@@ -64,9 +64,6 @@
       document.createElement("footer");
       document.createElement("navi");
       document.createElement("cont");
-      function onClickList(){
-        this.style.webkitAnimationPlayState = "running";
-      }
 
       var mouseX = 0, mouseY = 0,
       windowHalfX = window.innerWidth / 2,
@@ -74,7 +71,7 @@
       SEPARATION = 200,
       AMOUNTX = 10,
       AMOUNTY = 10,
-      camera, scene, renderer;
+      camera, scene, renderer,theSun
       init();
       animate();
       function init() {
@@ -87,47 +84,28 @@
 
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
         camera.position.z = 100;
-
         scene = new THREE.Scene();
-
-        renderer = new THREE.CanvasRenderer();
+        renderer = new THREE.CanvasRenderer({antialias:true,alpha: true  });
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setClearColorHex(0x000000, 1.0);//设置
         container.appendChild( renderer.domElement );
 
-        // particles
+        var light = new THREE.DirectionalLight(0xffffff, 1.0, 0);//设置平行光源
+        light.position.set( 200, 200, 200 );//设置光源向量
+        scene.add(light);// 追加光源到场景
+        var light2 = new THREE.AmbientLight(0x050505, 1.0, 0);//设置平行光源
+        light2.position.set( 200, 200, 200 );//设置光源向量
+        scene.add(light2);// 追加光源到场景
 
-        var PI2 = Math.PI * 2;
-        var material = new THREE.SpriteCanvasMaterial( {
-
-          color: 0xffffff,
-          program: function ( context ) {
-
-            context.beginPath();
-            context.arc( 0, 0, 0.5, 0, PI2, true );
-            context.fill();
-
-          }
-
-        } );
-
-        var geometry = new THREE.Geometry();
-        for ( var i = 0; i < 100; i ++ ) {
-
-          particle = new THREE.Sprite( material );
-          particle.position.x = Math.random() * 2 - 1;
-          particle.position.y = Math.random() * 2 - 1;
-          particle.position.z = Math.random() * 2 - 1;
-          particle.position.normalize();
-          particle.position.multiplyScalar( Math.random() * 10 + 450 );
-          particle.scale.x = particle.scale.y = 10;
-          scene.add( particle );
-
-          geometry.vertices.push( particle.position );
-
-        }
-        var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 0.5 } ) );
-        scene.add( line );
+      var theEarthTexture = THREE.ImageUtils.loadTexture("./res/3d/texture/theEarth.jpg");
+        //设置物体
+       theSun = new THREE.Mesh(
+            new THREE.SphereGeometry(20,100,50),                //width,height,depth
+            new THREE.MeshLambertMaterial({color: 0xffffff,overdraw:true}) //材质设定
+       );
+       theSun.position.set(0,0,0);
+       scene.add(theSun);
         document.addEventListener( 'mousemove', onDocumentMouseMove, false );
         document.addEventListener( 'touchstart', onDocumentTouchStart, false );
         document.addEventListener( 'touchmove', onDocumentTouchMove, false );
@@ -169,9 +147,8 @@
       }
 
       function render() {
-        camera.position.x += ( mouseX - camera.position.x ) * .05;
-        camera.position.y += ( - mouseY + 200 - camera.position.y ) * .05;
-        camera.lookAt( scene.position );
+        renderer.clear();
+        theSun.rotateOnAxis (new THREE.Vector3(0,1,0), 0.01)
         renderer.render( scene, camera );
       }
     </script>
