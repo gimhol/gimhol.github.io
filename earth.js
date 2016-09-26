@@ -43,7 +43,7 @@ createEarth()
 function createEarth(){
   var loader = new THREE.TextureLoader();
   loader.load(
-    'file:///F:/project/fimagine.github.com/textures/earth.jpg',
+    'textures/earth.jpg',
     function ( texture ) {
       alert("!")
     },
