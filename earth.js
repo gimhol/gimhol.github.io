@@ -96,9 +96,9 @@ function createEarth(){
       })//材质设定
     }
   };
-  loadTexture('earth_map_normal'  ,'https://gimhol.github.io/textures/earth_atmos_4096.jpg')
-  loadTexture('earth_map_bump'    ,'https://gimhol.github.io/textures/earth_normal_2048.jpg')
-  loadTexture('earth_map_specular','https://gimhol.github.io/textures/earth_specular_2048.jpg')
+  loadTexture('earth_map_normal'  ,'textures/earth_atmos_4096.jpg')
+  loadTexture('earth_map_bump'    ,'textures/earth_normal_2048.jpg')
+  loadTexture('earth_map_specular','textures/earth_specular_2048.jpg')
 }
 
 function onWindowResize() {
