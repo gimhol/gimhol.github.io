@@ -4,7 +4,7 @@ windowHalfY = window.innerHeight / 2,
 SEPARATION = 200,
 AMOUNTX = 10,
 AMOUNTY = 10,
-camera, scene, renderer,earth;
+camera, scene, renderer,earth,earth2;
 var container = document.createElement('div');
 document.body.appendChild(container)
 
@@ -12,10 +12,6 @@ init();
 animate();
 
 function init() {
-
-
-
-
   createPerspectiveCamera()
   createScene()
   createRenderer()
@@ -48,46 +44,61 @@ function createPerspectiveCamera(){
 
 function createAmbientLight(){
   var ambientLight = new THREE.AmbientLight(0x050505, 1.0, 0);
-  ambientLight.position.set( 200, 200, 200 );
   scene.add(ambientLight);
 }
 
 function createDirectionalLight(){
-  var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0, 0);
-  directionalLight.position.set( 200, 200, 200 );
-  scene.add(directionalLight);
+  var light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5,3,5);
+  scene.add(light);
+}
+
+function loadTexture(name,url){
+  var loader = new THREE.TextureLoader();
+  loader.load(
+    url,
+    function ( texture ) {
+      window.textures = window.textures || {}
+      window.textures[name] = texture
+      typeof window.onTexturesLoad === 'function' && window.onTexturesLoad(name,texture)
+    },
+    function (progress){
+      console.log(name+': '+ progress.loaded + '/' + progress.total)
+    },
+    function (err){}
+  );
 }
 
 function createEarth(){
-  var loader = new THREE.TextureLoader();
-  loader.load(
-    'textures/land_ocean_ice_cloud_2048.jpg',
-    function ( texture ) {
-      alert('earth !')
-      earth = new THREE.Mesh(
-        new THREE.SphereGeometry(20,100,50),
-        new THREE.MeshBasicMaterial({
-          map: texture,
-          //color: 0xffffff,
-          overdraw:true}) //材质设定
-      );
-      earth.position.set(0,0,0);
-    },
-    function (progress){
-      console.log(''+(progress.loaded / progress.total)*100 + '%')
-    },
-    function (err){
-      alert('earth !!')
-      earth = new THREE.Mesh(
-        new THREE.SphereGeometry(20,100,50),
-        new THREE.MeshLambertMaterial({color: 0xffffff,overdraw:true}) //材质设定
-      );
-      earth.position.set(0,0,0);
-    }
+  earth = new THREE.Mesh(
+    new THREE.SphereGeometry(30,25,15),
+    new THREE.MeshBasicMaterial({
+      wireframe:true,
+      wireframeLinewidth:1,
+      overdraw:0.4,
+    }) //材质设定
   );
-
-
+  earth.position.set(0,0,0);
   scene.add(earth);
+  window.onTexturesLoad = function(name,texture){
+    if(
+      window.textures['earth_map_normal'] &&
+      window.textures['earth_map_bump'] &&
+      window.textures['earth_map_specular']){
+      earth.material = new THREE.MeshPhongMaterial({
+        map: window.textures['earth_map_normal'],
+        bumpMap   : window.textures['earth_map_bump'],
+        specularMap: window.textures['earth_map_specular'],
+        bumpScale :  1,
+        specular: new THREE.Color('grey'),
+        color: 0xffffff,
+        overdraw:0.5
+      })//材质设定
+    }
+  };
+  loadTexture('earth_map_normal'  ,'https://gimhol.github.io/textures/earth_atmos_4096.jpg')
+  loadTexture('earth_map_bump'    ,'https://gimhol.github.io/textures/earth_normal_2048.jpg')
+  loadTexture('earth_map_specular','https://gimhol.github.io/textures/earth_specular_2048.jpg')
 }
 
 function onWindowResize() {
@@ -126,7 +137,6 @@ function animate() {
 
 function render() {
   renderer.clear();
-
   earth && earth.rotateOnAxis (new THREE.Vector3(0,1,0), 0.01)
 
   renderer.render( scene, camera );
