@@ -63,6 +63,7 @@ function createEarth(){
   loader.load(
     'textures/land_ocean_ice_cloud_2048.jpg',
     function ( texture ) {
+      alert('earth !')
       earth = new THREE.Mesh(
         new THREE.SphereGeometry(20,100,50),
         new THREE.MeshBasicMaterial({
@@ -73,9 +74,10 @@ function createEarth(){
       earth.position.set(0,0,0);
     },
     function (progress){
-      console.log(progress)
+      console.log(''+(progress.loaded / progress.total)*100 + '%')
     },
     function (err){
+      alert('earth !!')
       earth = new THREE.Mesh(
         new THREE.SphereGeometry(20,100,50),
         new THREE.MeshLambertMaterial({color: 0xffffff,overdraw:true}) //材质设定
