@@ -65,7 +65,7 @@ function createEarth(){
     function ( texture ) {
       earth = new THREE.Mesh(
         new THREE.SphereGeometry(20,100,50),
-        new THREE.MeshLambertMaterial({
+        new THREE.MeshBasicMaterial({
           map: texture,
           //color: 0xffffff,
           overdraw:true}) //材质设定
