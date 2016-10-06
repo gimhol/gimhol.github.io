@@ -1,10 +1,12 @@
+var textureLoader = new TextureLoader();
+var keyState = {}
 var mouseX = 0, mouseY = 0,
 windowHalfX = window.innerWidth / 2,
 windowHalfY = window.innerHeight / 2,
 SEPARATION = 200,
 AMOUNTX = 10,
 AMOUNTY = 10,
-camera, scene, renderer,earth,earth2;
+camera, scene, renderer,earth;
 var container = document.createElement('div');
 document.body.appendChild(container)
 
@@ -22,6 +24,8 @@ function init() {
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
   document.addEventListener( 'touchstart', onDocumentTouchStart, false );
   document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+  document.addEventListener( 'keydown', onDocumentKeyDown, false );
+  document.addEventListener( 'keyup', onDocumentKeyUp, false);
   window.addEventListener( 'resize', onWindowResize, false );
 }
 
@@ -53,52 +57,31 @@ function createDirectionalLight(){
   scene.add(light);
 }
 
-function loadTexture(name,url){
-  var loader = new THREE.TextureLoader();
-  loader.load(
-    url,
-    function ( texture ) {
-      window.textures = window.textures || {}
-      window.textures[name] = texture
-      typeof window.onTexturesLoad === 'function' && window.onTexturesLoad(name,texture)
-    },
-    function (progress){
-      console.log(name+': '+ progress.loaded + '/' + progress.total)
-    },
-    function (err){}
-  );
-}
-
 function createEarth(){
-  earth = new THREE.Mesh(
-    new THREE.SphereGeometry(30,25,15),
-    new THREE.MeshBasicMaterial({
-      wireframe:true,
-      wireframeLinewidth:1,
-      overdraw:0.4,
-    }) //材质设定
-  );
-  earth.position.set(0,0,0);
-  scene.add(earth);
-  window.onTexturesLoad = function(name,texture){
-    if(
-      window.textures['earth_map_normal'] &&
-      window.textures['earth_map_bump'] &&
-      window.textures['earth_map_specular']){
-      earth.material = new THREE.MeshPhongMaterial({
-        map: window.textures['earth_map_normal'],
-        bumpMap   : window.textures['earth_map_bump'],
-        specularMap: window.textures['earth_map_specular'],
-        bumpScale :  1,
-        specular: new THREE.Color('grey'),
-        color: 0xffffff,
-        overdraw:0.5
-      })//材质设定
-    }
-  };
-  loadTexture('earth_map_normal'  ,'textures/earth_atmos_4096.jpg')
-  loadTexture('earth_map_bump'    ,'textures/earth_normal_2048.jpg')
-  loadTexture('earth_map_specular','textures/earth_specular_2048.jpg')
+  earth = new Plant({
+    'name' : 'earth',
+    'di' : 12756,
+    'eo' : 23.26,
+    'rop' : 23*60*60*1000 + 56*60*1000, //自转周期 毫秒
+    'rep' : 365*24*60*60*1000,          //公转周期 毫秒
+    'texture'  : 'textures/earth_atmos_4096.jpg'
+  })
+
+  var moon = new Plant({
+    'name' : 'moon',
+    'di' : 3467,
+    'eo' : 23.26,
+    'rop' : 2360591559,  //自转周期 毫秒
+    'rep' : 2360591559,  //公转周期 毫秒
+    'around': earth,
+    'texture'  : 'textures/earth_atmos_4096.jpg'
+  })
+  moon.position.x = 384400 * 0.002
+
+  var o1 = new THREE.Object3D()
+  o1.add(earth)
+  o1.add(moon)
+  scene.add(o1)
 }
 
 function onWindowResize() {
@@ -108,12 +91,11 @@ function onWindowResize() {
   camera.updateProjectionMatrix();
   renderer.setSize( window.innerWidth, window.innerHeight );
 }
-
 function onDocumentMouseMove(event) {
+  //console.log([mouseX,mouseY])
   mouseX = event.clientX - windowHalfX;
   mouseY = event.clientY - windowHalfY;
 }
-
 function onDocumentTouchStart( event ) {
   if ( event.touches.length > 1 ) {
     event.preventDefault();
@@ -121,7 +103,6 @@ function onDocumentTouchStart( event ) {
     mouseY = event.touches[ 0 ].pageY - windowHalfY;
   }
 }
-
 function onDocumentTouchMove( event ) {
   if ( event.touches.length == 1 ) {
     event.preventDefault();
@@ -129,15 +110,38 @@ function onDocumentTouchMove( event ) {
     mouseY = event.touches[ 0 ].pageY - windowHalfY;
   }
 }
+function onDocumentKeyUp( event ){
+  keyState[event.key] = false
+}
+function onDocumentKeyDown( event ){
+  keyState[event.key] = true
+}
+
+var currentTimeStamp = new Date().getTime()
+var lastTimeStamp = new Date().getTime()
 
 function animate() {
   requestAnimationFrame( animate );
+  currentTimeStamp = new Date().getTime()
+  if(keyState.w != keyState.s){
+    if(keyState.s){
+      camera.position.z += 1
+    }else{
+      camera.position.z -= 1
+    }
+  }
+  if(keyState.a != keyState.d){
+    if(keyState.d){
+      camera.position.x += 1
+    }else{
+      camera.position.x -= 1
+    }
+  }
+  lastTimeStamp = currentTimeStamp
   render();
 }
 
 function render() {
   renderer.clear();
-  earth && earth.rotateOnAxis (new THREE.Vector3(0,1,0), 0.01)
-
   renderer.render( scene, camera );
 }
