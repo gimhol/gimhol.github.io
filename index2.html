@@ -7,9 +7,29 @@
     <style>
     </style>
   </head>
+
   <body>
     <div>
-      <img hidefocus="true" src="//www.baidu.com/img/bd_logo1.png" width="270" height="129">
+      <img hidefocus="true" src="https://www.baidu.com/img/bd_logo1.png" width="270" height="129">
     </div>
+    <script>
+      var imgs = document.getElementsByTagName('img');
+      if(imgs && imgs.length > 0){
+        for (var i = 0; i < imgs.length; ++i) {
+          imgs[i].onclick = function(e){
+            alert('!')
+            if(WebViewBridge){
+              var deliver = {
+                type:'clickImage',
+                uri:this.src,
+                width:this.naturalWidth,
+                height:this.naturalHeight,
+              };
+              WebViewBridge.send(JSON.stringify(deliver));
+            }
+          }
+        }
+      }
+    </script>
   </body>
 </html>
