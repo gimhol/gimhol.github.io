@@ -13,12 +13,20 @@
       <img hidefocus="true" src="https://www.baidu.com/img/bd_logo1.png" width="270" height="129">
     </div>
     <script>
+      function CheckImgExists(imgurl) {
+        var ImgObj = new Image();
+        ImgObj.src = imgurl;
+        if(ImgObj.width > 0 && ImgObj.height > 0){
+          return true;
+        } else {
+          return false;
+        }
+      }
       var imgs = document.getElementsByTagName('img');
       if(imgs && imgs.length > 0){
         for (var i = 0; i < imgs.length; ++i) {
           imgs[i].onclick = function(e){
-            alert('!')
-            if(WebViewBridge){
+            if(WebViewBridge && CheckImgExists(this.src)){
               var deliver = {
                 type:'clickImage',
                 uri:this.src,
