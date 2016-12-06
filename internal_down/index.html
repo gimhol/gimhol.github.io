@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>活力圈-内部下载</title>
+    <meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style type="text/css">
+      html{
+        background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#777777), to(#999999));
+        height:100%;
+      }
+      body{
+        margin:0;
+        padding:0;
+        width:100%;
+      }
+      #section{
+        padding-bottom:5px;
+        background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#777777), to(#999999));
+      }
+      #sectionTitle{
+        background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#555555), to(#111111));
+        left:0px;
+        padding:5px;
+        color: #CCCCCC;
+        font-family: "SimHei";
+        margin-left:0px;
+        width:100%;
+        margin-bottom:5px;
+      }
+      #downloadTextContainer{
+        background: #111111;
+        margin:4px;
+        padding:4px;
+        width:fit-content;
+        height:fit-content;
+        display:inline;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        color: #CCCCCC;
+        font-family: "SimHei";
+        user-select: none; 
+      }
+      .disable-selection{
+          -moz-user-select:none; /* Firefox */
+           -ms-user-select:none; /* Internet Explorer */
+         -ktml-user-select:none; /* KHTML浏览器（比如：Konqueror） */
+       -webkit-user-select:none; /* Chrome,Safari,and Opera */
+         -webkit-touch-callout:none; /* Disable Android and IOS callout */
+      }
+      #downloadText{
+        color: #CCCCCC;
+        font-family: "SimHei";
+
+      }
+      a:link,a:visited{
+       text-decoration:none;
+      }
+      a:hover{
+       text-decoration:underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main" style="padding:0px" class="main-content"></div>
+    <script src="http://gosspublic.alicdn.com/aliyun-oss-sdk.min.js"></script>
+    <script type="text/javascript">
+    
+      var client = new OSS.Wrapper({
+        region: 'oss-cn-hangzhou',
+        accessKeyId: 'LTAI1mSE7s7t0F9W',
+        accessKeySecret: 'ag5Y2x9TwHMG6pZ9G40RYJLZus8y4t',
+        bucket: 'holichat-down'
+      });
+      function listDir(dir){
+        try{
+          var result = client.list({
+            prefix: dir,
+            delimiter: '/'
+          });
+          result.prefixes.forEach(function (subDir) {
+            console.log('SubDir: ' + subDir);
+          });
+          result.objects.forEach(function (obj) {
+            console.log('Object: ' + obj.name);
+          });
+        }
+        catch(err){
+          console.warn(err)
+        }
+      }
+
+      listDir('blue');
+      
+      document.createElement('sectionTitle');
+      var versionInfos = []
+      var i=0
+      while(i<2){
+        versionInfos.push({
+          'name':'1.5.0',
+          'apkInfos':[
+            {
+              'name':'应用宝',
+              'url':'http://www.baidu.com/'
+            },            {
+              'name':'应用宝',
+              'url':'http://www.baidu.com/'
+            },            {
+              'name':'应用宝',
+              'url':'http://www.baidu.com/'
+            },            {
+              'name':'应用宝',
+              'url':'http://www.baidu.com/'
+            }
+          ]
+        })
+        ++i
+      }
+      var html = ""
+      function onMouseOver(){
+        //alert('onMouseOver')
+      }
+      function onMouseOut(){
+        //alert('onMouseOut')
+      }
+      versionInfos.map((versionInfo,idx)=>{
+        html += '<div id=\'section\'>'
+        html += '<div id=\'sectionTitle\' >版本号：'+versionInfo.name+'</div>'
+        html += '<div id=\'downloadTextContainer\' >'
+        html += '<a id=\'downloadText\' href='+''+'>下载全部</a>'
+        html += '</div>'
+        
+        
+        //html += '<img src="http://pan.baidu.com/share/qrcode?w=150&h=150&url=9999"/>'
+        
+        versionInfo.apkInfos.map((apkInfo)=>{
+          html += '<div id=\'downloadTextContainer\' onMouseOver=\'onMouseOver()\' onMouseOut=\'onMouseOut()\' >'
+          html += '<a id=\'downloadText\' href='+apkInfo.url+'>'+apkInfo.name+'</a>'
+          html += '</div>'
+        })
+        html += '</div>'
+      })
+      
+      document.getElementById('main').innerHTML = html
+    </script>
+  </body>
+</html>
