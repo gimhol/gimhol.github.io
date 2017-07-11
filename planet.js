@@ -1,4 +1,4 @@
-var faster  = 3600
+var faster  = 3600*10
 var smaller = 0.002
 
 function Plant(data){
@@ -9,6 +9,7 @@ function Plant(data){
   this.rop = data.rop || 0;   //rotation period 自转周期
   this.rep = data.rep || 0;   //revolution period 公转周期
   this.around = data.around;  //公转中心
+  this.ara = data.ara;        //公转半径
   this.textureUrl  = data.texture || '';  //贴图
   this.geometry = new THREE.SphereGeometry(smaller*this.di,25,15)
   this.materialConfig = {
@@ -21,6 +22,7 @@ function Plant(data){
   textureLoader.load(this.textureUrl, this.textureUrl)
   textureLoader.addLoadEventListener(this)
 
+  this.araAngle = 0
   this.animate()
 }
 Plant.prototype = Object.assign( Object.create( THREE.Mesh.prototype ),{
@@ -28,6 +30,15 @@ Plant.prototype = Object.assign( Object.create( THREE.Mesh.prototype ),{
   animate: function(e){
     setTimeout(()=>this.animate(),50/3)
     this.rotateOnAxis (new THREE.Vector3(0,1,0),faster*(50/3)*2*Math.PI/this.rop)
+
+    if(this.around){
+      this.araAngle += faster*(50/3)*2*Math.PI/this.rep
+      if(this.araAngle > 2*Math.PI){
+        this.araAngle -= 2*Math.PI
+      }
+      this.position.x = this.ara * smaller * Math.sin(this.araAngle)
+      this.position.z = this.ara * smaller * Math.cos(this.araAngle)
+    }
   },
   onLoadSuccess: function(name,url,texture){
     if(url === this.textureUrl){

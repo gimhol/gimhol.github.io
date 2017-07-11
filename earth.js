@@ -43,7 +43,10 @@ function createScene(){
 
 function createPerspectiveCamera(){
   camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-  camera.position.z = 100;
+  camera.position.z = 200;
+  camera.position.y = 200;
+  camera.position.x = 200;
+  camera.lookAt(new THREE.Vector3( 100, 0, 0 ))
 }
 
 function createAmbientLight(){
@@ -67,21 +70,35 @@ function createEarth(){
     'texture'  : 'textures/earth_atmos_4096.jpg'
   })
 
-  var moon = new Plant({
-    'name' : 'moon',
-    'di' : 3467,
-    'eo' : 23.26,
-    'rop' : 2360591559,  //自转周期 毫秒
-    'rep' : 2360591559,  //公转周期 毫秒
-    'around': earth,
-    'texture'  : 'textures/earth_atmos_4096.jpg'
-  })
-  moon.position.x = 384400 * 0.002
+  // var moon = new Plant({
+  //   'name' : 'moon',
+  //   'di' : 3467,
+  //   'eo' : 23.26,
+  //   'rop' : 2360591559,  //自转周期 毫秒
+  //   'rep' : 2360591559,  //公转周期 毫秒
+  //   'around': earth,
+  //   'ara'   : 384400,
+  //   'texture'  : 'textures/earth_atmos_4096.jpg'
+  // })
+  //
+  // var o1 = new THREE.Object3D()
+  // o1.add(earth)
+  // o1.add(moon)
+  // scene.add(o1)
 
-  var o1 = new THREE.Object3D()
-  o1.add(earth)
-  o1.add(moon)
-  scene.add(o1)
+
+  var geometry = new THREE.Geometry();
+  for ( var i = 0; i < 100; i ++ ) {
+    var p = new THREE.Vector3(
+      100 * (Math.random()*2-1),
+      100 * (Math.random()*2-1),
+      100 * (Math.random()*2-1))
+    geometry.vertices.push(  );
+  }
+  var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1 ,    wireframe:true,
+      wireframeLinewidth:10} ) );
+  line.position.x = 0
+  scene.add( line );
 }
 
 function onWindowResize() {

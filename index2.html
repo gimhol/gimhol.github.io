@@ -7,37 +7,25 @@
     <style>
     </style>
   </head>
-
   <body>
     <div>
-      <img hidefocus="true" src="https://www.baidu.com/img/bd_logo1.png" width="270" height="129">
+      <img hidefocus="true" src="res/3d/texture/earth.jpg" width="270" height="129">
     </div>
+
+    <script src="./game/InputHandler.js"></script>
+    <script src="./game/Game.js"></script>
+
     <script>
-      function CheckImgExists(imgurl) {
-        var ImgObj = new Image();
-        ImgObj.src = imgurl;
-        if(ImgObj.width > 0 && ImgObj.height > 0){
-          return true;
-        } else {
-          return false;
-        }
+      window.game.setFps(30)
+      window.game.start()
+
+      
+      window.game.onGameLoop = function(deltaTime){
+
       }
-      var imgs = document.getElementsByTagName('img');
-      if(imgs && imgs.length > 0){
-        for (var i = 0; i < imgs.length; ++i) {
-          imgs[i].onclick = function(e){
-            if(WebViewBridge && CheckImgExists(this.src)){
-              var deliver = {
-                type:'clickImage',
-                uri:this.src,
-                width:this.naturalWidth,
-                height:this.naturalHeight,
-              };
-              WebViewBridge.send(JSON.stringify(deliver));
-            }
-          }
-        }
-      }
+
+
+
     </script>
   </body>
 </html>
