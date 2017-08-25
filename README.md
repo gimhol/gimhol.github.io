@@ -1,2 +1,2 @@
-# gimhol.github.com
-fimagine.github.com
+# gimhol.github.io/
+https://gimhol.github.io/
