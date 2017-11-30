@@ -5,74 +5,18 @@
     <meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
-      content {
-        top:60px;
-        bottom:60px;
-        width: 100%;
-        position:absolute;
-        color:#DDD;
-        font-family: "SimHei";
-      }
-      header{
-        background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#555555), to(#111111));
-        position:absolute;
-        height: 60px;
-        top:0px;
-        left:0px;
-        right:0px;
-        color: #CCCCCC;
-        font-family: "SimHei";
-        vertical-align: "middle";
-      }
-      footer {
-        display: block;
-        background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#555555), to(#111111));
-        height: 60px;
-        font-size: 12px;
-        position:absolute;
-        bottom:0px;
-        left:0px;
-        right:0px;
-        color: #FFFFFF;
-        font-family: "SimHei";
-      }
-      html {
-        height:100%;
-        border:0;
-      }
-      body {
-        margin: 0px;
-				overflow: hidden;
-        height:100%;
-        background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#111111), to(#555555));
-      }
-      list-button {
-        left:20px
-      }
-      a {
-				color:#0078ff;
-			}
+    html{
+      height: 100%;
+    }
+    body{
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
     </style>
   </head>
-
   <body>
-    <script src="./threejs/three.js"></script>
-    <script src="./threejs/js/renderers/Projector.js"></script>
-    <script src="./threejs/js/renderers/CanvasRenderer.js"></script>
-    <script src="./textureLoader.js"></script>
-    <script src="./planet.js"></script>
-    <script src="./earth.js"></script>
-    <script>
-      document.createElement("header");
-      document.createElement("footer");
-      document.createElement("navi");
-      document.createElement("cont");
-    </script>
-    <content>
-    </content>
-    <header>
-    </header>
-    <footer>
-    </footer>
+    <div id="app"></div>
+    <script src="bundle.js"></script>
   </body>
 </html>
