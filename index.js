@@ -6,6 +6,7 @@
 
 import Engine from './fiengine/Engine'
 import SceneKeeper from './fiengine/keepers/SceneKeeper'
+import KeyboardCenter from './fiengine/input/KeyboardCenter'
 import LaunchScene from './app/LaunchScene'
 var appDiv = document.getElementById('app')
 var canvas = document.createElement('canvas')
@@ -15,4 +16,5 @@ Engine.getInstance()
   .setSize(800,600)
   .setBackgroundColor('black')
 
+KeyboardCenter.getInstance().launch();
 SceneKeeper.getInstance().run(new LaunchScene());

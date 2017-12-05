@@ -11,6 +11,12 @@ export default class FI_Node {
     this.scale    = { x:1 , y:1 };
     this.rotation   = 0;
   }
+  getPositionX(){return this.position.x}
+  setPositionX(v){this.position.x = v}
+  tranPositionX(v){this.position.x += v}
+  getPositionY(){return this.position.y}
+  setPositionY(v){this.position.y = v}
+  tranPositionY(v){this.position.y += v}
   onAdded(){}
   onRemoved(){}
   onUpdate(){}
