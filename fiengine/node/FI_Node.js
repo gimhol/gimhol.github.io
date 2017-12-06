@@ -12,11 +12,11 @@ export default class FI_Node {
     this.rotation   = 0;
   }
   getPositionX(){return this.position.x}
-  setPositionX(v){this.position.x = v}
-  tranPositionX(v){this.position.x += v}
+  setPositionX(v){this.position.x = v; return this.position.x}
+  tranPositionX(v){this.position.x += v; return this.position.x}
   getPositionY(){return this.position.y}
-  setPositionY(v){this.position.y = v}
-  tranPositionY(v){this.position.y += v}
+  setPositionY(v){this.position.y = v; return this.position.y}
+  tranPositionY(v){this.position.y += v; return this.position.y}
   onAdded(){}
   onRemoved(){}
   onUpdate(){}

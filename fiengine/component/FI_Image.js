@@ -5,6 +5,7 @@ export default class FI_Image extends FI_Component{
   constructor(uri){
     super()
     this.imageUri = uri;
+    this.texRect = null
   }
   onMount(){
     this.loadImage(this.imageUri)
@@ -12,16 +13,17 @@ export default class FI_Image extends FI_Component{
   async loadImage(uri){
     try{
       this.image = await imageKeeper.getImage(uri)
-      this.texRect = { x:0, y:0, width:this.image.width, height:this.image.height };
-
+      this.texRect = this.texRect || { x:0, y:0, width:this.image.width, height:this.image.height };
     }
     catch(err){
       console.warn(err)
     }
   }
-
+  setTexRect(x,y,width,height){
+    this.texRect = { x, y, width, height };
+  }
   draw(ctx){
-    if( this.image ){
+    if( this.image && this.texRect){
       var anchorOffset = this.node.getAnchorOffset()
       ctx.drawImage(this.image,
         this.texRect.x,
