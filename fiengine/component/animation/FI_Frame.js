@@ -8,14 +8,16 @@ export default class FI_Frame extends FI_Component{
     this.setDuration(duration)
     this.setImage(image)
     this.setTexRect(texRect)
-    this.image && this.image.setNode(this.getNode())
   }
-  setImage(image){ this.image = image }
+  setImage(image){
+    this.image = image;
+    this.hasMounted() && image && image.setNode(this.getNode())
+  }
   setDuration(duration){this.duration = duration}
-  getDuration(){return this.duration }
+  getDuration(){ return this.duration }
   setTexRect(texRect){ this.texRect = texRect }
   onMount(){
-    this.image && this.image.setNode(this.getNode())
+    this.image && !this.image.hasMounted() && this.image.setNode(this.getNode())
   }
   update(dt){
 

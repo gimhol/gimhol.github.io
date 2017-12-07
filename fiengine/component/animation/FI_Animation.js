@@ -1,7 +1,6 @@
 import FI_Component from '../FI_Component'
 
 export default class FI_Animation extends FI_Component{
-
   constructor(){
     super()
     this.frames = []
@@ -13,7 +12,9 @@ export default class FI_Animation extends FI_Component{
   }
   addFrame(frame){
     this.frames.push(frame)
-    frame.setNode(this.getNode())
+    if( this.hasMounted() ){
+      frame.setNode(this.getNode())
+    }
   }
   onMount(){
     this.frames.map((frame)=>{

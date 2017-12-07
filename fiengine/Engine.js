@@ -3,6 +3,7 @@ import FI_Image from './component/FI_Image'
 import FI_Touchable from './component/FI_Touchable'
 import {FI_RotationBy} from './action/FI_Rotation'
 import SceneKeeper from './keepers/SceneKeeper'
+import * as Utils from './utils'
 export default class Engine {
   static getInstance(){
     if(!this.instance){
@@ -37,6 +38,8 @@ export default class Engine {
     this.setSize(800,600)
     this.setBackgroundColor('white')
     this.ctx = this.canvas.getContext('2d');
+    this.ctxTracker = Utils.trackTransform(this.ctx)
+
     this.looper(0);
     return this;
   }

@@ -3,7 +3,7 @@ export default class FI_Node {
     this.children = []
     this.components = []
     this.actions = []
-
+    this.level    = 0;
     this.parent   = null;
     this.position = { x:0, y:0 };
     this.anchor   = { x:0.5, y:0.5 };
@@ -11,21 +11,39 @@ export default class FI_Node {
     this.scale    = { x:1 , y:1 };
     this.rotation   = 0;
   }
+  getLevel(){return this.level}
+  setLevel(v){this.level=v}
   getPositionX(){return this.position.x}
   setPositionX(v){this.position.x = v; return this.position.x}
   tranPositionX(v){this.position.x += v; return this.position.x}
   getPositionY(){return this.position.y}
   setPositionY(v){this.position.y = v; return this.position.y}
   tranPositionY(v){this.position.y += v; return this.position.y}
+
+  _onAdded(){
+    this.hasAdded = true
+    this.mountAllComponent()
+    this.onAdded()
+  }
+  _onRemoved(){
+    this.hasAdded = false
+    this.onRemoved()
+  }
+
   onAdded(){}
   onRemoved(){}
   onUpdate(){}
+
   addChild(child){
     if(child.getParent()){
       return console.warn('has been added !')
     }
     this.children.push(child)
-    child.onAdded()
+    child.setLevel(this.level+1)
+    child._onAdded()
+  }
+  mountAllComponent(){
+    this.components.map((component)=>component.setNode(this));
   }
   removeChild(child){
     for(var i=0;i<this.children.length;++i){
@@ -46,7 +64,7 @@ export default class FI_Node {
   }
   addComponent(component){
     this.components.push(component)
-    component.setNode(this)
+    this.hasAdded && component.setNode(this)
     return component
   }
   addAction(action){
