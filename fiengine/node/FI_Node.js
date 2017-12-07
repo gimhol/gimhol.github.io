@@ -13,12 +13,18 @@ export default class FI_Node {
   }
   getLevel(){return this.level}
   setLevel(v){this.level=v}
+
   getPositionX(){return this.position.x}
   setPositionX(v){this.position.x = v; return this.position.x}
   tranPositionX(v){this.position.x += v; return this.position.x}
+
   getPositionY(){return this.position.y}
   setPositionY(v){this.position.y = v; return this.position.y}
   tranPositionY(v){this.position.y += v; return this.position.y}
+
+  getRotation(){return this.rotation}
+  setRotation(v){this.rotation = v; return this.rotation}
+  tranRotation(v){this.rotation += v; return this.rotation}
 
   _onAdded(){
     this.hasAdded = true
@@ -102,7 +108,6 @@ export default class FI_Node {
     ctx.translate(this.position.x, this.position.y);
     ctx.rotate(this.rotation * Math.PI / 180);
     ctx.scale(this.scale.x,this.scale.y);
-    //ctx.translate(-this.position.x, -this.position.y);
     ctx.save()
     for(var i in this.components){
       this.components[i].draw(ctx);

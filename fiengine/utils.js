@@ -33,7 +33,6 @@ export const trackTransform = function (ctx) {
 
     var rotate = ctx.rotate;
     ctx.rotate = function (deg) {
-        var radians = deg * Math.PI / 180;
         xform = xform.rotate(deg);
         return rotate.call(ctx, deg);
     };

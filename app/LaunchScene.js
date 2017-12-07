@@ -88,7 +88,7 @@ export default class LaunchScene extends FI_Scene{
     animation.play()
 
     this.addChild(this.player)
-    
+
     this.player.addComponent(animation)
     var t = this.player.addComponent(new FI_Touchable())
     t.setOnClickFunc(()=>{
@@ -105,6 +105,7 @@ export default class LaunchScene extends FI_Scene{
     a.size = {width: 50, height: 50}
     a.position = {x: 50, y: 30}
     a.addComponent(new FI_Image('../textures/moon_1024.jpg'))
+    a.setRotation(45)
     var t = a.addComponent(new FI_Touchable())
     t.setOnClickFunc(()=>{
       console.log('weapon')

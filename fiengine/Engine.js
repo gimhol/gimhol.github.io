@@ -4,6 +4,25 @@ import FI_Touchable from './component/FI_Touchable'
 import {FI_RotationBy} from './action/FI_Rotation'
 import SceneKeeper from './keepers/SceneKeeper'
 import * as Utils from './utils'
+import Matrix from './base/Matrix'
+
+var m1 = new Matrix(3,3,[
+    1,0,0,
+    0,1,0,
+    0,0,1
+])
+var m2 = new Matrix(3,3,[
+    1,0,0,
+    0,1,0,
+    0,0,1
+])
+console.log(m1.toString())
+
+// console.log(m1.translate(100,100).toString())
+
+console.log(m1.add(m2).toString())
+console.log(m1.sub(m2).toString())
+
 export default class Engine {
   static getInstance(){
     if(!this.instance){

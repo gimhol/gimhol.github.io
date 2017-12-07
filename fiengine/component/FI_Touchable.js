@@ -9,6 +9,7 @@ export default class FI_Touchable extends FI_Component{
     MouseCenter.getInstance().addListener('mouseup', this.onMouseUp.bind(this), this.node.getLevel() )
   }
   onMouseDown(e){
+
     var anchorOffset = this.node.getAnchorOffset()
     var l = this.transform.e - anchorOffset.x
     var r = l + this.node.size.width
@@ -21,6 +22,8 @@ export default class FI_Touchable extends FI_Component{
       e.clientY <= b
     ){
       this.isMouseDownOnMe = true
+      console.log(this.transform)
+      console.log(this.transform.inverse())
       return true
     }
   }
