@@ -17,18 +17,46 @@ export default class LaunchScene extends FI_Scene{
     this.speedY = 0;
     this.pressRight = 0;
     this.pressLeft = 0;
-    this.pressUp = 0;
+    this.pressJump = 0;
+    this.pressAttack = 0;
   }
 
   onUpdate(dt){
     var ground = 500
-    if(this.pressUp == 1){
-      ++this.pressUp
+    if(this.pressJump == 1){
+      ++this.pressJump
       this.actor2d.jump()
+    }
+    if(this.pressAttack == 1 && !this.shotting){
+      ++this.pressAttack
+      this.shotting = true
+      this.createBullet()
     }
     this.actor2d.walk(this.pressRight-this.pressLeft)
   }
+  createBullet(){
 
+    this.count = this.count || 0
+    this.count++
+    var a = new FI_Node()
+    a.size = {width: 50, height: 50}
+    a.position = {x: this.player.getPositionX(), y: this.player.getPositionY()}
+    a.addComponent(new FI_Image('../textures/moon_1024.jpg'))
+
+    var mover = a.addComponent( new FI_Mover() )
+    mover.tranVelocityX(1600)
+    a.addAction(new FI_RotationBy(10000,10000))
+
+    this.addChild(a)
+
+    console.log(this.count)
+    if( this.count < 3){
+      setTimeout(this.createBullet.bind(this),125)
+    }else{
+      this.shotting = false
+      this.count = 0
+    }
+  }
   onAdded(){
     var svg = document.createElement('svg');
 
@@ -40,8 +68,11 @@ export default class LaunchScene extends FI_Scene{
         case 'd':
           if(this.pressRight < 1) this.pressRight = 1
           break;
-        case 'w':
-          if(this.pressUp < 1) this.pressUp = 1;
+        case 'j':
+          if(this.pressAttack < 1) this.pressAttack = 1;
+          break;
+        case 'k':
+          if(this.pressJump < 1) this.pressJump = 1;
           break;
       }
     })
@@ -53,12 +84,14 @@ export default class LaunchScene extends FI_Scene{
         case 'd':
           if(this.pressRight > 0) this.pressRight = 0
           break;
-        case 'w':
-          if(this.pressUp > 0) this.pressUp = 0
+        case 'j':
+          if(this.pressAttack > 0) this.pressAttack = 0;
+          break;
+        case 'k':
+          if(this.pressJump > 0) this.pressJump = 0
           break;
       }
     })
-
 
     this.player = new FI_Node()
     this.player.size = {width: 100, height: 100}
@@ -95,15 +128,9 @@ export default class LaunchScene extends FI_Scene{
       console.log('player')
     })
 
-
-
-
-
-
-
     var a = new FI_Node()
     a.size = {width: 50, height: 50}
-    a.position = {x: 50, y: 30}
+    a.position = {x: 50, y: 50}
     a.addComponent(new FI_Image('../textures/moon_1024.jpg'))
     a.setRotation(45)
     var t = a.addComponent(new FI_Touchable())

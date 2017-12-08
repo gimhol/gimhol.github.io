@@ -1,3 +1,6 @@
+import Vector2D from '../math/Vector2D'
+import Size2D from '../math/Size2D'
+
 export default class FI_Node {
   constructor(){
     this.children = []
@@ -5,11 +8,11 @@ export default class FI_Node {
     this.actions = []
     this.level    = 0;
     this.parent   = null;
-    this.position = { x:0, y:0 };
-    this.anchor   = { x:0.5, y:0.5 };
-    this.size     = { width: 0, height: 0 };
-    this.scale    = { x:1 , y:1 };
-    this.rotation   = 0;
+    this.position = new Vector2D(0,0);
+    this.anchor   = new Vector2D(0.5,0.5);
+    this.size     = new Size2D(0, 0);
+    this.scale    = new Vector2D(1,1);
+    this.rotation = 0;
   }
   getLevel(){return this.level}
   setLevel(v){this.level=v}
@@ -21,6 +24,9 @@ export default class FI_Node {
   getPositionY(){return this.position.y}
   setPositionY(v){this.position.y = v; return this.position.y}
   tranPositionY(v){this.position.y += v; return this.position.y}
+
+  getPosition(){return this.position}
+  setPosition(v){this.position = v}
 
   getRotation(){return this.rotation}
   setRotation(v){this.rotation = v; return this.rotation}
@@ -61,12 +67,6 @@ export default class FI_Node {
   }
   getParent(){
     return this.parent
-  }
-  setRotation(rotation){
-    this.rotation = rotation;
-  }
-  getRotation(){
-    return this.rotation;
   }
   addComponent(component){
     this.components.push(component)

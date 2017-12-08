@@ -1,13 +1,14 @@
 import FI_Component from './FI_Component'
+import Vector2D from '../math/Vector2D'
 
 export default class FI_Mover extends FI_Component{
   constructor(){
     super()
-    this.velocity = {x: 0, y: 0}
+    this.velocity = new Vector2D(0,0)
   }
 
   getVelocity(){ return this.velocity }
-  setVelocity(x,y){ this.velocity = {x,y} }
+  setVelocity(x,y){ this.velocity = new Vector2D(x,y) }
   tranVelocity(x,y){
     this.velocity.x += x
     this.velocity.y += y
