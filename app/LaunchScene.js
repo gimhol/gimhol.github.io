@@ -15,10 +15,15 @@ export default class LaunchScene extends FI_Scene{
     super()
     this.gavity = 60;
     this.speedY = 0;
+    this.pressUp = 0;
+    this.pressDown = 0;
     this.pressRight = 0;
     this.pressLeft = 0;
     this.pressJump = 0;
     this.pressAttack = 0;
+    this.pressFn = 0;
+
+    this.playerFace = 1;
   }
 
   onUpdate(dt){
@@ -27,34 +32,80 @@ export default class LaunchScene extends FI_Scene{
       ++this.pressJump
       this.actor2d.jump()
     }
+    this.playerFace = (this.pressRight-this.pressLeft) || this.playerFace
     if(this.pressAttack == 1 && !this.shotting){
-      ++this.pressAttack
+      //++this.pressAttack
       this.shotting = true
-      this.createBullet()
+      if(this.pressFn == 1){
+        this.rightShot()
+      }else{
+        this.leftShot()
+      }
     }
     this.actor2d.walk(this.pressRight-this.pressLeft)
   }
-  createBullet(){
-
-    this.count = this.count || 0
-    this.count++
+  createBullet(angle){
     var a = new FI_Node()
-    a.size = {width: 50, height: 50}
+    a.size = {width: 25, height: 25}
     a.position = {x: this.player.getPositionX(), y: this.player.getPositionY()}
     a.addComponent(new FI_Image('../textures/moon_1024.jpg'))
 
     var mover = a.addComponent( new FI_Mover() )
-    mover.tranVelocityX(1600)
+    var sp = 1600
+    mover.tranVelocityX(Math.sin(angle)*1600)
+    mover.tranVelocityY(Math.cos(angle)*1600)
     a.addAction(new FI_RotationBy(10000,10000))
 
     this.addChild(a)
-
-    console.log(this.count)
-    if( this.count < 3){
-      setTimeout(this.createBullet.bind(this),125)
-    }else{
+  }
+  getShotAngle(){
+    var du = this.pressDown - this.pressUp
+    var lr = this.pressRight - this.pressLeft
+    var a = 90;
+    if( lr == 1 ){
+      if(du == 1){
+        a -= 45
+      }else if(du == -1){
+        a += 45
+      }
+    }
+    else if(lr == -1){
+      a = -90
+      if(du == 1){
+        a += 45
+      }else if(du == -1){
+        a -= 45
+      }
+    }
+    else if(du == 1){
+      a = 0
+    }else if(du == -1){
+      a = 180
+    }
+    return a
+  }
+  rightShot(){
+    var a = this.getShotAngle()
+    this.createBullet((a+10)*Math.PI/180)
+    this.createBullet(a*Math.PI/180)
+    this.createBullet((a-10)*Math.PI/180)
+    setTimeout(()=>{
       this.shotting = false
-      this.count = 0
+    },500)
+  }
+  leftShot(){
+    this.count = this.count || 0
+    this.count++
+    var a = this.getShotAngle()
+    this.createBullet(a*Math.PI/180)
+    if( this.count < 3){
+      setTimeout(this.leftShot.bind(this),100)
+    }else{
+
+      setTimeout(()=>{
+        this.shotting = false
+        this.count = 0
+      },500)
     }
   }
   onAdded(){
@@ -62,6 +113,12 @@ export default class LaunchScene extends FI_Scene{
 
     KeyboardCenter.getInstance().addListener('keydown',(e)=>{
       switch(e.key){
+        case 'w':
+          if(this.pressUp < 1) this.pressUp = 1
+          break;
+        case 's':
+          if(this.pressDown < 1) this.pressDown = 1
+          break;
         case 'a':
           if(this.pressLeft < 1) this.pressLeft = 1
           break;
@@ -74,10 +131,19 @@ export default class LaunchScene extends FI_Scene{
         case 'k':
           if(this.pressJump < 1) this.pressJump = 1;
           break;
+        case 'l':
+          if(this.pressFn < 1) this.pressFn = 1;
+          break;
       }
     })
     KeyboardCenter.getInstance().addListener('keyup',(e)=>{
       switch(e.key){
+        case 'w':
+          if(this.pressUp > 0) this.pressUp = 0
+          break;
+        case 's':
+          if(this.pressDown > 0) this.pressDown = 0
+          break;
         case 'a':
           if(this.pressLeft > 0) this.pressLeft = 0
           break;
@@ -89,6 +155,9 @@ export default class LaunchScene extends FI_Scene{
           break;
         case 'k':
           if(this.pressJump > 0) this.pressJump = 0
+          break;
+        case 'l':
+          if(this.pressFn > 0) this.pressFn = 0
           break;
       }
     })
@@ -110,14 +179,21 @@ export default class LaunchScene extends FI_Scene{
     this.actor2d = this.player.addComponent(actor2d)
 
     var animation = new FI_Animation()
-    var image = new FI_Image('../textures/moon_1024.jpg')
+    var image = new FI_Image('../textures/genji.jpg')
     var frame = null
-    for(var i=0;i<100;++i){
-      frame = new FI_Frame()
-      frame.init( image,10,{ x:i, y:0, width:10, height:10 })
-      animation.addFrame(frame)
-    }
-    animation.setLoop(10)
+    frame = new FI_Frame()
+    frame.init( image,250,{ x:0, y:0, width:80, height:80 })
+    animation.addFrame(frame)
+    frame = new FI_Frame()
+    frame.init( image,250,{ x:80, y:0, width:80, height:80 })
+    animation.addFrame(frame)
+    frame = new FI_Frame()
+    frame.init( image,250,{ x:160, y:0, width:80, height:80 })
+    animation.addFrame(frame)
+    frame = new FI_Frame()
+    frame.init( image,250,{ x:80, y:0, width:80, height:80 })
+    animation.addFrame(frame)
+    animation.setLoop(0)
     animation.play()
 
     this.addChild(this.player)

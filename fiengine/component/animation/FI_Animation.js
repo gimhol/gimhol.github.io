@@ -36,20 +36,23 @@ export default class FI_Animation extends FI_Component{
         this.curTime += dt;
         curFrame.update(dt)
         var diff = this.curTime - curFrame.getDuration()
-
-        this.curIndex = this.curIndex+1
-        if( this.curIndex >= this.frames.length){
-          if(this.loop == 0 ){
-            this.curIndex = 0
-          }
-          else if(this.curLoop >= this.loop){
-            this.curLoop += 1
-            this.curIndex = 0
-          }else{
-            this.curIndex = this.frames.length - 1
-            this.stop()
+        if(diff >= 0){
+          this.curTime = 0;
+          this.curIndex = this.curIndex+1
+          if( this.curIndex >= this.frames.length){
+            if(this.loop == 0 ){
+              this.curIndex = 0
+            }
+            else if(this.curLoop >= this.loop){
+              this.curLoop += 1
+              this.curIndex = 0
+            }else{
+              this.curIndex = this.frames.length - 1
+              this.stop()
+            }
           }
         }
+
       }
     }
   }
