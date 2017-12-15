@@ -13,4 +13,7 @@ export default class KeyboardCenter extends EventCenter{
   onKeyUp(e){
     this.dispatch('keyup',e)
   }
+  onUpdate(dt){
+
+  }
 }

@@ -8,8 +8,10 @@ import KeyboardCenter from '../fiengine/input/KeyboardCenter'
 
 import FI_Frame from '../fiengine/component/animation/FI_Frame'
 import FI_Animation from '../fiengine/component/animation/FI_Animation'
+import FI_InputResponser from '../fiengine/component/FI_InputResponser'
 
 import FI_Actor2D from './component/FI_Actor2D'
+import AnimationCreator from '../fiengine/helper/AnimationCreator'
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -22,27 +24,13 @@ export default class LaunchScene extends FI_Scene{
     this.pressJump = 0;
     this.pressAttack = 0;
     this.pressFn = 0;
-
+    this.ud = 0
+    this.lr = 0
     this.playerFace = 1;
   }
 
   onUpdate(dt){
     var ground = 500
-    if(this.pressJump == 1){
-      ++this.pressJump
-      this.actor2d.jump()
-    }
-    this.playerFace = (this.pressRight-this.pressLeft) || this.playerFace
-    if(this.pressAttack == 1 && !this.shotting){
-      //++this.pressAttack
-      this.shotting = true
-      if(this.pressFn == 1){
-        this.rightShot()
-      }else{
-        this.leftShot()
-      }
-    }
-    this.actor2d.walk(this.pressRight-this.pressLeft)
   }
   createBullet(angle){
     var a = new FI_Node()
@@ -59,8 +47,8 @@ export default class LaunchScene extends FI_Scene{
     this.addChild(a)
   }
   getShotAngle(){
-    var du = this.pressDown - this.pressUp
-    var lr = this.pressRight - this.pressLeft
+    var du = this.ud
+    var lr = this.lr
     var a = 90;
     if( lr == 1 ){
       if(du == 1){
@@ -111,57 +99,6 @@ export default class LaunchScene extends FI_Scene{
   onAdded(){
     var svg = document.createElement('svg');
 
-    KeyboardCenter.getInstance().addListener('keydown',(e)=>{
-      switch(e.key){
-        case 'w':
-          if(this.pressUp < 1) this.pressUp = 1
-          break;
-        case 's':
-          if(this.pressDown < 1) this.pressDown = 1
-          break;
-        case 'a':
-          if(this.pressLeft < 1) this.pressLeft = 1
-          break;
-        case 'd':
-          if(this.pressRight < 1) this.pressRight = 1
-          break;
-        case 'j':
-          if(this.pressAttack < 1) this.pressAttack = 1;
-          break;
-        case 'k':
-          if(this.pressJump < 1) this.pressJump = 1;
-          break;
-        case 'l':
-          if(this.pressFn < 1) this.pressFn = 1;
-          break;
-      }
-    })
-    KeyboardCenter.getInstance().addListener('keyup',(e)=>{
-      switch(e.key){
-        case 'w':
-          if(this.pressUp > 0) this.pressUp = 0
-          break;
-        case 's':
-          if(this.pressDown > 0) this.pressDown = 0
-          break;
-        case 'a':
-          if(this.pressLeft > 0) this.pressLeft = 0
-          break;
-        case 'd':
-          if(this.pressRight > 0) this.pressRight = 0
-          break;
-        case 'j':
-          if(this.pressAttack > 0) this.pressAttack = 0;
-          break;
-        case 'k':
-          if(this.pressJump > 0) this.pressJump = 0
-          break;
-        case 'l':
-          if(this.pressFn > 0) this.pressFn = 0
-          break;
-      }
-    })
-
     this.player = new FI_Node()
     this.player.size = {width: 100, height: 100}
     this.player.position = {x: 400, y: 300}
@@ -177,25 +114,19 @@ export default class LaunchScene extends FI_Scene{
     actor2d.setWalkAcc(50)
 
     this.actor2d = this.player.addComponent(actor2d)
-
-    var animation = new FI_Animation()
-    var image = new FI_Image('../textures/genji.jpg')
-    var frame = null
-    frame = new FI_Frame()
-    frame.init( image,250,{ x:0, y:0, width:80, height:80 })
-    animation.addFrame(frame)
-    frame = new FI_Frame()
-    frame.init( image,250,{ x:80, y:0, width:80, height:80 })
-    animation.addFrame(frame)
-    frame = new FI_Frame()
-    frame.init( image,250,{ x:160, y:0, width:80, height:80 })
-    animation.addFrame(frame)
-    frame = new FI_Frame()
-    frame.init( image,250,{ x:80, y:0, width:80, height:80 })
-    animation.addFrame(frame)
-    animation.setLoop(0)
+    var animation = AnimationCreator.createWithData({
+      name: 'genji_standing',
+      loop: 0,
+      duration: 250,
+      image: '../textures/genji.jpg',
+      frames: [
+        { rect: { x:0, y:0, width:80, height:80 } },
+        { rect: { x:80, y:0, width:80, height:80 } },
+        { rect: { x:160, y:0, width:80, height:80 } },
+        { rect: { x:80, y:0, width:80, height:80 } }
+      ]
+    })
     animation.play()
-
     this.addChild(this.player)
 
     this.player.addComponent(animation)
@@ -214,6 +145,31 @@ export default class LaunchScene extends FI_Scene{
       console.log('weapon')
     })
     this.player.addChild(a)
+
+    var inputResponser = this.addComponent(new FI_InputResponser())
+    inputResponser.onKeyPress('k', ()=>this.actor2d.jump())
+    inputResponser.onDirectionKeepPress('w','s',(direction,dt)=>{
+      direction /= (direction?Math.abs(direction):1)
+      this.ud = direction;
+    })
+    inputResponser.onDirectionKeepPress('a','d',(direction,dt)=>{
+      direction /= (direction?Math.abs(direction):1)
+      this.lr = direction
+      this.playerFace = direction
+      this.actor2d.walk(direction)
+    })
+    inputResponser.onKeyPress('l', ()=>{this.pressFn=1})
+    inputResponser.onKeyRelease('l', ()=>{this.pressFn=1})
+    inputResponser.onKeyKeepPress('j',()=>{
+      if(!this.shotting){
+        this.shotting = true
+        if(this.pressFn == 1)
+          this.rightShot()
+        else
+          this.leftShot()
+      }
+    })
+
   }
   onRemoved(){
 

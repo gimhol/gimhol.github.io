@@ -35,4 +35,7 @@ export default class EventCenter extends SingletonCls{
     this.listeners[eventName] = listenerArr
     return listener
   }
+  update(dt){
+    this.opUpdate && this.opUpdate(dt)
+  }
 }
