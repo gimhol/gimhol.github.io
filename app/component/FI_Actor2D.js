@@ -24,6 +24,9 @@ export default class FI_Actor2D extends FI_Component {
   setMover(c){
     this.mover = c;
   }
+  setRect(r){
+    this.rect = r;
+  }
   onMount(){
     this.mover && this.mover.setNode(this.getNode())
   }
@@ -44,7 +47,6 @@ export default class FI_Actor2D extends FI_Component {
       this.mover.setVelocityY(0)
       this.jumpable = true
     }
-
 
     var diff = this.walkDirection;
     var maxVX = this.walkSpeed;

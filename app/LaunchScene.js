@@ -12,6 +12,8 @@ import FI_InputResponser from '../fiengine/component/FI_InputResponser'
 
 import FI_Actor2D from './component/FI_Actor2D'
 import AnimationCreator from '../fiengine/helper/AnimationCreator'
+import FI_Draw from '../fiengine/component/FI_Draw'
+import FI_Rect from '../fiengine/math/Rect'
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -96,7 +98,48 @@ export default class LaunchScene extends FI_Scene{
       },500)
     }
   }
+
+
+
   onAdded(){
+    this.stage2D = new FI_Node()
+    var draw = this.stage2D.addComponent(new FI_Draw())
+
+    var r1 = new FI_Rect(0,600,1000,100)
+    var r2 = new FI_Rect(10,610,900,50)
+    var r3 = r1.intersectWith(r2)
+    draw.add({
+      color: '#FF0000',
+      width: 1,
+      close: true,
+      type: 'lines',
+      points:[
+        {x:0,y:0},
+        {x:100,y:100},
+        {x:100,y:0}
+      ],
+    })
+    draw.add({
+      color: '#FF0000',
+      style: 'stroke',
+      type: 'rect',
+      x:r1.x,y:r1.y,w:r1.w,h:r1.h
+    })
+    draw.add({
+      color: '#FF0000',
+      style: 'stroke',
+      type: 'rect',
+      x:r2.x,y:r2.y,w:r2.w,h:r2.h
+    })
+    r3 && draw.add({
+      color: '#00FF00',
+      style: 'fill',
+      type: 'rect',
+      x:r3.x,y:r3.y,w:r3.w,h:r3.h
+    })
+
+    this.addChild(this.stage2D)
+
     var svg = document.createElement('svg');
 
     this.player = new FI_Node()
@@ -106,10 +149,10 @@ export default class LaunchScene extends FI_Scene{
 
     var actor2d = new FI_Actor2D();
     actor2d.setMover( new FI_Mover() )
+    actor2d.setRect( new FI_Rect(0,0,100,100))
     actor2d.setGavity(this.gavity)
     actor2d.setGround(500)
     actor2d.setJumpSpeed(-1000)
-
     actor2d.setWalkSpeed(500)
     actor2d.setWalkAcc(50)
 
@@ -130,6 +173,7 @@ export default class LaunchScene extends FI_Scene{
     this.addChild(this.player)
 
     this.player.addComponent(animation)
+
     var t = this.player.addComponent(new FI_Touchable())
     t.setOnClickFunc(()=>{
       console.log('player')

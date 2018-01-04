@@ -43,8 +43,6 @@ export default class Engine {
     this.backgroundColor = bc;
     return this;
   }
-
-
   launch(canvas){
     this.canvas = canvas;
     this.setSize(800,600)
@@ -68,8 +66,10 @@ export default class Engine {
   }
   draw(){
     var ctx = this.ctx
-    this.ctx.fillStyle=this.backgroundColor;
-    this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height)
+
+    ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    ctx.fillStyle=this.backgroundColor;
+    ctx.fillRect(0,0,this.canvas.width,this.canvas.height)
     ctx.save();
     this.rootNode.draw(ctx);
     ctx.restore()
