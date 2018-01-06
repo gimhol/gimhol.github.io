@@ -13,6 +13,9 @@ export default class FI_Node {
     this.size     = new Size2D(0, 0);
     this.scale    = new Vector2D(1,1);
     this.rotation = 0;
+
+    this.enable = 1;
+    this.invisible = 1;
   }
   getLevel(){return this.level}
   setLevel(v){this.level=v}
@@ -93,6 +96,9 @@ export default class FI_Node {
     }
   }
   update(dt){
+    if(!this.enable){
+      return
+    }
     this.onUpdate(dt);
     for(var i in this.actions){
       this.actions[i].update(dt)
@@ -105,6 +111,9 @@ export default class FI_Node {
     }
   }
   draw(ctx){
+    if(!this.invisible){
+      return
+    }
     ctx.translate(this.position.x, this.position.y);
     ctx.rotate(this.rotation * Math.PI / 180);
     ctx.scale(this.scale.x,this.scale.y);

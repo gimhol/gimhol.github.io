@@ -1,4 +1,4 @@
-import FI_Scene from '../fiengine/node/FI_Node'
+import FI_Scene from '../fiengine/node/FI_Scene'
 import FI_Node from '../fiengine/node/FI_Node'
 import FI_Image from '../fiengine/component/FI_Image'
 import FI_Mover from '../fiengine/component/FI_Mover'
@@ -12,6 +12,8 @@ import FI_InputResponser from '../fiengine/component/FI_InputResponser'
 
 import FI_Actor2D from './component/FI_Actor2D'
 import AnimationCreator from '../fiengine/helper/AnimationCreator'
+import FI_Text from '../fiengine/component/FI_Text'
+import MainScene from './scenes/MainScene'
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -145,7 +147,7 @@ export default class LaunchScene extends FI_Scene{
       console.log('weapon')
     })
     this.player.addChild(a)
-
+    this.player.addComponent(new FI_Text())
     var inputResponser = this.addComponent(new FI_InputResponser())
     inputResponser.onKeyPress('k', ()=>this.actor2d.jump())
     inputResponser.onDirectionKeepPress('w','s',(direction,dt)=>{
@@ -169,7 +171,7 @@ export default class LaunchScene extends FI_Scene{
           this.leftShot()
       }
     })
-
+    //this.goto(MainScene)
   }
   onRemoved(){
 

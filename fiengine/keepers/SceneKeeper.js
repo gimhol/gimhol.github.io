@@ -7,7 +7,20 @@ export default class SceneKeeper extends FI_Node{
     }
     return this.instance;
   }
+  constructor(){
+    super()
+    this.curIndex = 0;
+  }
   run(scene){
     this.addChild(scene)
   }
+  push(scene){
+    //this.children[this.curIndex].invisible = 0;
+    ++this.curIndex;
+    this.addChild(scene)
+  }
+  back(){
+
+  }
+
 }
