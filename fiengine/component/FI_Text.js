@@ -6,26 +6,33 @@ export default class FI_Text extends FI_Component{
     super()
     this.content = 'Hello'
     this.anchor = {x:0,y:0}
-    this.fontSize = '72px'
+    this.fontSize = '36px'
     this.fontFamily = 'Arial'
-    this.textAlign = 'left'
+    this.textAlign = 'center'
+    this.offset = {x:0, y:0}
+    this.size = {width:0, height:0}
   }
-
   onMount(){
 
   }
-
   setWidth(){
 
   }
-
+  _onSizeChange(size){
+    this.size = size
+    this.onSizeChange && this.onSizeChange(this)
+  }
   draw(ctx){
-    ctx.fillStyle = 'red'
-    ctx.strokeStyle = 'blue'
+    ctx.fillStyle = 'white'
+    ctx.strokeStyle = 'gray'
     ctx.font = this.fontSize + ' ' + this.fontFamily
-    var offsetX =  0//- 0.5 * ctx.measureText(this.content).width
     ctx.textAlign = this.textAlign
-    ctx.fillText(this.content,offsetX,0)
-    ctx.strokeText(this.content,offsetX,0)
+
+    var size = ctx.measureText(this.content);
+    if(size.width != this.size.width || size.height != this.size.height){
+      this._onSizeChange(size)
+    }
+    ctx.fillText(this.content,this.offset.x,this.offset.y)
+    ctx.strokeText(this.content,this.offset.x,this.offset.y)
   }
 }
