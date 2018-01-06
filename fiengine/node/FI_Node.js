@@ -54,8 +54,10 @@ export default class FI_Node {
       return console.warn('has been added !')
     }
     this.children.push(child)
+    child.parent = this;
     child.setLevel(this.level+1)
     child._onAdded()
+    return child
   }
   mountAllComponent(){
     this.components.map((component)=>component.setNode(this));
