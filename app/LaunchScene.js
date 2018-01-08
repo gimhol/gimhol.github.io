@@ -14,6 +14,7 @@ import FI_Actor2D from './component/FI_Actor2D'
 import AnimationCreator from '../fiengine/helper/AnimationCreator'
 import FI_Text from '../fiengine/component/FI_Text'
 import MainScene from './scenes/MainScene'
+import Button from './ui/Button'
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -100,6 +101,13 @@ export default class LaunchScene extends FI_Scene{
   }
   onAdded(){
     var svg = document.createElement('svg');
+
+
+    var button = new Button('Sprite & Action');
+    button.size = {width: 100, height: 100}
+    button.position = {x: 400, y: 300}
+    this.addChild(button)
+
 
     this.player = new FI_Node()
     this.player.size = {width: 100, height: 100}
