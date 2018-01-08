@@ -9,6 +9,7 @@ import SceneKeeper from './fiengine/keepers/SceneKeeper'
 import KeyboardCenter from './fiengine/input/KeyboardCenter'
 import MouseCenter from './fiengine/input/MouseCenter'
 import LaunchScene from './app/LaunchScene'
+import MainScene from './app/scenes/MainScene'
 var appDiv = document.getElementById('app')
 var canvas = document.createElement('canvas')
 appDiv.appendChild(canvas)
