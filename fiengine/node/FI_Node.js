@@ -20,6 +20,14 @@ export default class FI_Node {
   getLevel(){return this.level}
   setLevel(v){this.level=v}
 
+  getScaleX(){return this.scale.x}
+  setScaleX(v){this.scale.x = v; return this.scale.x}
+  tranScaleX(v){this.scale.x += v; return this.scale.x}
+
+  getScaleY(){return this.scale.y}
+  setScaleY(v){this.scale.y = v; return this.scale.y}
+  tranScaleY(v){this.scale.y += v; return this.scale.y}
+
   getPositionX(){return this.position.x}
   setPositionX(v){this.position.x = v; return this.position.x}
   tranPositionX(v){this.position.x += v; return this.position.x}
@@ -90,6 +98,9 @@ export default class FI_Node {
         return;
       }
     }
+  }
+  removeAllActions(){
+    this.actions = []
   }
   getAnchorOffset(){
     return {
