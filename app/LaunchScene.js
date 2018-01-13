@@ -17,6 +17,7 @@ import MainScene from './scenes/MainScene'
 import Button from './ui/Button'
 import FI_Draw from '../fiengine/component/FI_Draw'
 import FI_Rect from '../fiengine/math/Rect'
+import Genji from './characters/Genji'
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -142,15 +143,12 @@ export default class LaunchScene extends FI_Scene{
     })
 
     this.addChild(this.stage2D)
-
-    var svg = document.createElement('svg');
-
+    this.genji = this.addChild(new Genji())
 
     var button = new Button('Sprite & Action');
     button.size = {width: 100, height: 100}
     button.position = {x: 400, y: 300}
     this.addChild(button)
-
 
     this.player = new FI_Node()
     this.player.size = {width: 100, height: 100}
@@ -201,7 +199,7 @@ export default class LaunchScene extends FI_Scene{
     this.player.addChild(a)
 
     var inputResponser = this.addComponent(new FI_InputResponser())
-    inputResponser.onKeyPress('k', ()=>this.actor2d.jump())
+    inputResponser.onKeyPress('k', ()=>this.genji.jump())
     inputResponser.onDirectionKeepPress('w','s',(direction,dt)=>{
       direction /= (direction?Math.abs(direction):1)
       this.ud = direction;
@@ -210,7 +208,7 @@ export default class LaunchScene extends FI_Scene{
       direction /= (direction?Math.abs(direction):1)
       this.lr = direction
       this.playerFace = direction
-      this.actor2d.walk(direction)
+      this.genji.walk(direction)
     })
     inputResponser.onKeyPress('l', ()=>{this.pressFn=1})
     inputResponser.onKeyRelease('l', ()=>{this.pressFn=1})
