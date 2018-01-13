@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -139,11 +139,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Vector2D = __webpack_require__(4);
+var _Vector2D = __webpack_require__(2);
 
 var _Vector2D2 = _interopRequireDefault(_Vector2D);
 
-var _Size2D = __webpack_require__(16);
+var _Size2D = __webpack_require__(24);
 
 var _Size2D2 = _interopRequireDefault(_Size2D);
 
@@ -165,6 +165,9 @@ var FI_Node = function () {
     this.size = new _Size2D2.default(0, 0);
     this.scale = new _Vector2D2.default(1, 1);
     this.rotation = 0;
+
+    this.enable = 1;
+    this.invisible = 1;
   }
 
   _createClass(FI_Node, [{
@@ -176,6 +179,36 @@ var FI_Node = function () {
     key: 'setLevel',
     value: function setLevel(v) {
       this.level = v;
+    }
+  }, {
+    key: 'getScaleX',
+    value: function getScaleX() {
+      return this.scale.x;
+    }
+  }, {
+    key: 'setScaleX',
+    value: function setScaleX(v) {
+      this.scale.x = v;return this.scale.x;
+    }
+  }, {
+    key: 'tranScaleX',
+    value: function tranScaleX(v) {
+      this.scale.x += v;return this.scale.x;
+    }
+  }, {
+    key: 'getScaleY',
+    value: function getScaleY() {
+      return this.scale.y;
+    }
+  }, {
+    key: 'setScaleY',
+    value: function setScaleY(v) {
+      this.scale.y = v;return this.scale.y;
+    }
+  }, {
+    key: 'tranScaleY',
+    value: function tranScaleY(v) {
+      this.scale.y += v;return this.scale.y;
     }
   }, {
     key: 'getPositionX',
@@ -261,8 +294,10 @@ var FI_Node = function () {
         return console.warn('has been added !');
       }
       this.children.push(child);
+      child.parent = this;
       child.setLevel(this.level + 1);
       child._onAdded();
+      return child;
     }
   }, {
     key: 'mountAllComponent',
@@ -313,6 +348,11 @@ var FI_Node = function () {
       }
     }
   }, {
+    key: 'removeAllActions',
+    value: function removeAllActions() {
+      this.actions = [];
+    }
+  }, {
     key: 'getAnchorOffset',
     value: function getAnchorOffset() {
       return {
@@ -323,6 +363,9 @@ var FI_Node = function () {
   }, {
     key: 'update',
     value: function update(dt) {
+      if (!this.enable) {
+        return;
+      }
       this.onUpdate(dt);
       for (var i in this.actions) {
         this.actions[i].update(dt);
@@ -337,6 +380,9 @@ var FI_Node = function () {
   }, {
     key: 'draw',
     value: function draw(ctx) {
+      if (!this.invisible) {
+        return;
+      }
       ctx.translate(this.position.x, this.position.y);
       ctx.rotate(this.rotation * Math.PI / 180);
       ctx.scale(this.scale.x, this.scale.y);
@@ -374,15 +420,41 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Vector2D = function Vector2D(x, y) {
+  _classCallCheck(this, Vector2D);
+
+  this.x = x;
+  this.y = y;
+};
+
+exports.default = Vector2D;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _FI_Component2 = __webpack_require__(0);
 
 var _FI_Component3 = _interopRequireDefault(_FI_Component2);
 
-var _ImageKeeper = __webpack_require__(17);
+var _ImageKeeper = __webpack_require__(4);
 
 var _ImageKeeper2 = _interopRequireDefault(_ImageKeeper);
+
+var _Vector2D = __webpack_require__(2);
+
+var _Vector2D2 = _interopRequireDefault(_Vector2D);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -402,10 +474,32 @@ var FI_Image = function (_FI_Component) {
 
     _this.imageUri = uri;
     _this.texRect = null;
+    _this.scale = new _Vector2D2.default(1, 1);
+    _this.flap = new _Vector2D2.default(1, 1);
     return _this;
   }
+  /**
+   * 设置缩放系数
+   * @param {Vector2D} scale 缩放系数
+   */
+
 
   _createClass(FI_Image, [{
+    key: 'setScale',
+    value: function setScale(scale) {
+      this.scale = scale;
+    }
+    /**
+     * 设置翻转系数
+     * @param {Vector2D} flap 翻转系数
+     */
+
+  }, {
+    key: 'setFlap',
+    value: function setFlap(flap) {
+      this.flap = flap;
+    }
+  }, {
     key: 'onMount',
     value: function onMount() {
       this.loadImage(this.imageUri);
@@ -430,6 +524,7 @@ var FI_Image = function (_FI_Component) {
     value: function draw(ctx) {
       if (this.image && this.texRect) {
         var anchorOffset = this.node.getAnchorOffset();
+        ctx.scale(this.scale.x * this.flap.x, this.scale.y * this.flap.y);
         ctx.drawImage(this.image, this.texRect.x, this.texRect.y, this.texRect.width, this.texRect.height, -anchorOffset.x, -anchorOffset.y, this.node.size.width, this.node.size.height);
       }
     }
@@ -441,7 +536,7 @@ var FI_Image = function (_FI_Component) {
 exports.default = FI_Image;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -453,7 +548,254 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventCenter2 = __webpack_require__(8);
+var _utils = __webpack_require__(9);
+
+var Utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ImageKeeper = function () {
+  function ImageKeeper() {
+    _classCallCheck(this, ImageKeeper);
+
+    this.images = {};
+  }
+
+  _createClass(ImageKeeper, [{
+    key: 'firstLoadImage',
+    value: function firstLoadImage(uri) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        var image = new Image();
+        image.src = uri;
+        image.onload = function () {
+          for (var i in _this.images[uri]) {
+            _this.images[uri][i].onload(image);
+          }
+          _this.images[uri] = image;
+          return resolve(image);
+        };
+        image.onerror = function (err) {
+          for (var i in _this.images[uri]) {
+            _this.images[uri][i].onerror(err);
+          }
+          delete _this.images[uri];
+          return reject(err);
+        };
+      });
+    }
+  }, {
+    key: 'loadImage',
+    value: function loadImage(uri) {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        _this2.images[uri].push({
+          onload: resolve,
+          onerror: reject
+        });
+      });
+    }
+  }, {
+    key: 'getImage',
+    value: function getImage(uri) {
+      var image = this.images[uri];
+      //not exist
+      if (!image) {
+        this.images[uri] = [];
+        return this.firstLoadImage(uri);
+      }
+      //loading.
+      else if (Utils.isArray(image)) {
+          return this.loadImage(uri);
+        }
+        //already loaded.
+        else {
+            return Promise.resolve(image);
+          }
+    }
+  }]);
+
+  return ImageKeeper;
+}();
+
+exports.default = new ImageKeeper();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Component2 = __webpack_require__(0);
+
+var _FI_Component3 = _interopRequireDefault(_FI_Component2);
+
+var _MouseCenter = __webpack_require__(10);
+
+var _MouseCenter2 = _interopRequireDefault(_MouseCenter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_Touchable = function (_FI_Component) {
+  _inherits(FI_Touchable, _FI_Component);
+
+  function FI_Touchable() {
+    _classCallCheck(this, FI_Touchable);
+
+    return _possibleConstructorReturn(this, (FI_Touchable.__proto__ || Object.getPrototypeOf(FI_Touchable)).apply(this, arguments));
+  }
+
+  _createClass(FI_Touchable, [{
+    key: 'setOnClickFunc',
+    value: function setOnClickFunc(func) {
+      this.onClick = func;
+    }
+  }, {
+    key: 'onMount',
+    value: function onMount() {
+      _MouseCenter2.default.getInstance().addListener('mousedown', this._onMouseDown.bind(this), this.node.getLevel());
+      _MouseCenter2.default.getInstance().addListener('mouseup', this._onMouseUp.bind(this), this.node.getLevel());
+      _MouseCenter2.default.getInstance().addListener('mousemove', this._onMouseMove.bind(this), this.node.getLevel());
+    }
+  }, {
+    key: '_onMouseMove',
+    value: function _onMouseMove(e) {
+      var anchorOffset = this.node.getAnchorOffset();
+      var l = this.transform.e - anchorOffset.x;
+      var r = l + this.node.size.width;
+      var t = this.transform.f - anchorOffset.y;
+      var b = t + this.node.size.height;
+      if (e.clientX >= l && e.clientX <= r && e.clientY >= t && e.clientY <= b) {
+        !this.isMouseOnMe && this.onMouseOut && this.onMouseIn(this);
+        this.isMouseOnMe = true;
+      } else {
+        this.isMouseOnMe && this.onMouseOut && this.onMouseOut(this);
+        this.isMouseOnMe = false;
+      }
+    }
+  }, {
+    key: '_onMouseDown',
+    value: function _onMouseDown(e) {
+      this.isMouseOnMe && this.onMouseDown && this.onMouseDown(this);
+    }
+  }, {
+    key: '_onMouseUp',
+    value: function _onMouseUp(e) {
+      this.isMouseOnMe && this.onMouseUp && this.onMouseUp(this);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      this.debugDraw(ctx);
+      this.transform = ctx.getTransform();
+    }
+  }]);
+
+  return FI_Touchable;
+}(_FI_Component3.default);
+
+exports.default = FI_Touchable;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Node2 = __webpack_require__(1);
+
+var _FI_Node3 = _interopRequireDefault(_FI_Node2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SceneKeeper = function (_FI_Node) {
+  _inherits(SceneKeeper, _FI_Node);
+
+  _createClass(SceneKeeper, null, [{
+    key: 'getInstance',
+    value: function getInstance() {
+      if (!this.instance) {
+        this.instance = new SceneKeeper();
+      }
+      return this.instance;
+    }
+  }]);
+
+  function SceneKeeper() {
+    _classCallCheck(this, SceneKeeper);
+
+    var _this = _possibleConstructorReturn(this, (SceneKeeper.__proto__ || Object.getPrototypeOf(SceneKeeper)).call(this));
+
+    _this.curIndex = 0;
+    return _this;
+  }
+
+  _createClass(SceneKeeper, [{
+    key: 'run',
+    value: function run(scene) {
+      this.addChild(scene);
+    }
+  }, {
+    key: 'push',
+    value: function push(scene) {
+      //this.children[this.curIndex].invisible = 0;
+      ++this.curIndex;
+      this.addChild(scene);
+    }
+  }, {
+    key: 'back',
+    value: function back() {}
+  }]);
+
+  return SceneKeeper;
+}(_FI_Node3.default);
+
+exports.default = SceneKeeper;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _EventCenter2 = __webpack_require__(11);
 
 var _EventCenter3 = _interopRequireDefault(_EventCenter2);
 
@@ -501,7 +843,7 @@ var KeyboardCenter = function (_EventCenter) {
 exports.default = KeyboardCenter;
 
 /***/ }),
-/* 4 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -511,19 +853,62 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Image = __webpack_require__(3);
+
+var _FI_Image2 = _interopRequireDefault(_FI_Image);
+
+var _FI_Frame = __webpack_require__(16);
+
+var _FI_Frame2 = _interopRequireDefault(_FI_Frame);
+
+var _FI_Animation = __webpack_require__(17);
+
+var _FI_Animation2 = _interopRequireDefault(_FI_Animation);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Vector2D = function Vector2D(x, y) {
-  _classCallCheck(this, Vector2D);
+var AnimationCreator = function () {
+  function AnimationCreator() {
+    _classCallCheck(this, AnimationCreator);
 
-  this.x = x;
-  this.y = y;
-};
+    this.imagesCache = {};
+  }
 
-exports.default = Vector2D;
+  _createClass(AnimationCreator, [{
+    key: 'getImage',
+    value: function getImage(imageSrc) {
+      if (!this.imagesCache[imageSrc]) {
+        this.imagesCache[imageSrc] = new _FI_Image2.default(imageSrc);
+      }
+      return this.imagesCache[imageSrc];
+    }
+  }, {
+    key: 'createWithData',
+    value: function createWithData(animationData) {
+      var _this = this;
+
+      var ret = new _FI_Animation2.default();
+      animationData.frames.map(function (frameData, idx) {
+        var frame = new _FI_Frame2.default();
+        frame.init(_this.getImage(frameData.image || animationData.image), frameData.duration || animationData.duration, frameData.rect);
+        ret.addFrame(frame);
+      });
+      ret.setLoop(animationData.loop);
+      return ret;
+    }
+  }]);
+
+  return AnimationCreator;
+}();
+
+exports.default = new AnimationCreator();
 
 /***/ }),
-/* 5 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -620,7 +1005,7 @@ var trackTransform = exports.trackTransform = function trackTransform(ctx) {
 };
 
 /***/ }),
-/* 6 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -632,101 +1017,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _FI_Component2 = __webpack_require__(0);
-
-var _FI_Component3 = _interopRequireDefault(_FI_Component2);
-
-var _MouseCenter = __webpack_require__(7);
-
-var _MouseCenter2 = _interopRequireDefault(_MouseCenter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FI_Touchable = function (_FI_Component) {
-  _inherits(FI_Touchable, _FI_Component);
-
-  function FI_Touchable() {
-    _classCallCheck(this, FI_Touchable);
-
-    return _possibleConstructorReturn(this, (FI_Touchable.__proto__ || Object.getPrototypeOf(FI_Touchable)).apply(this, arguments));
-  }
-
-  _createClass(FI_Touchable, [{
-    key: 'setOnClickFunc',
-    value: function setOnClickFunc(func) {
-      this.onClick = func;
-    }
-  }, {
-    key: 'onMount',
-    value: function onMount() {
-      _MouseCenter2.default.getInstance().addListener('mousedown', this.onMouseDown.bind(this), this.node.getLevel());
-      _MouseCenter2.default.getInstance().addListener('mouseup', this.onMouseUp.bind(this), this.node.getLevel());
-    }
-  }, {
-    key: 'onMouseDown',
-    value: function onMouseDown(e) {
-
-      var anchorOffset = this.node.getAnchorOffset();
-      var l = this.transform.e - anchorOffset.x;
-      var r = l + this.node.size.width;
-      var t = this.transform.f - anchorOffset.y;
-      var b = t + this.node.size.height;
-      if (e.clientX >= l && e.clientX <= r && e.clientY >= t && e.clientY <= b) {
-        this.isMouseDownOnMe = true;
-        console.log(this.transform);
-        console.log(this.transform.inverse());
-        return true;
-      }
-    }
-  }, {
-    key: 'onMouseUp',
-    value: function onMouseUp(e) {
-      if (!this.isMouseDownOnMe) {
-        return;
-      }
-      this.isMouseDownOnMe = false;
-      var anchorOffset = this.node.getAnchorOffset();
-      var l = this.transform.e - anchorOffset.x;
-      var r = l + this.node.size.width;
-      var t = this.transform.f - anchorOffset.y;
-      var b = t + this.node.size.height;
-      if (e.clientX >= l && e.clientX <= r && e.clientY >= t && e.clientY <= b) {
-        this.onClick(this);
-      }
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {
-      this.debugDraw(ctx);
-      this.transform = ctx.getTransform();
-    }
-  }]);
-
-  return FI_Touchable;
-}(_FI_Component3.default);
-
-exports.default = FI_Touchable;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _EventCenter2 = __webpack_require__(8);
+var _EventCenter2 = __webpack_require__(11);
 
 var _EventCenter3 = _interopRequireDefault(_EventCenter2);
 
@@ -752,6 +1043,7 @@ var MouseCenter = function (_EventCenter) {
     value: function launch() {
       document.addEventListener('mousedown', this.onMouseDown.bind(this), false);
       document.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+      document.addEventListener('mousemove', this.onMouseMove.bind(this), false);
     }
   }, {
     key: 'onMouseDown',
@@ -763,6 +1055,11 @@ var MouseCenter = function (_EventCenter) {
     value: function onMouseUp(e) {
       this.dispatch('mouseup', e);
     }
+  }, {
+    key: 'onMouseMove',
+    value: function onMouseMove(e) {
+      this.dispatch('mousemove', e);
+    }
   }]);
 
   return MouseCenter;
@@ -771,7 +1068,7 @@ var MouseCenter = function (_EventCenter) {
 exports.default = MouseCenter;
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -783,7 +1080,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _SingletonCls2 = __webpack_require__(18);
+var _SingletonCls2 = __webpack_require__(25);
 
 var _SingletonCls3 = _interopRequireDefault(_SingletonCls2);
 
@@ -867,7 +1164,7 @@ var EventCenter = function (_SingletonCls) {
 exports.default = EventCenter;
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -880,7 +1177,7 @@ exports.FI_RotationTo = exports.FI_RotationBy = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _FI_Action3 = __webpack_require__(19);
+var _FI_Action3 = __webpack_require__(13);
 
 var _FI_Action4 = _interopRequireDefault(_FI_Action3);
 
@@ -956,7 +1253,7 @@ var FI_RotationTo = exports.FI_RotationTo = function (_FI_Action2) {
 }(_FI_Action4.default);
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -968,49 +1265,37 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _FI_Node2 = __webpack_require__(1);
-
-var _FI_Node3 = _interopRequireDefault(_FI_Node2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var SceneKeeper = function (_FI_Node) {
-  _inherits(SceneKeeper, _FI_Node);
-
-  function SceneKeeper() {
-    _classCallCheck(this, SceneKeeper);
-
-    return _possibleConstructorReturn(this, (SceneKeeper.__proto__ || Object.getPrototypeOf(SceneKeeper)).apply(this, arguments));
+var FI_Action = function () {
+  function FI_Action() {
+    _classCallCheck(this, FI_Action);
   }
 
-  _createClass(SceneKeeper, [{
-    key: 'run',
-    value: function run(scene) {
-      this.addChild(scene);
+  _createClass(FI_Action, [{
+    key: "onAssign",
+    value: function onAssign() {}
+  }, {
+    key: "onFinish",
+    value: function onFinish() {}
+  }, {
+    key: "setNode",
+    value: function setNode(node) {
+      this.node = node;
+      this.onAssign();
     }
-  }], [{
-    key: 'getInstance',
-    value: function getInstance() {
-      if (!this.instance) {
-        this.instance = new SceneKeeper();
-      }
-      return this.instance;
-    }
+  }, {
+    key: "update",
+    value: function update() {}
   }]);
 
-  return SceneKeeper;
-}(_FI_Node3.default);
+  return FI_Action;
+}();
 
-exports.default = SceneKeeper;
+exports.default = FI_Action;
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1141,7 +1426,7 @@ var Matrix = function () {
 exports.default = Matrix;
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1157,6 +1442,139 @@ var _FI_Component2 = __webpack_require__(0);
 
 var _FI_Component3 = _interopRequireDefault(_FI_Component2);
 
+var _Vector2D = __webpack_require__(2);
+
+var _Vector2D2 = _interopRequireDefault(_Vector2D);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_Mover = function (_FI_Component) {
+  _inherits(FI_Mover, _FI_Component);
+
+  function FI_Mover() {
+    _classCallCheck(this, FI_Mover);
+
+    var _this = _possibleConstructorReturn(this, (FI_Mover.__proto__ || Object.getPrototypeOf(FI_Mover)).call(this));
+
+    _this.velocity = new _Vector2D2.default(0, 0);
+    return _this;
+  }
+
+  _createClass(FI_Mover, [{
+    key: 'getVelocity',
+    value: function getVelocity() {
+      return this.velocity;
+    }
+  }, {
+    key: 'setVelocity',
+    value: function setVelocity(x, y) {
+      this.velocity = new _Vector2D2.default(x, y);
+    }
+  }, {
+    key: 'tranVelocity',
+    value: function tranVelocity(x, y) {
+      this.velocity.x += x;
+      this.velocity.y += y;
+      return this.velocity;
+    }
+  }, {
+    key: 'getVelocityX',
+    value: function getVelocityX() {
+      return this.velocity.x;
+    }
+  }, {
+    key: 'setVelocityX',
+    value: function setVelocityX(v) {
+      this.velocity.x = v;return this.velocity.x;
+    }
+  }, {
+    key: 'tranVelocityX',
+    value: function tranVelocityX(v) {
+      this.velocity.x += v;return this.velocity.x;
+    }
+  }, {
+    key: 'decayVelocityX',
+    value: function decayVelocityX(v) {
+      if (this.velocity.x > 0) {
+        this.velocity.x -= Math.abs(v);
+        this.velocity.x = Math.max(0, this.velocity.x);
+      } else if (this.velocity.x < 0) {
+        this.velocity.x += Math.abs(v);
+        this.velocity.x = Math.min(0, this.velocity.x);
+      }
+    }
+  }, {
+    key: 'getVelocityY',
+    value: function getVelocityY() {
+      return this.velocity.y;
+    }
+  }, {
+    key: 'setVelocityY',
+    value: function setVelocityY(v) {
+      this.velocity.y = v;return this.velocity.y;
+    }
+  }, {
+    key: 'tranVelocityY',
+    value: function tranVelocityY(v) {
+      this.velocity.y += v;return this.velocity.y;
+    }
+  }, {
+    key: 'decayVelocityY',
+    value: function decayVelocityY(v) {
+      if (this.velocity.y > 0) {
+        this.velocity.y -= Math.abs(v);
+        this.velocity.y = Math.max(0, this.velocity.y);
+      } else if (this.velocity.y < 0) {
+        this.velocity.y += Math.abs(v);
+        this.velocity.y = Math.min(0, this.velocity.y);
+      }
+    }
+  }, {
+    key: 'onMount',
+    value: function onMount() {}
+  }, {
+    key: 'update',
+    value: function update(dt) {
+      this.node.tranPositionX(this.velocity.x * dt / 1000);
+      this.node.tranPositionY(this.velocity.y * dt / 1000);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {}
+  }]);
+
+  return FI_Mover;
+}(_FI_Component3.default);
+
+exports.default = FI_Mover;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Component2 = __webpack_require__(0);
+
+var _FI_Component3 = _interopRequireDefault(_FI_Component2);
+
+var _Vector2D = __webpack_require__(2);
+
+var _Vector2D2 = _interopRequireDefault(_Vector2D);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1171,10 +1589,36 @@ var FI_Frame = function (_FI_Component) {
   function FI_Frame() {
     _classCallCheck(this, FI_Frame);
 
-    return _possibleConstructorReturn(this, (FI_Frame.__proto__ || Object.getPrototypeOf(FI_Frame)).call(this));
+    var _this = _possibleConstructorReturn(this, (FI_Frame.__proto__ || Object.getPrototypeOf(FI_Frame)).call(this));
+
+    _this.scale = new _Vector2D2.default(1, 1);
+    _this.flap = new _Vector2D2.default(1, 1);
+    return _this;
   }
+  /**
+   * 设置缩放系数
+   * @param {Vector2D} scale 缩放系数
+   */
+
 
   _createClass(FI_Frame, [{
+    key: 'setScale',
+    value: function setScale(scale) {
+      this.scale = scale;
+      this.image && this.image.setScale(scale);
+    }
+    /**
+     * 设置翻转系数
+     * @param {Vector2D} flap 翻转系数
+     */
+
+  }, {
+    key: 'setFlap',
+    value: function setFlap(flap) {
+      this.flap = flap;
+      this.image && this.image.setFlap(flap);
+    }
+  }, {
     key: 'init',
     value: function init(image, duration, texRect) {
       this.setDuration(duration);
@@ -1226,7 +1670,7 @@ var FI_Frame = function (_FI_Component) {
 exports.default = FI_Frame;
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1241,6 +1685,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _FI_Component2 = __webpack_require__(0);
 
 var _FI_Component3 = _interopRequireDefault(_FI_Component2);
+
+var _Vector2D = __webpack_require__(2);
+
+var _Vector2D2 = _interopRequireDefault(_Vector2D);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1264,16 +1712,39 @@ var FI_Animation = function (_FI_Component) {
     _this.isAutoReset = true;
     _this.loop = 0;
     _this.curLoop = 0;
+
+    _this.scale = new _Vector2D2.default(1, 1);
+    _this.flap = new _Vector2D2.default(1, 1);
     return _this;
   }
+  /**
+   * 设置缩放系数
+   * @param {Vector2D} scale 缩放系数
+   */
+
 
   _createClass(FI_Animation, [{
+    key: 'setScale',
+    value: function setScale(scale) {
+      this.scale = scale;
+      this.curFrame && this.curFrame.setScale(scale);
+    }
+    /**
+     * 设置翻转系数
+     * @param {Vector2D} flap 翻转系数
+     */
+
+  }, {
+    key: 'setFlap',
+    value: function setFlap(flap) {
+      this.flap = flap;
+      this.curFrame && this.curFrame.setFlap(flap);
+    }
+  }, {
     key: 'addFrame',
     value: function addFrame(frame) {
       this.frames.push(frame);
-      if (this.hasMounted()) {
-        frame.setNode(this.getNode());
-      }
+      this.hasMounted() && frame.setNode(this.node);
     }
   }, {
     key: 'onMount',
@@ -1321,17 +1792,23 @@ var FI_Animation = function (_FI_Component) {
           var diff = this.curTime - curFrame.getDuration();
           if (diff >= 0) {
             this.curTime = 0;
-            this.curIndex = this.curIndex + 1;
-            if (this.curIndex >= this.frames.length) {
+            var newIndex = this.curIndex + 1;
+            if (newIndex >= this.frames.length) {
               if (this.loop == 0) {
-                this.curIndex = 0;
+                newIndex = 0;
               } else if (this.curLoop >= this.loop) {
                 this.curLoop += 1;
-                this.curIndex = 0;
+                newIndex = 0;
               } else {
-                this.curIndex = this.frames.length - 1;
+                newIndex = this.frames.length - 1;
                 this.stop();
               }
+            }
+            if (newIndex !== this.curIndex) {
+              this.curIndex = newIndex;
+              this.curFrame = this.frames[newIndex];
+              this.curFrame.setScale(this.scale);
+              this.curFrame.setFlap(this.flap);
             }
           }
         }
@@ -1340,10 +1817,7 @@ var FI_Animation = function (_FI_Component) {
   }, {
     key: 'draw',
     value: function draw(ctx) {
-      var curFrame = this.frames[this.curIndex];
-      if (curFrame) {
-        curFrame.draw(ctx);
-      }
+      this.curFrame && this.curFrame.draw(ctx);
     }
   }]);
 
@@ -1353,40 +1827,364 @@ var FI_Animation = function (_FI_Component) {
 exports.default = FI_Animation;
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _Engine = __webpack_require__(15);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-var _Engine2 = _interopRequireDefault(_Engine);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _SceneKeeper = __webpack_require__(10);
+var _FI_Component2 = __webpack_require__(0);
 
-var _SceneKeeper2 = _interopRequireDefault(_SceneKeeper);
-
-var _KeyboardCenter = __webpack_require__(3);
-
-var _KeyboardCenter2 = _interopRequireDefault(_KeyboardCenter);
-
-var _MouseCenter = __webpack_require__(7);
-
-var _MouseCenter2 = _interopRequireDefault(_MouseCenter);
-
-var _LaunchScene = __webpack_require__(21);
-
-var _LaunchScene2 = _interopRequireDefault(_LaunchScene);
+var _FI_Component3 = _interopRequireDefault(_FI_Component2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var appDiv = document.getElementById('app'); // import React from 'react';
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_Actor2D = function (_FI_Component) {
+  _inherits(FI_Actor2D, _FI_Component);
+
+  function FI_Actor2D() {
+    _classCallCheck(this, FI_Actor2D);
+
+    var _this = _possibleConstructorReturn(this, (FI_Actor2D.__proto__ || Object.getPrototypeOf(FI_Actor2D)).call(this));
+
+    _this.jumpable = false;
+    _this.walkDirection = 0;
+    _this.jumpSpeed = 0;
+    _this.walkSpeed = 0;
+    _this.walkAcc = 0;
+    _this.gavity = 0;
+    _this.ground = 0;
+    return _this;
+  }
+
+  _createClass(FI_Actor2D, [{
+    key: 'jump',
+    value: function jump() {
+      this.jumpable && this.mover.setVelocityY(this.jumpSpeed);
+    }
+  }, {
+    key: 'walk',
+    value: function walk(direction) {
+      this.walkDirection = direction ? direction / Math.abs(direction) : 0;
+    }
+  }, {
+    key: 'setJumpSpeed',
+    value: function setJumpSpeed(v) {
+      this.jumpSpeed = v;
+    }
+  }, {
+    key: 'setWalkSpeed',
+    value: function setWalkSpeed(v) {
+      this.walkSpeed = Math.abs(v);
+    }
+  }, {
+    key: 'setWalkAcc',
+    value: function setWalkAcc(v) {
+      this.walkAcc = Math.abs(v);
+    }
+  }, {
+    key: 'setGavity',
+    value: function setGavity(v) {
+      this.gavity = v;
+    }
+  }, {
+    key: 'setGround',
+    value: function setGround(v) {
+      this.ground = v;
+    }
+  }, {
+    key: 'setMover',
+    value: function setMover(c) {
+      this.mover = c;
+    }
+  }, {
+    key: 'setRect',
+    value: function setRect(r) {
+      this.rect = r;
+    }
+  }, {
+    key: 'onMount',
+    value: function onMount() {
+      this.mover && this.mover.setNode(this.getNode());
+    }
+  }, {
+    key: 'update',
+    value: function update(dt) {
+      if (!this.mover) {
+        return;
+      }
+      this.mover.update(dt);
+      var curY = this.node.getPositionY();
+      var curVY = 0;
+      if (curY < this.ground) {
+
+        curVY = this.mover.tranVelocityY(this.gavity) * dt / 1000;
+        this.jumpable = false;
+      }
+      if (curY + curVY > this.ground) {
+        this.node.setPositionY(this.ground);
+        this.mover.setVelocityY(0);
+        this.jumpable = true;
+      }
+
+      var diff = this.walkDirection;
+      var maxVX = this.walkSpeed;
+      var accX = this.walkAcc;
+      if (maxVX && accX) {
+        if (diff) {
+          var vx = this.mover.getVelocityX();
+          this.mover.tranVelocityX(diff * (accX - Math.abs(vx * accX / maxVX)));
+          if (diff > 0 && vx < 0 || diff < 0 && vx > 0) {
+            this.mover.decayVelocityX(accX);
+          }
+        } else {
+          this.mover.decayVelocityX(accX);
+        }
+      }
+    }
+  }]);
+
+  return FI_Actor2D;
+}(_FI_Component3.default);
+
+exports.default = FI_Actor2D;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Component2 = __webpack_require__(0);
+
+var _FI_Component3 = _interopRequireDefault(_FI_Component2);
+
+var _ImageKeeper = __webpack_require__(4);
+
+var _ImageKeeper2 = _interopRequireDefault(_ImageKeeper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_Text = function (_FI_Component) {
+  _inherits(FI_Text, _FI_Component);
+
+  function FI_Text(uri) {
+    _classCallCheck(this, FI_Text);
+
+    var _this = _possibleConstructorReturn(this, (FI_Text.__proto__ || Object.getPrototypeOf(FI_Text)).call(this));
+
+    _this.content = 'Hello';
+    _this.anchor = { x: 0, y: 0 };
+    _this.fontSize = 36;
+    _this.fontSizeUnit = 'px';
+    _this.fontFamily = 'Arial';
+    _this.textAlign = 'center';
+    _this.fillStyle = 'white';
+    _this.strokeStyle = 'gray';
+    _this.offset = { x: 0, y: 0 };
+    _this.size = { width: 0, height: 0 };
+    return _this;
+  }
+
+  _createClass(FI_Text, [{
+    key: 'onMount',
+    value: function onMount() {}
+  }, {
+    key: 'setWidth',
+    value: function setWidth() {}
+  }, {
+    key: '_onSizeChange',
+    value: function _onSizeChange(size) {
+      this.size = size;
+      this.onSizeChange && this.onSizeChange(this);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      ctx.fillStyle = this.fillStyle;
+      ctx.strokeStyle = this.strokeStyle;
+      ctx.font = this.fontSize + this.fontSizeUnit + ' ' + this.fontFamily;
+      ctx.textAlign = this.textAlign;
+
+      var size = ctx.measureText(this.content);
+      if (size.width != this.size.width || size.height != this.size.height) {
+        this._onSizeChange(size);
+      }
+      this.fillStyle && ctx.fillText(this.content, this.offset.x, this.offset.y);
+      this.strokeStyle && ctx.strokeText(this.content, this.offset.x, this.offset.y);
+    }
+  }]);
+
+  return FI_Text;
+}(_FI_Component3.default);
+
+exports.default = FI_Text;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Scene2 = __webpack_require__(29);
+
+var _FI_Scene3 = _interopRequireDefault(_FI_Scene2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MainScene = function (_FI_Scene) {
+  _inherits(MainScene, _FI_Scene);
+
+  function MainScene() {
+    _classCallCheck(this, MainScene);
+
+    return _possibleConstructorReturn(this, (MainScene.__proto__ || Object.getPrototypeOf(MainScene)).call(this));
+  }
+
+  _createClass(MainScene, [{
+    key: 'onAdded',
+    value: function onAdded() {
+      console.log('Hello');
+    }
+  }]);
+
+  return MainScene;
+}(_FI_Scene3.default);
+
+exports.default = MainScene;
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Rect = function () {
+  _createClass(Rect, null, [{
+    key: "intersectWith",
+    value: function intersectWith(r1, r2) {
+      var l = Math.max(r1.x, r2.x);
+      var r = Math.min(r1.x + r1.w, r2.x + r2.w);
+      var w = r - l;
+      if (w < 0) return null;
+
+      var t = Math.max(r1.y, r2.y);
+      var b = Math.min(r1.y + r1.h, r2.y + r2.h);
+      var h = b - t;
+      if (h < 0) return null;
+
+      return new Rect(l, t, w, h);
+    }
+  }]);
+
+  function Rect(x, y, w, h) {
+    _classCallCheck(this, Rect);
+
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+  }
+
+  _createClass(Rect, [{
+    key: "intersectWith",
+    value: function intersectWith(r) {
+      return Rect.intersectWith(this, r);
+    }
+  }]);
+
+  return Rect;
+}();
+
+exports.default = Rect;
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _Engine = __webpack_require__(23);
+
+var _Engine2 = _interopRequireDefault(_Engine);
+
+var _SceneKeeper = __webpack_require__(6);
+
+var _SceneKeeper2 = _interopRequireDefault(_SceneKeeper);
+
+var _KeyboardCenter = __webpack_require__(7);
+
+var _KeyboardCenter2 = _interopRequireDefault(_KeyboardCenter);
+
+var _MouseCenter = __webpack_require__(10);
+
+var _MouseCenter2 = _interopRequireDefault(_MouseCenter);
+
+var _LaunchScene = __webpack_require__(27);
+
+var _LaunchScene2 = _interopRequireDefault(_LaunchScene);
+
+var _MainScene = __webpack_require__(20);
+
+var _MainScene2 = _interopRequireDefault(_MainScene);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import React from 'react';
 // import ReactDOM from 'react-dom';
 // import App from './app/App.js';
 // ReactDOM.render(<App/>, document.getElementById('app'));
 // //
 
+var appDiv = document.getElementById('app');
 var canvas = document.createElement('canvas');
 appDiv.appendChild(canvas);
 _Engine2.default.getInstance().launch(canvas).setSize(800, 600).setBackgroundColor('black');
@@ -1396,7 +2194,7 @@ _MouseCenter2.default.getInstance().launch();
 _SceneKeeper2.default.getInstance().run(new _LaunchScene2.default());
 
 /***/ }),
-/* 15 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1412,29 +2210,29 @@ var _FI_Node = __webpack_require__(1);
 
 var _FI_Node2 = _interopRequireDefault(_FI_Node);
 
-var _FI_Image = __webpack_require__(2);
+var _FI_Image = __webpack_require__(3);
 
 var _FI_Image2 = _interopRequireDefault(_FI_Image);
 
-var _FI_Touchable = __webpack_require__(6);
+var _FI_Touchable = __webpack_require__(5);
 
 var _FI_Touchable2 = _interopRequireDefault(_FI_Touchable);
 
-var _FI_Rotation = __webpack_require__(9);
+var _FI_Rotation = __webpack_require__(12);
 
-var _SceneKeeper = __webpack_require__(10);
+var _SceneKeeper = __webpack_require__(6);
 
 var _SceneKeeper2 = _interopRequireDefault(_SceneKeeper);
 
-var _utils = __webpack_require__(5);
+var _utils = __webpack_require__(9);
 
 var Utils = _interopRequireWildcard(_utils);
 
-var _Matrix = __webpack_require__(11);
+var _Matrix = __webpack_require__(14);
 
 var _Matrix2 = _interopRequireDefault(_Matrix);
 
-var _Matrix2D = __webpack_require__(20);
+var _Matrix2D = __webpack_require__(26);
 
 var _Matrix2D2 = _interopRequireDefault(_Matrix2D);
 
@@ -1523,8 +2321,10 @@ var Engine = function () {
     key: 'draw',
     value: function draw() {
       var ctx = this.ctx;
-      this.ctx.fillStyle = this.backgroundColor;
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      ctx.fillStyle = this.backgroundColor;
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       ctx.save();
       this.rootNode.draw(ctx);
       ctx.restore();
@@ -1537,7 +2337,7 @@ var Engine = function () {
 exports.default = Engine;
 
 /***/ }),
-/* 16 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1559,96 +2359,7 @@ var Size2D = function Size2D(w, h) {
 exports.default = Size2D;
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _utils = __webpack_require__(5);
-
-var Utils = _interopRequireWildcard(_utils);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ImageKeeper = function () {
-  function ImageKeeper() {
-    _classCallCheck(this, ImageKeeper);
-
-    this.images = {};
-  }
-
-  _createClass(ImageKeeper, [{
-    key: 'firstLoadImage',
-    value: function firstLoadImage(uri) {
-      var _this = this;
-
-      return new Promise(function (resolve, reject) {
-        var image = new Image();
-        image.src = uri;
-        image.onload = function () {
-          for (var i in _this.images[uri]) {
-            _this.images[uri][i].onload(image);
-          }
-          _this.images[uri] = image;
-          return resolve(image);
-        };
-        image.onerror = function (err) {
-          for (var i in _this.images[uri]) {
-            _this.images[uri][i].onerror(err);
-          }
-          delete _this.images[uri];
-          return reject(err);
-        };
-      });
-    }
-  }, {
-    key: 'loadImage',
-    value: function loadImage(uri) {
-      var _this2 = this;
-
-      return new Promise(function (resolve, reject) {
-        _this2.images[uri].push({
-          onload: resolve,
-          onerror: reject
-        });
-      });
-    }
-  }, {
-    key: 'getImage',
-    value: function getImage(uri) {
-      var image = this.images[uri];
-      //not exist
-      if (!image) {
-        this.images[uri] = [];
-        return this.firstLoadImage(uri);
-      }
-      //loading.
-      else if (Utils.isArray(image)) {
-          return this.loadImage(uri);
-        }
-        //already loaded.
-        else {
-            return Promise.resolve(image);
-          }
-    }
-  }]);
-
-  return ImageKeeper;
-}();
-
-exports.default = new ImageKeeper();
-
-/***/ }),
-/* 18 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1688,7 +2399,7 @@ var SingletonCls = function () {
 exports.default = SingletonCls;
 
 /***/ }),
-/* 19 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1700,49 +2411,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var FI_Action = function () {
-  function FI_Action() {
-    _classCallCheck(this, FI_Action);
-  }
-
-  _createClass(FI_Action, [{
-    key: "onAssign",
-    value: function onAssign() {}
-  }, {
-    key: "onFinish",
-    value: function onFinish() {}
-  }, {
-    key: "setNode",
-    value: function setNode(node) {
-      this.node = node;
-      this.onAssign();
-    }
-  }, {
-    key: "update",
-    value: function update() {}
-  }]);
-
-  return FI_Action;
-}();
-
-exports.default = FI_Action;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Matrix = __webpack_require__(11);
+var _Matrix = __webpack_require__(14);
 
 var _Matrix2 = _interopRequireDefault(_Matrix);
 
@@ -1786,7 +2455,7 @@ var Matrix2D = function () {
 exports.default = Matrix2D;
 
 /***/ }),
-/* 21 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1802,43 +2471,67 @@ var _FI_Node = __webpack_require__(1);
 
 var _FI_Node2 = _interopRequireDefault(_FI_Node);
 
-var _FI_Image = __webpack_require__(2);
+var _FI_Image = __webpack_require__(3);
 
 var _FI_Image2 = _interopRequireDefault(_FI_Image);
 
-var _FI_Mover = __webpack_require__(22);
+var _FI_Mover = __webpack_require__(15);
 
 var _FI_Mover2 = _interopRequireDefault(_FI_Mover);
 
-var _FI_Touchable = __webpack_require__(6);
+var _FI_Touchable = __webpack_require__(5);
 
 var _FI_Touchable2 = _interopRequireDefault(_FI_Touchable);
 
-var _FI_Rotation = __webpack_require__(9);
+var _FI_Rotation = __webpack_require__(12);
 
-var _KeyboardCenter = __webpack_require__(3);
+var _KeyboardCenter = __webpack_require__(7);
 
 var _KeyboardCenter2 = _interopRequireDefault(_KeyboardCenter);
 
-var _FI_Frame = __webpack_require__(12);
+var _FI_Frame = __webpack_require__(16);
 
 var _FI_Frame2 = _interopRequireDefault(_FI_Frame);
 
-var _FI_Animation = __webpack_require__(13);
+var _FI_Animation = __webpack_require__(17);
 
 var _FI_Animation2 = _interopRequireDefault(_FI_Animation);
 
-var _FI_InputResponser = __webpack_require__(23);
+var _FI_InputResponser = __webpack_require__(28);
 
 var _FI_InputResponser2 = _interopRequireDefault(_FI_InputResponser);
 
-var _FI_Actor2D = __webpack_require__(24);
+var _FI_Actor2D = __webpack_require__(18);
 
 var _FI_Actor2D2 = _interopRequireDefault(_FI_Actor2D);
 
-var _AnimationCreator = __webpack_require__(25);
+var _AnimationCreator = __webpack_require__(8);
 
 var _AnimationCreator2 = _interopRequireDefault(_AnimationCreator);
+
+var _FI_Text = __webpack_require__(19);
+
+var _FI_Text2 = _interopRequireDefault(_FI_Text);
+
+var _MainScene = __webpack_require__(20);
+
+var _MainScene2 = _interopRequireDefault(_MainScene);
+
+var _Button = __webpack_require__(30);
+
+var _Button2 = _interopRequireDefault(_Button);
+
+var _FI_Draw = __webpack_require__(32);
+
+var _FI_Draw2 = _interopRequireDefault(_FI_Draw);
+
+var _Rect = __webpack_require__(21);
+
+var _Rect2 = _interopRequireDefault(_Rect);
+
+var _Genji = __webpack_require__(33);
+
+var _Genji2 = _interopRequireDefault(_Genji);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1955,7 +2648,45 @@ var LaunchScene = function (_FI_Scene) {
     value: function onAdded() {
       var _this4 = this;
 
-      var svg = document.createElement('svg');
+      this.stage2D = new _FI_Node2.default();
+      var draw = this.stage2D.addComponent(new _FI_Draw2.default());
+
+      var r1 = new _Rect2.default(0, 600, 1000, 100);
+      var r2 = new _Rect2.default(10, 610, 900, 50);
+      var r3 = r1.intersectWith(r2);
+      draw.add({
+        color: '#FF0000',
+        width: 1,
+        close: true,
+        type: 'lines',
+        points: [{ x: 0, y: 0 }, { x: 100, y: 100 }, { x: 100, y: 0 }]
+      });
+      draw.add({
+        color: '#FF0000',
+        style: 'stroke',
+        type: 'rect',
+        x: r1.x, y: r1.y, w: r1.w, h: r1.h
+      });
+      draw.add({
+        color: '#FF0000',
+        style: 'stroke',
+        type: 'rect',
+        x: r2.x, y: r2.y, w: r2.w, h: r2.h
+      });
+      r3 && draw.add({
+        color: '#00FF00',
+        style: 'fill',
+        type: 'rect',
+        x: r3.x, y: r3.y, w: r3.w, h: r3.h
+      });
+
+      this.addChild(this.stage2D);
+      this.genji = this.addChild(new _Genji2.default());
+
+      var button = new _Button2.default('Sprite & Action');
+      button.size = { width: 100, height: 100 };
+      button.position = { x: 400, y: 300 };
+      this.addChild(button);
 
       this.player = new _FI_Node2.default();
       this.player.size = { width: 100, height: 100 };
@@ -1964,10 +2695,10 @@ var LaunchScene = function (_FI_Scene) {
 
       var actor2d = new _FI_Actor2D2.default();
       actor2d.setMover(new _FI_Mover2.default());
+      actor2d.setRect(new _Rect2.default(0, 0, 100, 100));
       actor2d.setGavity(this.gavity);
       actor2d.setGround(500);
       actor2d.setJumpSpeed(-1000);
-
       actor2d.setWalkSpeed(500);
       actor2d.setWalkAcc(50);
 
@@ -1983,6 +2714,7 @@ var LaunchScene = function (_FI_Scene) {
       this.addChild(this.player);
 
       this.player.addComponent(animation);
+
       var t = this.player.addComponent(new _FI_Touchable2.default());
       t.setOnClickFunc(function () {
         console.log('player');
@@ -2001,7 +2733,7 @@ var LaunchScene = function (_FI_Scene) {
 
       var inputResponser = this.addComponent(new _FI_InputResponser2.default());
       inputResponser.onKeyPress('k', function () {
-        return _this4.actor2d.jump();
+        return _this4.genji.jump();
       });
       inputResponser.onDirectionKeepPress('w', 's', function (direction, dt) {
         direction /= direction ? Math.abs(direction) : 1;
@@ -2011,7 +2743,7 @@ var LaunchScene = function (_FI_Scene) {
         direction /= direction ? Math.abs(direction) : 1;
         _this4.lr = direction;
         _this4.playerFace = direction;
-        _this4.actor2d.walk(direction);
+        _this4.genji.walk(direction);
       });
       inputResponser.onKeyPress('l', function () {
         _this4.pressFn = 1;
@@ -2037,7 +2769,7 @@ var LaunchScene = function (_FI_Scene) {
 exports.default = LaunchScene;
 
 /***/ }),
-/* 22 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2053,136 +2785,7 @@ var _FI_Component2 = __webpack_require__(0);
 
 var _FI_Component3 = _interopRequireDefault(_FI_Component2);
 
-var _Vector2D = __webpack_require__(4);
-
-var _Vector2D2 = _interopRequireDefault(_Vector2D);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var FI_Mover = function (_FI_Component) {
-  _inherits(FI_Mover, _FI_Component);
-
-  function FI_Mover() {
-    _classCallCheck(this, FI_Mover);
-
-    var _this = _possibleConstructorReturn(this, (FI_Mover.__proto__ || Object.getPrototypeOf(FI_Mover)).call(this));
-
-    _this.velocity = new _Vector2D2.default(0, 0);
-    return _this;
-  }
-
-  _createClass(FI_Mover, [{
-    key: 'getVelocity',
-    value: function getVelocity() {
-      return this.velocity;
-    }
-  }, {
-    key: 'setVelocity',
-    value: function setVelocity(x, y) {
-      this.velocity = new _Vector2D2.default(x, y);
-    }
-  }, {
-    key: 'tranVelocity',
-    value: function tranVelocity(x, y) {
-      this.velocity.x += x;
-      this.velocity.y += y;
-      return this.velocity;
-    }
-  }, {
-    key: 'getVelocityX',
-    value: function getVelocityX() {
-      return this.velocity.x;
-    }
-  }, {
-    key: 'setVelocityX',
-    value: function setVelocityX(v) {
-      this.velocity.x = v;return this.velocity.x;
-    }
-  }, {
-    key: 'tranVelocityX',
-    value: function tranVelocityX(v) {
-      this.velocity.x += v;return this.velocity.x;
-    }
-  }, {
-    key: 'decayVelocityX',
-    value: function decayVelocityX(v) {
-      if (this.velocity.x > 0) {
-        this.velocity.x -= Math.abs(v);
-        this.velocity.x = Math.max(0, this.velocity.x);
-      } else if (this.velocity.x < 0) {
-        this.velocity.x += Math.abs(v);
-        this.velocity.x = Math.min(0, this.velocity.x);
-      }
-    }
-  }, {
-    key: 'getVelocityY',
-    value: function getVelocityY() {
-      return this.velocity.y;
-    }
-  }, {
-    key: 'setVelocityY',
-    value: function setVelocityY(v) {
-      this.velocity.y = v;return this.velocity.y;
-    }
-  }, {
-    key: 'tranVelocityY',
-    value: function tranVelocityY(v) {
-      this.velocity.y += v;return this.velocity.y;
-    }
-  }, {
-    key: 'decayVelocityY',
-    value: function decayVelocityY(v) {
-      if (this.velocity.y > 0) {
-        this.velocity.y -= Math.abs(v);
-        this.velocity.y = Math.max(0, this.velocity.y);
-      } else if (this.velocity.y < 0) {
-        this.velocity.y += Math.abs(v);
-        this.velocity.y = Math.min(0, this.velocity.y);
-      }
-    }
-  }, {
-    key: 'onMount',
-    value: function onMount() {}
-  }, {
-    key: 'update',
-    value: function update(dt) {
-      this.node.tranPositionX(this.velocity.x * dt / 1000);
-      this.node.tranPositionY(this.velocity.y * dt / 1000);
-    }
-  }, {
-    key: 'draw',
-    value: function draw(ctx) {}
-  }]);
-
-  return FI_Mover;
-}(_FI_Component3.default);
-
-exports.default = FI_Mover;
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _FI_Component2 = __webpack_require__(0);
-
-var _FI_Component3 = _interopRequireDefault(_FI_Component2);
-
-var _KeyboardCenter = __webpack_require__(3);
+var _KeyboardCenter = __webpack_require__(7);
 
 var _KeyboardCenter2 = _interopRequireDefault(_KeyboardCenter);
 
@@ -2293,7 +2896,212 @@ var FI_InputResponser = function (_FI_Component) {
 exports.default = FI_InputResponser;
 
 /***/ }),
-/* 24 */
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Node2 = __webpack_require__(1);
+
+var _FI_Node3 = _interopRequireDefault(_FI_Node2);
+
+var _SceneKeeper = __webpack_require__(6);
+
+var _SceneKeeper2 = _interopRequireDefault(_SceneKeeper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_Scene = function (_FI_Node) {
+  _inherits(FI_Scene, _FI_Node);
+
+  function FI_Scene() {
+    _classCallCheck(this, FI_Scene);
+
+    return _possibleConstructorReturn(this, (FI_Scene.__proto__ || Object.getPrototypeOf(FI_Scene)).apply(this, arguments));
+  }
+
+  _createClass(FI_Scene, [{
+    key: 'goto',
+    value: function goto(sceneCls) {
+      _SceneKeeper2.default.getInstance().push(new sceneCls());
+    }
+  }]);
+
+  return FI_Scene;
+}(_FI_Node3.default);
+
+exports.default = FI_Scene;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Node2 = __webpack_require__(1);
+
+var _FI_Node3 = _interopRequireDefault(_FI_Node2);
+
+var _FI_Text = __webpack_require__(19);
+
+var _FI_Text2 = _interopRequireDefault(_FI_Text);
+
+var _FI_Touchable = __webpack_require__(5);
+
+var _FI_Touchable2 = _interopRequireDefault(_FI_Touchable);
+
+var _FI_Scale = __webpack_require__(31);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Button = function (_FI_Node) {
+  _inherits(Button, _FI_Node);
+
+  function Button(textContent) {
+    _classCallCheck(this, Button);
+
+    var _this = _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).call(this));
+
+    _this.textContent = textContent;
+    return _this;
+  }
+
+  _createClass(Button, [{
+    key: 'onAdded',
+    value: function onAdded() {
+      var _this2 = this;
+
+      var inner = this.addChild(new _FI_Node3.default());
+      var textNode = inner.addChild(new _FI_Node3.default());
+
+      var textComponent = textNode.addComponent(new _FI_Text2.default());
+      textComponent.content = this.textContent;
+      textComponent.onSizeChange = function (t) {
+        _this2.size.width = t.size.width;
+      };
+
+      var touchableComponent = this.addComponent(new _FI_Touchable2.default());
+      touchableComponent.onMouseIn = function (t) {
+        inner.removeAllActions();
+        inner.addAction(new _FI_Scale.FI_ScaleTo(1.1, 1.1, 250));
+      };
+      touchableComponent.onMouseOut = function (t) {
+        inner.removeAllActions();
+        inner.addAction(new _FI_Scale.FI_ScaleTo(1, 1, 250));
+      };
+      touchableComponent.onMouseDown = function (t) {
+        inner.removeAllActions();
+        inner.addAction(new _FI_Scale.FI_ScaleTo(1, 1, 75));
+      };
+      touchableComponent.onMouseUp = function (t) {
+        inner.removeAllActions();
+        inner.addAction(new _FI_Scale.FI_ScaleTo(1.1, 1.1, 75));
+      };
+    }
+  }]);
+
+  return Button;
+}(_FI_Node3.default);
+
+exports.default = Button;
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FI_ScaleTo = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Action2 = __webpack_require__(13);
+
+var _FI_Action3 = _interopRequireDefault(_FI_Action2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_ScaleTo = exports.FI_ScaleTo = function (_FI_Action) {
+  _inherits(FI_ScaleTo, _FI_Action);
+
+  function FI_ScaleTo(x, y, duration) {
+    _classCallCheck(this, FI_ScaleTo);
+
+    var _this = _possibleConstructorReturn(this, (FI_ScaleTo.__proto__ || Object.getPrototypeOf(FI_ScaleTo)).call(this));
+
+    _this.valueX = x;
+    _this.valueY = y;
+    _this.duration = duration;
+    _this.time = duration;
+    return _this;
+  }
+
+  _createClass(FI_ScaleTo, [{
+    key: 'onAssign',
+    value: function onAssign() {
+      this.speedX = (this.valueX - this.node.getScaleX()) / this.duration;
+      this.speedY = (this.valueY - this.node.getScaleY()) / this.duration;
+    }
+  }, {
+    key: 'onFinish',
+    value: function onFinish() {
+      this.node.setScaleX(this.valueX);
+      this.node.setScaleY(this.valueY);
+      this.node.removeAction(this);
+    }
+  }, {
+    key: 'update',
+    value: function update(dt) {
+      this.node.tranScaleX(this.speedX * dt);
+      this.node.tranScaleY(this.speedY * dt);
+      this.time -= dt;
+      if (this.time <= 0) {
+        this.onFinish();
+      }
+    }
+  }]);
+
+  return FI_ScaleTo;
+}(_FI_Action3.default);
+
+/***/ }),
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2309,6 +3117,10 @@ var _FI_Component2 = __webpack_require__(0);
 
 var _FI_Component3 = _interopRequireDefault(_FI_Component2);
 
+var _ImageKeeper = __webpack_require__(4);
+
+var _ImageKeeper2 = _interopRequireDefault(_ImageKeeper);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2317,113 +3129,84 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var FI_Actor2D = function (_FI_Component) {
-  _inherits(FI_Actor2D, _FI_Component);
+var FI_Draw = function (_FI_Component) {
+  _inherits(FI_Draw, _FI_Component);
 
-  function FI_Actor2D() {
-    _classCallCheck(this, FI_Actor2D);
+  function FI_Draw() {
+    _classCallCheck(this, FI_Draw);
 
-    var _this = _possibleConstructorReturn(this, (FI_Actor2D.__proto__ || Object.getPrototypeOf(FI_Actor2D)).call(this));
+    var _this = _possibleConstructorReturn(this, (FI_Draw.__proto__ || Object.getPrototypeOf(FI_Draw)).call(this));
 
-    _this.jumpable = false;
-    _this.walkDirection = 0;
-    _this.jumpSpeed = 0;
-    _this.walkSpeed = 0;
-    _this.walkAcc = 0;
-    _this.gavity = 0;
-    _this.ground = 0;
+    _this.items = [];
     return _this;
   }
 
-  _createClass(FI_Actor2D, [{
-    key: 'jump',
-    value: function jump() {
-      this.jumpable && this.mover.setVelocityY(this.jumpSpeed);
+  _createClass(FI_Draw, [{
+    key: 'add',
+    value: function add(arr) {
+      this.items.push(arr);
+      return arr;
     }
   }, {
-    key: 'walk',
-    value: function walk(direction) {
-      this.walkDirection = direction ? direction / Math.abs(direction) : 0;
-    }
-  }, {
-    key: 'setJumpSpeed',
-    value: function setJumpSpeed(v) {
-      this.jumpSpeed = v;
-    }
-  }, {
-    key: 'setWalkSpeed',
-    value: function setWalkSpeed(v) {
-      this.walkSpeed = Math.abs(v);
-    }
-  }, {
-    key: 'setWalkAcc',
-    value: function setWalkAcc(v) {
-      this.walkAcc = Math.abs(v);
-    }
-  }, {
-    key: 'setGavity',
-    value: function setGavity(v) {
-      this.gavity = v;
-    }
-  }, {
-    key: 'setGround',
-    value: function setGround(v) {
-      this.ground = v;
-    }
-  }, {
-    key: 'setMover',
-    value: function setMover(c) {
-      this.mover = c;
-    }
-  }, {
-    key: 'onMount',
-    value: function onMount() {
-      this.mover && this.mover.setNode(this.getNode());
-    }
-  }, {
-    key: 'update',
-    value: function update(dt) {
-      if (!this.mover) {
-        return;
-      }
-      this.mover.update(dt);
-      var curY = this.node.getPositionY();
-      var curVY = 0;
-      if (curY < this.ground) {
-
-        curVY = this.mover.tranVelocityY(this.gavity) * dt / 1000;
-        this.jumpable = false;
-      }
-      if (curY + curVY > this.ground) {
-        this.node.setPositionY(this.ground);
-        this.mover.setVelocityY(0);
-        this.jumpable = true;
-      }
-
-      var diff = this.walkDirection;
-      var maxVX = this.walkSpeed;
-      var accX = this.walkAcc;
-      if (maxVX && accX) {
-        if (diff) {
-          var vx = this.mover.getVelocityX();
-          this.mover.tranVelocityX(diff * (accX - Math.abs(vx * accX / maxVX)));
-          if (diff > 0 && vx < 0 || diff < 0 && vx > 0) {
-            this.mover.decayVelocityX(accX);
-          }
-        } else {
-          this.mover.decayVelocityX(accX);
+    key: 'remove',
+    value: function remove(arr) {
+      for (var i = 0; i < this.items.length; ++i) {
+        if (this.items[i] === arr) {
+          this.items.splice(i, 1);
+          break;
         }
       }
     }
+  }, {
+    key: 'onMount',
+    value: function onMount() {}
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      this.items.map(function (itemData) {
+        var color = itemData.color,
+            width = itemData.width,
+            close = itemData.close,
+            style = itemData.style,
+            type = itemData.type;
+
+
+        style = style || 'stroke';
+
+        if (color) ctx[style + 'Style'] = color;
+        if (width) ctx.lineWidth = width;
+
+        switch (type) {
+          case 'lines':
+            ctx.beginPath();
+            var points = itemData.points;
+
+            points.map(function (pointData, idx) {
+              idx === 0 ? ctx.moveTo(pointData.x, pointData.y) : ctx.lineTo(pointData.x, pointData.y);
+            });
+            close && ctx.closePath();
+            ctx[style]();
+            break;
+          case 'rect':
+            var x = itemData.x,
+                y = itemData.y,
+                w = itemData.w,
+                h = itemData.h;
+
+            ctx[style + 'Rect'](x, y, w, h);
+            break;
+        }
+      });
+    }
   }]);
 
-  return FI_Actor2D;
+  return FI_Draw;
 }(_FI_Component3.default);
 
-exports.default = FI_Actor2D;
+exports.default = FI_Draw;
 
 /***/ }),
-/* 25 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2435,57 +3218,217 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _FI_Image = __webpack_require__(2);
+var _FI_Node2 = __webpack_require__(1);
 
-var _FI_Image2 = _interopRequireDefault(_FI_Image);
+var _FI_Node3 = _interopRequireDefault(_FI_Node2);
 
-var _FI_Frame = __webpack_require__(12);
+var _FI_Actor2D = __webpack_require__(18);
 
-var _FI_Frame2 = _interopRequireDefault(_FI_Frame);
+var _FI_Actor2D2 = _interopRequireDefault(_FI_Actor2D);
 
-var _FI_Animation = __webpack_require__(13);
+var _Rect = __webpack_require__(21);
 
-var _FI_Animation2 = _interopRequireDefault(_FI_Animation);
+var _Rect2 = _interopRequireDefault(_Rect);
+
+var _FI_Mover = __webpack_require__(15);
+
+var _FI_Mover2 = _interopRequireDefault(_FI_Mover);
+
+var _FI_Animator = __webpack_require__(34);
+
+var _FI_Animator2 = _interopRequireDefault(_FI_Animator);
+
+var _AnimationCreator = __webpack_require__(8);
+
+var _AnimationCreator2 = _interopRequireDefault(_AnimationCreator);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var AnimationCreator = function () {
-  function AnimationCreator() {
-    _classCallCheck(this, AnimationCreator);
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-    this.imagesCache = {};
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Genji = function (_FI_Node) {
+  _inherits(Genji, _FI_Node);
+
+  function Genji() {
+    _classCallCheck(this, Genji);
+
+    var _this = _possibleConstructorReturn(this, (Genji.__proto__ || Object.getPrototypeOf(Genji)).call(this));
+
+    _this.gavity = 60;
+
+    _this.size.width = 100;
+    _this.size.height = 100;
+    _this.position.x = 400;
+    _this.position.y = 300;
+    _this.anchor.x = 0.5;
+    _this.anchor.y = 0;
+
+    var actor2d = new _FI_Actor2D2.default();
+    actor2d.setMover(new _FI_Mover2.default());
+    actor2d.setRect(new _Rect2.default(0, 0, 100, 100));
+    actor2d.setGavity(_this.gavity);
+    actor2d.setGround(500);
+    actor2d.setJumpSpeed(-1000);
+    actor2d.setWalkSpeed(500);
+    actor2d.setWalkAcc(50);
+    _this.actor2d = _this.addComponent(actor2d);
+
+    _this.animator = _this.addComponent(new _FI_Animator2.default());
+    _this.animator.addAnimationWithData({
+      name: 'genji_standing',
+      loop: 0,
+      duration: 120,
+      image: '../textures/template.png',
+      frames: [{ rect: { x: 0, y: 0, width: 79, height: 79 } }, { rect: { x: 80, y: 0, width: 79, height: 79 } }, { rect: { x: 160, y: 0, width: 79, height: 79 } }, { rect: { x: 240, y: 0, width: 79, height: 79 } }]
+    });
+    _this.animator.addAnimationWithData({
+      name: 'genji_walking',
+      loop: 0,
+      duration: 60,
+      image: '../textures/template.png',
+      frames: [{ rect: { x: 0, y: 160, width: 79, height: 79 } }, { rect: { x: 80, y: 160, width: 79, height: 79 } }, { rect: { x: 160, y: 160, width: 79, height: 79 } }, { rect: { x: 80, y: 160, width: 79, height: 79 } }]
+    });
+    _this.animator.playAnaimtion('genji_standing');
+    return _this;
   }
 
-  _createClass(AnimationCreator, [{
-    key: 'getImage',
-    value: function getImage(imageSrc) {
-      if (!this.imagesCache[imageSrc]) {
-        this.imagesCache[imageSrc] = new _FI_Image2.default(imageSrc);
-      }
-      return this.imagesCache[imageSrc];
+  _createClass(Genji, [{
+    key: 'jump',
+    value: function jump() {
+      this.actor2d.jump();
     }
   }, {
-    key: 'createWithData',
-    value: function createWithData(animationData) {
-      var _this = this;
-
-      var ret = new _FI_Animation2.default();
-      animationData.frames.map(function (frameData, idx) {
-        var frame = new _FI_Frame2.default();
-        frame.init(_this.getImage(frameData.image || animationData.image), frameData.duration || animationData.duration, frameData.rect);
-        ret.addFrame(frame);
-      });
-      ret.setLoop(animationData.loop);
-      return ret;
+    key: 'walk',
+    value: function walk(direction) {
+      if (direction) {
+        this.animator.playAnaimtion('genji_walking');
+        this.animator.flap.x = direction;
+      } else {
+        this.animator.playAnaimtion('genji_standing');
+      }
+      this.actor2d.walk(direction);
     }
   }]);
 
-  return AnimationCreator;
-}();
+  return Genji;
+}(_FI_Node3.default);
 
-exports.default = new AnimationCreator();
+exports.default = Genji;
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _FI_Component2 = __webpack_require__(0);
+
+var _FI_Component3 = _interopRequireDefault(_FI_Component2);
+
+var _AnimationCreator = __webpack_require__(8);
+
+var _AnimationCreator2 = _interopRequireDefault(_AnimationCreator);
+
+var _Vector2D = __webpack_require__(2);
+
+var _Vector2D2 = _interopRequireDefault(_Vector2D);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var FI_Animator = function (_FI_Component) {
+  _inherits(FI_Animator, _FI_Component);
+
+  function FI_Animator() {
+    _classCallCheck(this, FI_Animator);
+
+    var _this = _possibleConstructorReturn(this, (FI_Animator.__proto__ || Object.getPrototypeOf(FI_Animator)).call(this));
+
+    _this.animations = {};
+    _this.scale = new _Vector2D2.default(1, 1);
+    _this.flap = new _Vector2D2.default(1, 1);
+    return _this;
+  }
+  /**
+   * 设置缩放系数
+   * @param {Vector2D} scale 缩放系数
+   */
+
+
+  _createClass(FI_Animator, [{
+    key: 'setScale',
+    value: function setScale(scale) {
+      this.scale = scale;
+      this.curAnimation && this.curAnimation.setScale(scale);
+    }
+    /**
+     * 设置翻转系数
+     * @param {Vector2D} flap 翻转系数
+     */
+
+  }, {
+    key: 'setFlap',
+    value: function setFlap(flap) {
+      this.flap = flap;
+      this.curAnimation && this.curAnimation.setFlap(flap);
+    }
+  }, {
+    key: 'onMount',
+    value: function onMount() {
+      for (var key in this.animations) {
+        !this.animations[key].hasMounted() && this.animations[key].setNode(this.node);
+      }
+    }
+  }, {
+    key: 'addAnimationWithData',
+    value: function addAnimationWithData(data) {
+      var animation = _AnimationCreator2.default.createWithData(data);
+      this.hasMounted() && !animation.hasMounted() && animation.setNode(this.node);
+      this.animations[data.name] = animation;
+    }
+  }, {
+    key: 'playAnaimtion',
+    value: function playAnaimtion(name) {
+      this.curAnimation = this.animations[name];
+      this.curAnimation.play();
+      this.curAnimation.setScale(this.scale);
+      this.curAnimation.setFlap(this.flap);
+    }
+  }, {
+    key: 'setScaleX',
+    value: function setScaleX(x) {}
+  }, {
+    key: 'update',
+    value: function update(dt) {
+      this.curAnimation && this.curAnimation.update(dt);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      this.curAnimation && this.curAnimation.draw(ctx);
+    }
+  }]);
+
+  return FI_Animator;
+}(_FI_Component3.default);
+
+exports.default = FI_Animator;
 
 /***/ })
 /******/ ]);
