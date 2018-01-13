@@ -1,5 +1,5 @@
 import FI_Component from '../FI_Component'
-
+import Vector2D from '../../math/Vector2D'
 export default class FI_Animation extends FI_Component{
   constructor(){
     super()
@@ -9,12 +9,30 @@ export default class FI_Animation extends FI_Component{
     this.isAutoReset = true
     this.loop = 0
     this.curLoop = 0
+
+    this.scale = new Vector2D(1,1);
+    this.flap = new Vector2D(1,1);
   }
+  /**
+   * 设置缩放系数
+   * @param {Vector2D} scale 缩放系数
+   */
+  setScale(scale){
+    this.scale = scale;
+    this.curFrame && this.curFrame.setScale(scale)
+  }
+  /**
+   * 设置翻转系数
+   * @param {Vector2D} flap 翻转系数
+   */
+  setFlap(flap){
+    this.flap = flap;
+    this.curFrame && this.curFrame.setFlap(flap)
+  }
+
   addFrame(frame){
     this.frames.push(frame)
-    if( this.hasMounted() ){
-      frame.setNode(this.getNode())
-    }
+    this.hasMounted() && frame.setNode(this.node)
   }
   onMount(){
     this.frames.map((frame)=>{
@@ -38,28 +56,30 @@ export default class FI_Animation extends FI_Component{
         var diff = this.curTime - curFrame.getDuration()
         if(diff >= 0){
           this.curTime = 0;
-          this.curIndex = this.curIndex+1
-          if( this.curIndex >= this.frames.length){
+          var newIndex = this.curIndex+1
+          if( newIndex >= this.frames.length){
             if(this.loop == 0 ){
-              this.curIndex = 0
+              newIndex = 0
             }
             else if(this.curLoop >= this.loop){
               this.curLoop += 1
-              this.curIndex = 0
+              newIndex = 0
             }else{
-              this.curIndex = this.frames.length - 1
+              newIndex = this.frames.length - 1
               this.stop()
             }
           }
+          if(newIndex !== this.curIndex){
+            this.curIndex = newIndex
+            this.curFrame = this.frames[newIndex]
+            this.curFrame.setScale(this.scale)
+            this.curFrame.setFlap(this.flap)
+          }
         }
-
       }
     }
   }
   draw(ctx){
-    var curFrame = this.frames[this.curIndex]
-    if( curFrame ){
-      curFrame.draw(ctx);
-    }
+    this.curFrame && this.curFrame.draw(ctx);
   }
 }
