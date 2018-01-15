@@ -1,4 +1,4 @@
-export default class SingletonCls {
+class SingletonCls {
   static getInstance(){
     if(!SingletonCls._instance){
       SingletonCls._instance = new SingletonCls();
@@ -9,3 +9,4 @@ export default class SingletonCls {
     delete SingletonCls._instance;
   }
 }
+export default SingletonCls;
