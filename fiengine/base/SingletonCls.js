@@ -1,11 +1,11 @@
 export default class SingletonCls {
   static getInstance(){
-    if(!this.instance){
-      this.instance = new this();
+    if(!SingletonCls._instance){
+      SingletonCls._instance = new SingletonCls();
     }
-    return this.instance;
+    return SingletonCls._instance;
   }
   static deleteInstance(){
-    delete this.instance;
+    delete SingletonCls._instance;
   }
 }
