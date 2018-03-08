@@ -83,7 +83,7 @@ export default class FI_Node {
   }
   addComponent(component){
     this.components.push(component)
-    this.hasAdded && component.setNode(this)
+    component.setNode(this)
     return component
   }
   addAction(action){

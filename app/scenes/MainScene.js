@@ -4,6 +4,6 @@ export default class MainScene extends FI_Scene{
     super()
   }
   onAdded(){
-    console.log('Hello')
+    this.addComponent(new FI_Draw)
   }
 }

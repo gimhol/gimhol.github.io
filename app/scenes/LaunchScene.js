@@ -1,23 +1,23 @@
-import FI_Scene from '../fiengine/node/FI_Node'
-import FI_Node from '../fiengine/node/FI_Node'
-import FI_Image from '../fiengine/component/FI_Image'
-import FI_Mover from '../fiengine/component/FI_Mover'
-import FI_Touchable from '../fiengine/component/FI_Touchable'
-import { FI_RotationBy } from '../fiengine/action/FI_Rotation'
-import KeyboardCenter from '../fiengine/input/KeyboardCenter'
+import FI_Scene from '../../fiengine/node/FI_Node'
+import FI_Node from '../../fiengine/node/FI_Node'
+import FI_Image from '../../fiengine/component/FI_Image'
+import FI_Mover from '../../fiengine/component/FI_Mover'
+import FI_Touchable from '../../fiengine/component/FI_Touchable'
+import { FI_RotationBy } from '../../fiengine/action/FI_Rotation'
+import KeyboardCenter from '../../fiengine/input/KeyboardCenter'
 
-import FI_Frame from '../fiengine/component/animation/FI_Frame'
-import FI_Animation from '../fiengine/component/animation/FI_Animation'
-import FI_InputResponser from '../fiengine/component/FI_InputResponser'
+import FI_Frame from '../../fiengine/component/animation/FI_Frame'
+import FI_Animation from '../../fiengine/component/animation/FI_Animation'
+import FI_InputResponser from '../../fiengine/component/FI_InputResponser'
 
-import FI_Actor2D from './component/FI_Actor2D'
-import AnimationCreator from '../fiengine/helper/AnimationCreator'
-import FI_Text from '../fiengine/component/FI_Text'
-import MainScene from './scenes/MainScene'
-import Button from './ui/Button'
-import FI_Draw from '../fiengine/component/FI_Draw'
-import FI_Rect from '../fiengine/math/Rect'
-import Genji from './characters/Genji'
+import FI_Actor2D from '../component/FI_Actor2D'
+import AnimationCreator from '../../fiengine/helper/AnimationCreator'
+import FI_Text from '../../fiengine/component/FI_Text'
+import MainScene from '../scenes/MainScene'
+import Button from '../ui/Button'
+import FI_Draw from '../../fiengine/component/FI_Draw'
+import FI_Rect from '../../fiengine/math/Rect'
+import Genji from '../characters/Genji'
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -42,7 +42,7 @@ export default class LaunchScene extends FI_Scene{
     var a = new FI_Node()
     a.size = {width: 25, height: 25}
     a.position = {x: this.player.getPositionX(), y: this.player.getPositionY()}
-    a.addComponent(new FI_Image('../textures/moon_1024.jpg'))
+    a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
 
     var mover = a.addComponent( new FI_Mover() )
     var sp = 1600
@@ -169,7 +169,7 @@ export default class LaunchScene extends FI_Scene{
       name: 'genji_standing',
       loop: 0,
       duration: 250,
-      image: '../textures/genji.jpg',
+      image: '../../textures/genji.jpg',
       frames: [
         { rect: { x:0, y:0, width:80, height:80 } },
         { rect: { x:80, y:0, width:80, height:80 } },
@@ -190,7 +190,7 @@ export default class LaunchScene extends FI_Scene{
     var a = new FI_Node()
     a.size = {width: 50, height: 50}
     a.position = {x: 50, y: 50}
-    a.addComponent(new FI_Image('../textures/moon_1024.jpg'))
+    a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
     a.setRotation(45)
     var t = a.addComponent(new FI_Touchable())
     t.setOnClickFunc(()=>{
