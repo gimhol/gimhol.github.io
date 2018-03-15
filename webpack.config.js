@@ -10,6 +10,7 @@ var config = {
     port: 7777   //设定使用webpack-dev-server工具的服务器端口
   },
   module: {
+	  /*
     loaders: [ {   //引入babel模块处理ES6代码
        test: /\.(js|jsx)?$/,
        exclude: /node_modules/,
@@ -18,7 +19,11 @@ var config = {
        query: {
           presets: ['es2015','react']
        }
-    }]
+    }]*/
+	
+	rules: [
+		{test: /\.(js|jsx)?$/, use: ['babel-loader']}
+	]
   },
   resolve:{
     extensions:['.js',".css",".jsx"]
