@@ -1,8 +1,9 @@
 import Vector2D from '../math/Vector2D'
 import Size2D from '../math/Size2D'
-
-export default class FI_Node {
+import FI_Object from '../base/FI_Object'
+export default class FI_Node extends FI_Object{
   constructor(){
+    super();
     this.children = []
     this.components = []
     this.actions = []
@@ -13,49 +14,58 @@ export default class FI_Node {
     this.size     = new Size2D(0, 0);
     this.scale    = new Vector2D(1,1);
     this.rotation = 0;
-
-    this.enable = 1;
-    this.invisible = 1;
+    this.enable = false;
+    this.visible = 1;
   }
-  getLevel(){return this.level}
-  setLevel(v){this.level=v}
-
-  getScaleX(){return this.scale.x}
-  setScaleX(v){this.scale.x = v; return this.scale.x}
-  tranScaleX(v){this.scale.x += v; return this.scale.x}
-
-  getScaleY(){return this.scale.y}
-  setScaleY(v){this.scale.y = v; return this.scale.y}
-  tranScaleY(v){this.scale.y += v; return this.scale.y}
-
-  getPositionX(){return this.position.x}
-  setPositionX(v){this.position.x = v; return this.position.x}
-  tranPositionX(v){this.position.x += v; return this.position.x}
-
-  getPositionY(){return this.position.y}
-  setPositionY(v){this.position.y = v; return this.position.y}
-  tranPositionY(v){this.position.y += v; return this.position.y}
-
-  getPosition(){return this.position}
-  setPosition(v){this.position = v}
-
-  getRotation(){return this.rotation}
-  setRotation(v){this.rotation = v; return this.rotation}
-  tranRotation(v){this.rotation += v; return this.rotation}
-
+  // LifeCycle
   _onAdded(){
     this.hasAdded = true
-    this.mountAllComponent()
-    this.onAdded()
+    this.mountAllComponent();
+    this.setEnable(true);
+    this.onAdded && this.onAdded();
   }
   _onRemoved(){
     this.hasAdded = false
-    this.onRemoved()
+    this.removeAllComponents();
+    this.onRemoved && this.onRemoved();
+  }
+  _onDisable(){
+    this.onDisable && this.onDisable();
+    for(var i in this.components){
+      this.components[i].setEnable(false);
+    }
+    for(var i in this.children){
+      !this.children[i].setEnable(false);
+    }
+  }
+  _onEnable(){
+    this.onEnable && this.onEnable();
+    for(var i in this.components){
+      this.components[i].setEnable(true);
+    }
+    for(var i in this.children){
+      !this.children[i].setEnable(true);
+    }
   }
 
-  onAdded(){}
-  onRemoved(){}
-  onUpdate(){}
+  setEnable(v){
+    if(this.enable === !!v){
+      return true;
+    }
+    this.enable = !!v
+    if(this.enable){
+      this._onEnable();
+    }else{
+      this._onDisable();
+    }
+  }
+
+  getAnchorOffset(){
+    return {
+      x: this.anchor.x * this.size.width,
+      y: this.anchor.y * this.size.height
+    }
+  }
 
   addChild(child){
     if(child.getParent()){
@@ -67,9 +77,11 @@ export default class FI_Node {
     child._onAdded()
     return child
   }
+
   mountAllComponent(){
     this.components.map((component)=>component.setNode(this));
   }
+
   removeChild(child){
     for(var i=0;i<this.children.length;++i){
       if(this.children[i]==child){
@@ -83,8 +95,22 @@ export default class FI_Node {
   }
   addComponent(component){
     this.components.push(component)
-    component.setNode(this)
+    this.hasAdded && component.setNode(this)
     return component
+  }
+  removeComponent(component){
+    for(var i=0;i<this.components.length;++i){
+      if(this.components[i]==component){
+        this.components.splice(i,1);
+        component.hasMounted() && component._onUnmount()
+        return;
+      }
+    }
+  }
+  removeAllComponents(){
+    for(var i=0;i<this.components.length;++i){
+      this.components[i].hasMounted() && this.components[i]._onUnmount()
+    }
   }
   addAction(action){
     this.actions.push(action)
@@ -102,49 +128,60 @@ export default class FI_Node {
   removeAllActions(){
     this.actions = []
   }
-  getAnchorOffset(){
-    return {
-      x: this.anchor.x * this.size.width,
-      y: this.anchor.y * this.size.height
-    }
-  }
+
   update(dt){
     if(!this.enable){
       return
     }
-    this.onUpdate(dt);
-    for(var i in this.actions){
-      this.actions[i].update(dt)
-    }
-    for(var i in this.components){
-      this.components[i].update(dt);
-    }
-    for(var i in this.children){
-      this.children[i].update(dt);
-    }
+    this.onUpdate && this.onUpdate(dt);
+    this.actions.map((action)=>action.update(dt));
+    this.components.map((component)=>component.update(dt));
+    this.children.map((child)=>child.update(dt));
   }
   draw(ctx){
-    if(!this.invisible){
+    if(!this.visible){
       return
     }
     ctx.translate(this.position.x, this.position.y);
     ctx.rotate(this.rotation * Math.PI / 180);
     ctx.scale(this.scale.x,this.scale.y);
     ctx.save()
-    for(var i in this.components){
-      this.components[i].draw(ctx);
-      ctx.restore()
-      ctx.save()
-    }
-    for(var i in this.children){
-      this.children[i].draw(ctx);
-      ctx.restore()
-      ctx.save()
-    }
-    ctx.restore()
-  }
+    this.components.map((component)=>{
+      component.draw(ctx);
+      ctx.restore();
+      ctx.save();
+    });
+    this.children.map((child)=>{
+      child.draw(ctx);
+      ctx.restore();
+      ctx.save();
+    });
+    ctx.restore();
 
-  debugDraw(ctx){
-
+    this._doneTransformsDirty();
+    this._doneLevelDirty();
+    this._doneEnableDirty();
   }
+  isTransformsDirty(){
+    return this.isPositionDirty || this.isScaleDirty || this.isRotationDirty || this.isSizeDirty
+  }
+  _doneTransformsDirty(){
+    this._donePositionDirty();
+    this._doneScaleDirty();
+    this._doneAnchorDirty();
+    this._doneSizeDirty();
+  }
+  debugDraw(ctx){}
 }
+Vector2D.BindAllHandler(FI_Node,'Position');
+Vector2D.BindAllHandler(FI_Node,'Scale');
+Vector2D.BindAllHandler(FI_Node,'Anchor');
+
+Size2D.BindMemberHandler(FI_Node,'Size',true);
+Size2D.BindWHHandle(FI_Node,'Size');
+Size2D.BindClassHandle(FI_Node,'Size');
+
+FI_Object.BindDirtyIntHandler(FI_Node,'Level');
+FI_Object.BindDirtyNumberHandler(FI_Node,'Rotation');
+FI_Object.BindDirtyBoolHandler(FI_Node,'Enable');
+FI_Object.BindDirtyBoolHandler(FI_Node,'Visible');

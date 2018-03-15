@@ -1,23 +1,29 @@
-import FI_Scene from '../../fiengine/node/FI_Node'
-import FI_Node from '../../fiengine/node/FI_Node'
-import FI_Image from '../../fiengine/component/FI_Image'
-import FI_Mover from '../../fiengine/component/FI_Mover'
-import FI_Touchable from '../../fiengine/component/FI_Touchable'
 import { FI_RotationBy } from '../../fiengine/action/FI_Rotation'
 import KeyboardCenter from '../../fiengine/input/KeyboardCenter'
 
-import FI_Frame from '../../fiengine/component/animation/FI_Frame'
-import FI_Animation from '../../fiengine/component/animation/FI_Animation'
-import FI_InputResponser from '../../fiengine/component/FI_InputResponser'
-
-import FI_Actor2D from '../component/FI_Actor2D'
 import AnimationCreator from '../../fiengine/helper/AnimationCreator'
-import FI_Text from '../../fiengine/component/FI_Text'
-import MainScene from '../scenes/MainScene'
+import FI_Actor2D from '../component/FI_Actor2D'
 import Button from '../ui/Button'
-import FI_Draw from '../../fiengine/component/FI_Draw'
-import FI_Rect from '../../fiengine/math/Rect'
 import Genji from '../characters/Genji'
+import MainScene from './MainScene'
+
+import {
+  FI_SceneKeeper,
+  FI_Scene,
+  FI_Node,
+  FI_Image,
+  FI_Mover,
+  FI_Touchable,
+  FI_Text,
+  FI_Draw,
+
+  FI_Animation,
+  FI_Frame,
+  FI_Rect,
+  FI_Vector2D,
+  FI_InputResponser
+} from '../../fiengine/Root'
+
 export default class LaunchScene extends FI_Scene{
   constructor(){
     super()
@@ -40,8 +46,8 @@ export default class LaunchScene extends FI_Scene{
   }
   createBullet(angle){
     var a = new FI_Node()
-    a.size = {width: 25, height: 25}
-    a.position = {x: this.player.getPositionX(), y: this.player.getPositionY()}
+    a.setSizeWH(25,25)
+    a.setPosition(this.player.getPosition());
     a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
 
     var mover = a.addComponent( new FI_Mover() )
@@ -49,7 +55,7 @@ export default class LaunchScene extends FI_Scene{
     mover.tranVelocityX(Math.sin(angle)*1600)
     mover.tranVelocityY(Math.cos(angle)*1600)
     a.addAction(new FI_RotationBy(10000,10000))
-
+    console.log(a)
     this.addChild(a)
   }
   getShotAngle(){
@@ -108,19 +114,19 @@ export default class LaunchScene extends FI_Scene{
   onAdded(){
     this.stage2D = new FI_Node()
     var draw = this.stage2D.addComponent(new FI_Draw())
-
     var r1 = new FI_Rect(0,600,1000,100)
     var r2 = new FI_Rect(10,610,900,50)
     var r3 = r1.intersectWith(r2)
     draw.add({
-      color: '#FF0000',
-      width: 1,
-      close: true,
       type: 'lines',
+
+      stroke: true,
+      fill: true,
+      width: 1,
       points:[
-        {x:0,y:0},
-        {x:100,y:100},
-        {x:100,y:0}
+        new FI_Vector2D(0,0),
+        new FI_Vector2D(100,100),
+        new FI_Vector2D(100,0)
       ],
     })
     draw.add({
@@ -145,14 +151,26 @@ export default class LaunchScene extends FI_Scene{
     this.addChild(this.stage2D)
     this.genji = this.addChild(new Genji())
 
+    this.buttonLayer = new FI_Node();
+    this.buttonLayer.setPositionXY(300,0);
+
     var button = new Button('Sprite & Action');
-    button.size = {width: 100, height: 100}
-    button.position = {x: 400, y: 300}
-    this.addChild(button)
+    button.setPositionXY(400,300);
+    this.buttonLayer.addChild(button);
+
+    var button = new Button('Button');
+    button.setPositionXY(400,350);
+    button.onMouseUp = ()=>{
+      this.setScaleXY( this.getScaleX()*0.8,1)
+      //FI_SceneKeeper.getInstance().push(new MainScene());
+    }
+    this.buttonLayer.addChild(button);
+
+    this.addChild(this.buttonLayer)
 
     this.player = new FI_Node()
-    this.player.size = {width: 100, height: 100}
-    this.player.position = {x: 400, y: 300}
+    this.player.setSizeWH(100,100);
+    this.player.setPositionXY(400,300)
     this.player.anchor = {x:0.5, y:0}
 
     var actor2d = new FI_Actor2D();
@@ -163,7 +181,7 @@ export default class LaunchScene extends FI_Scene{
     actor2d.setJumpSpeed(-1000)
     actor2d.setWalkSpeed(500)
     actor2d.setWalkAcc(50)
-
+    console.log(this.player)
     this.actor2d = this.player.addComponent(actor2d)
     var animation = AnimationCreator.createWithData({
       name: 'genji_standing',
@@ -182,20 +200,11 @@ export default class LaunchScene extends FI_Scene{
 
     this.player.addComponent(animation)
 
-    var t = this.player.addComponent(new FI_Touchable())
-    t.setOnClickFunc(()=>{
-      console.log('player')
-    })
-
     var a = new FI_Node()
-    a.size = {width: 50, height: 50}
-    a.position = {x: 50, y: 50}
+    a.setSizeWH(50,50);
+    a.setPositionXY(50,50)
     a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
     a.setRotation(45)
-    var t = a.addComponent(new FI_Touchable())
-    t.setOnClickFunc(()=>{
-      console.log('weapon')
-    })
     this.player.addChild(a)
 
     var inputResponser = this.addComponent(new FI_InputResponser())

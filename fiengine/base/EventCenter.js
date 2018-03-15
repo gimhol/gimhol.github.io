@@ -5,7 +5,14 @@ class Listener {
     this.func = func;
     this.priority = priority;
   }
+  setEventCenter(eventCenter){
+    this.eventCenter = eventCenter;
+  }
   removeSelf(){
+    if(!this.eventCenter){
+      return;
+    }
+    this.eventCenter.removeListener(this)
   }
 }
 export default class EventCenter extends SingletonCls{
@@ -30,10 +37,20 @@ export default class EventCenter extends SingletonCls{
       return;
     }
     var listener = new Listener(eventName,func,priority);
+    listener.setEventCenter(this)
     listenerArr.push(listener)
     listenerArr.sort((a,b)=>(b.priority-a.priority))
     this.listeners[eventName] = listenerArr
     return listener
+  }
+  removeListener(listener){
+    var list = this.getListeners(listener.name)
+    for(var i = 0; i < list.length; ++i){
+      if(list[i] === listener){
+        list.splice(i,1);
+        break;
+      }
+    }
   }
   update(dt){
     this.opUpdate && this.opUpdate(dt)

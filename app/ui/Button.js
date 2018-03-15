@@ -15,24 +15,28 @@ export default class Button extends FI_Node{
     textComponent.content = this.textContent
     textComponent.onSizeChange = (t)=>{
       this.size.width = t.size.width
+      this.size.height = t.size.height
     }
-
     var touchableComponent = this.addComponent(new FI_Touchable())
     touchableComponent.onMouseIn = (t)=>{
       inner.removeAllActions()
       inner.addAction(new FI_ScaleTo(1.1,1.1,250))
+      this.onMouseIn && this.onMouseIn()
     }
     touchableComponent.onMouseOut = (t)=>{
       inner.removeAllActions()
       inner.addAction(new FI_ScaleTo(1,1,250))
+      this.onMouseOut && this.onMouseOut()
     }
     touchableComponent.onMouseDown = (t)=>{
       inner.removeAllActions()
-      inner.addAction(new FI_ScaleTo(1,1,75))
+      inner.addAction(new FI_ScaleTo(1,1,50))
+      this.onMouseDown && this.onMouseDown()
     }
     touchableComponent.onMouseUp = (t)=>{
       inner.removeAllActions()
-      inner.addAction(new FI_ScaleTo(1.1,1.1,75))
+      inner.addAction(new FI_ScaleTo(1.1,1.1,50))
+      this.onMouseUp && this.onMouseUp()
     }
   }
 }

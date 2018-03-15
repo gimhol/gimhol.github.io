@@ -5,6 +5,7 @@ export default class FI_Draw extends FI_Component{
   constructor(){
     super()
     this.items = []
+    this.isDirty = true;
   }
   add(arr){
     this.items.push(arr)
@@ -21,32 +22,40 @@ export default class FI_Draw extends FI_Component{
   onMount(){
   }
   draw(ctx){
+    // if(!this.isDirty){
+    //   return
+    // }
+    this.isDirty = false
+    var anchorOffset = this.node.getAnchorOffset()
     this.items.map((itemData)=>{
-      var { color, width, close, style, type} = itemData
-
-      style = style||'stroke'
-
-      if(color) ctx[style+'Style'] = color;
-      if(width) ctx.lineWidth = width;
-
+      var { fill, stroke, fillStyle, strokeStyle, width, close, style, type} = itemData
+      ctx.fillStyle = fillStyle || 'transparent'
+      ctx.strokeStyle = strokeStyle || 'gray';
+      ctx.lineWidth = width || 1;
+      ctx.beginPath();
       switch(type){
         case 'lines':
-          ctx.beginPath();
           var { points } = itemData;
           points.map((pointData,idx)=>{
             idx === 0 ?
-              ctx.moveTo(pointData.x,pointData.y):
-              ctx.lineTo(pointData.x,pointData.y)
+              ctx.moveTo(pointData.x - anchorOffset.x,pointData.y - anchorOffset.y):
+              ctx.lineTo(pointData.x - anchorOffset.x,pointData.y - anchorOffset.y)
           })
-          close && ctx.closePath();
-          ctx[style]();
+          stroke && ctx.stroke();
           break;
         case 'rect':
           var { x,y,w,h } = itemData;
-          ctx[style+'Rect'](x,y,w,h)
+          stroke && ctx['strokeRect'](x - anchorOffset.x,y - anchorOffset.y,w,h)
+          fill && ctx['fillRect'](x - anchorOffset.x,y - anchorOffset.y,w,h)
+          break;
+        case 'circle':
+          var { x, y, r } = itemData;
+          ctx.arc(x - anchorOffset.x, y - anchorOffset.y, r, 0, 2*Math.PI);
+          stroke && ctx.stroke();
+          fill && ctx.fill();
           break;
       }
-
+      close && ctx.closePath();
     })
   }
 }
