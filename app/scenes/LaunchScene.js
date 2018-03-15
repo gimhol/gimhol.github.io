@@ -38,7 +38,6 @@ export default class LaunchScene extends FI_Scene{
     this.pressFn = 0;
     this.ud = 0
     this.lr = 0
-    this.playerFace = 1;
   }
 
   onUpdate(dt){
@@ -47,7 +46,7 @@ export default class LaunchScene extends FI_Scene{
   createBullet(angle){
     var a = new FI_Node()
     a.setSizeWH(25,25)
-    a.setPosition(this.player.getPosition());
+    a.setPosition(this.genji.getPosition());
     a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
 
     var mover = a.addComponent( new FI_Mover() )
@@ -119,7 +118,7 @@ export default class LaunchScene extends FI_Scene{
     var r3 = r1.intersectWith(r2)
     draw.add({
       type: 'lines',
-
+      color: '#FF0000',
       stroke: true,
       fill: true,
       width: 1,
@@ -131,19 +130,22 @@ export default class LaunchScene extends FI_Scene{
     })
     draw.add({
       color: '#FF0000',
-      style: 'stroke',
+      stroke: true,
+      fill: true,
       type: 'rect',
       x:r1.x,y:r1.y,w:r1.w,h:r1.h
     })
     draw.add({
       color: '#FF0000',
-      style: 'stroke',
+      stroke: true,
+      fill: true,
       type: 'rect',
       x:r2.x,y:r2.y,w:r2.w,h:r2.h
     })
     r3 && draw.add({
       color: '#00FF00',
-      style: 'fill',
+      stroke: true,
+      fill: true,
       type: 'rect',
       x:r3.x,y:r3.y,w:r3.w,h:r3.h
     })
@@ -168,45 +170,6 @@ export default class LaunchScene extends FI_Scene{
 
     this.addChild(this.buttonLayer)
 
-    this.player = new FI_Node()
-    this.player.setSizeWH(100,100);
-    this.player.setPositionXY(400,300)
-    this.player.anchor = {x:0.5, y:0}
-
-    var actor2d = new FI_Actor2D();
-    actor2d.setMover( new FI_Mover() )
-    actor2d.setRect( new FI_Rect(0,0,100,100))
-    actor2d.setGavity(this.gavity)
-    actor2d.setGround(500)
-    actor2d.setJumpSpeed(-1000)
-    actor2d.setWalkSpeed(500)
-    actor2d.setWalkAcc(50)
-    console.log(this.player)
-    this.actor2d = this.player.addComponent(actor2d)
-    var animation = AnimationCreator.createWithData({
-      name: 'genji_standing',
-      loop: 0,
-      duration: 250,
-      image: '../../textures/genji.jpg',
-      frames: [
-        { rect: { x:0, y:0, width:80, height:80 } },
-        { rect: { x:80, y:0, width:80, height:80 } },
-        { rect: { x:160, y:0, width:80, height:80 } },
-        { rect: { x:80, y:0, width:80, height:80 } }
-      ]
-    })
-    animation.play()
-    this.addChild(this.player)
-
-    this.player.addComponent(animation)
-
-    var a = new FI_Node()
-    a.setSizeWH(50,50);
-    a.setPositionXY(50,50)
-    a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
-    a.setRotation(45)
-    this.player.addChild(a)
-
     var inputResponser = this.addComponent(new FI_InputResponser())
     inputResponser.onKeyPress('k', ()=>this.genji.jump())
     inputResponser.onDirectionKeepPress('w','s',(direction,dt)=>{
@@ -215,9 +178,21 @@ export default class LaunchScene extends FI_Scene{
     })
     inputResponser.onDirectionKeepPress('a','d',(direction,dt)=>{
       direction /= (direction?Math.abs(direction):1)
-      this.lr = direction
-      this.playerFace = direction
-      this.genji.walk(direction)
+      if( !this.genji.isRunning ){
+        this.lr = direction
+        this.genji.walk(direction)
+      }else if(this.lr == -1*direction){
+        this.lr = direction
+
+        this.genji.stopRunning()
+      }
+    })
+
+    inputResponser.onKeyDoubleClick('a',()=>{
+      !this.genji.isRunning && this.genji.run(-1)
+    })
+    inputResponser.onKeyDoubleClick('d',()=>{
+      !this.genji.isRunning && this.genji.run(1)
     })
     inputResponser.onKeyPress('l', ()=>{this.pressFn=1})
     inputResponser.onKeyRelease('l', ()=>{this.pressFn=1})
@@ -230,6 +205,8 @@ export default class LaunchScene extends FI_Scene{
           this.leftShot()
       }
     })
+
+
 
   }
   onRemoved(){

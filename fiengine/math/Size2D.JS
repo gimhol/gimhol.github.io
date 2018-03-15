@@ -4,7 +4,7 @@ export default class Size2D extends FI_Object{
   constructor(width,height){
     super();
     this.setWidth(width);
-    this.tranWidth(height);
+    this.setHeight(height);
   }
 
   // both

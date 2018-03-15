@@ -41,20 +41,21 @@ export default class FI_Draw extends FI_Component{
               ctx.moveTo(pointData.x - anchorOffset.x,pointData.y - anchorOffset.y):
               ctx.lineTo(pointData.x - anchorOffset.x,pointData.y - anchorOffset.y)
           })
-          stroke && ctx.stroke();
           break;
         case 'rect':
           var { x,y,w,h } = itemData;
-          stroke && ctx['strokeRect'](x - anchorOffset.x,y - anchorOffset.y,w,h)
-          fill && ctx['fillRect'](x - anchorOffset.x,y - anchorOffset.y,w,h)
+          !this.aaaa && console.log(this.node)
+          this.aaaa = true
+          // console.log(x,y,anchorOffset.x, anchorOffset.y,w,h)
+          ctx.rect(x - anchorOffset.x,y - anchorOffset.y,w,h)
           break;
         case 'circle':
           var { x, y, r } = itemData;
           ctx.arc(x - anchorOffset.x, y - anchorOffset.y, r, 0, 2*Math.PI);
-          stroke && ctx.stroke();
-          fill && ctx.fill();
           break;
       }
+      stroke && ctx.stroke();
+      fill && ctx.fill();
       close && ctx.closePath();
     })
   }
