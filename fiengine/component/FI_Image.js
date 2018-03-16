@@ -1,6 +1,7 @@
 import FI_Component from './FI_Component'
 import imageKeeper from '../keepers/ImageKeeper'
 import Vector2D from '../math/Vector2D'
+import Rect from '../math/Rect'
 export default class FI_Image extends FI_Component{
   constructor(uri){
     super()
@@ -9,21 +10,24 @@ export default class FI_Image extends FI_Component{
     this.scale = new Vector2D(1,1);
     this.flap = new Vector2D(1,1);
   }
-  /**
-   * 设置缩放系数
-   * @param {Vector2D} scale 缩放系数
-   */
+
   setScale(scale){ this.scale = scale; }
-  /**
-   * 设置翻转系数
-   * @param {Vector2D} flap 翻转系数
-   */
+
   setFlap(flap){ this.flap = flap; }
 
   onMount(){
-    this.loadImage(this.imageUri)
+    this.imageUri && this._loadImage(this.imageUri)
   }
-  async loadImage(uri){
+
+  setTexRect(rect){
+    this.texRect = rect;
+  }
+
+  setImage(image){
+    this.image = image;
+  }
+
+  async _loadImage(uri){
     try{
       this.image = await imageKeeper.getImage(uri)
       this.texRect = this.texRect || { x:0, y:0, width:this.image.width, height:this.image.height };
@@ -32,11 +36,12 @@ export default class FI_Image extends FI_Component{
       console.warn(err)
     }
   }
-  setTexRect(x,y,width,height){
-    this.texRect = { x, y, width, height };
-  }
+
   _onRender(ctx){
-    if( this.image && this.texRect){
+    if( !super._onRender(ctx) ){
+      return false;
+    }
+    if( this.image && this.texRect && this.node ){
       var anchorOffset = this.node.getAnchorOffset()
       ctx.scale(this.scale.x * this.flap.x, this.scale.y * this.flap.y)
       ctx.drawImage(this.image,
@@ -50,5 +55,7 @@ export default class FI_Image extends FI_Component{
         this.node.size.height
       )
     }
+
+    return true;
   }
 }

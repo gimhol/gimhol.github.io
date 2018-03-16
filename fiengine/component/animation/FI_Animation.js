@@ -3,13 +3,11 @@ import Vector2D from '../../math/Vector2D'
 export default class FI_Animation extends FI_Component{
   constructor(){
     super()
-    this.frames = []
     this.curIndex = 0
     this.curTime = 0
     this.isAutoReset = true
     this.loop = 0
     this.curLoop = 0
-
     this.scale = new Vector2D(1,1);
     this.flap = new Vector2D(1,1);
   }
@@ -30,15 +28,6 @@ export default class FI_Animation extends FI_Component{
     this.curFrame && this.curFrame.setFlap(flap)
   }
 
-  addFrame(frame){
-    this.frames.push(frame)
-    this.hasMounted() && frame.setNode(this.node)
-  }
-  onMount(){
-    this.frames.map((frame)=>{
-      frame.setNode(this.getNode())
-    })
-  }
   play(){ this.playing = true }
   stop(){ this.playing = false }
   setAutoReset(v){ this.isAutoReset = v }
@@ -49,7 +38,7 @@ export default class FI_Animation extends FI_Component{
 
   _onUpdate(dt){
     if(this.playing){
-      var curFrame = this.frames[this.curIndex]
+      var curFrame = this.children[this.curIndex]
       if( curFrame ){
         this.curTime += dt;
         curFrame._onUpdate(dt)
@@ -57,7 +46,7 @@ export default class FI_Animation extends FI_Component{
         if(diff >= 0){
           this.curTime = 0;
           var newIndex = this.curIndex+1
-          if( newIndex >= this.frames.length){
+          if( newIndex >= this.children.length){
             if(this.loop == 0 ){
               newIndex = 0
             }
@@ -65,13 +54,13 @@ export default class FI_Animation extends FI_Component{
               this.curLoop += 1
               newIndex = 0
             }else{
-              newIndex = this.frames.length - 1
+              newIndex = this.children.length - 1
               this.stop()
             }
           }
           if(newIndex !== this.curIndex){
             this.curIndex = newIndex
-            this.curFrame = this.frames[newIndex]
+            this.curFrame = this.children[newIndex]
             this.curFrame.setScale(this.scale)
             this.curFrame.setFlap(this.flap)
           }

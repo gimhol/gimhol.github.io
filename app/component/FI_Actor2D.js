@@ -28,7 +28,7 @@ export default class FI_Actor2D extends FI_Component {
     this.rect = r;
   }
   onMount(){
-    this.mover && this.mover.setNode(this.getNode())
+    this.mover && this.mover._setNode(this.node)
   }
   _onUpdate(dt){
     if(!this.mover){

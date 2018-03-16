@@ -25,31 +25,35 @@ export default class FI_Animator extends FI_Component{
     this.flap = flap;
     this.curAnimation && this.curAnimation.setFlap(flap);
   }
-  onMount(){
-    for(var key in this.animations){
-      !this.animations[key].hasMounted() && this.animations[key].setNode(this.node)
-    }
-  }
-  addAnimationWithData(data){
-    var animation = AnimationCreator.createWithData(data)
-    this.hasMounted() && !animation.hasMounted() && animation.setNode(this.node)
+  async addAnimationWithData(data){
+    var animation = await AnimationCreator.createWithData(data)
+    this.addChild(animation);
     this.animations[data.name] = animation;
   }
 
   playAnaimtion(name){
+    if(!this.animations[name]){
+      return
+    }
     this.curAnimation = this.animations[name];
     this.curAnimation.play();
     this.curAnimation.setScale(this.scale);
     this.curAnimation.setFlap(this.flap);
   }
-  setScaleX(x){
 
-  }
   _onUpdate(dt){
-    this.curAnimation && this.curAnimation._onUpdate(dt)
-  }
-  _onRender(ctx){
-    this.curAnimation && this.curAnimation._onRender(ctx)
+    if( !this.enable ){
+      return false;
+    }
+    this.curAnimation && this.curAnimation._onUpdate(dt);
+    return true
   }
 
+  _onRender(ctx){
+    if( !this.enable ){
+      return false;
+    }
+    this.curAnimation && this.curAnimation._onRender(ctx);
+    return true
+  }
 }

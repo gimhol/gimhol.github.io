@@ -1,30 +1,38 @@
 import FI_Image from '../component/FI_Image'
 import FI_Frame from '../component/animation/FI_Frame'
 import FI_Animation from '../component/animation/FI_Animation'
-
+import ImageKeeper from '../keepers/ImageKeeper'
 class AnimationCreator {
   constructor(){
     this.imagesCache = {}
   }
+
   getImage(imageSrc){
     if(!this.imagesCache[imageSrc]){
       this.imagesCache[imageSrc] = new FI_Image(imageSrc)
     }
     return this.imagesCache[imageSrc]
   }
-  createWithData(animationData){
-    var ret = new FI_Animation();
-    animationData.frames.map((frameData,idx)=>{
-      var frame = new FI_Frame()
-      frame.init(
-        this.getImage(frameData.image || animationData.image),
-        frameData.duration || animationData.duration,
-        frameData.rect
-      )
-      ret.addFrame(frame)
-    })
-    ret.setLoop(animationData.loop)
-    return ret;
+
+  async createWithData(animationData){
+
+    var animation = new FI_Animation();
+
+    for(var i=0; i<animationData.frames.length; ++i){
+      var frameData = animationData.frames[i];
+      var frame = animation.addChild( new FI_Frame() );
+
+      try{
+        var image = await ImageKeeper.getImage(frameData.image || animationData.image);
+        frame.init( image, frameData.duration || animationData.duration, frameData.rect );
+      }
+      catch(err){
+        console.warn(err)
+      }
+    }
+    animation.setLoop(animationData.loop)
+
+    return animation;
   }
 
 }

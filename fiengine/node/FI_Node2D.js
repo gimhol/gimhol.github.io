@@ -11,48 +11,6 @@ export default class FI_Node2D extends FI_Node{
     this.scale    = new Vector2D(1,1);
     this.rotation = 0;
   }
-  // LifeCycle
-  _onAdded(){
-    this.hasAdded = true
-    this.mountAllComponent();
-    this.setEnable(true);
-    this.onAdded && this.onAdded();
-  }
-  _onRemoved(){
-    this.hasAdded = false
-    this.removeAllComponents();
-    this.onRemoved && this.onRemoved();
-  }
-  _onDisable(){
-    this.onDisable && this.onDisable();
-    for(var i in this.components){
-      this.components[i].setEnable(false);
-    }
-    for(var i in this.children){
-      !this.children[i].setEnable(false);
-    }
-  }
-  _onEnable(){
-    this.onEnable && this.onEnable();
-    for(var i in this.components){
-      this.components[i].setEnable(true);
-    }
-    for(var i in this.children){
-      !this.children[i].setEnable(true);
-    }
-  }
-
-  setEnable(v){
-    if(this.enable === !!v){
-      return true;
-    }
-    this.enable = !!v
-    if(this.enable){
-      this._onEnable();
-    }else{
-      this._onDisable();
-    }
-  }
 
   getAnchorOffset(){
     return {
@@ -72,10 +30,6 @@ export default class FI_Node2D extends FI_Node{
     return child
   }
 
-  mountAllComponent(){
-    this.components.map((component)=>component.setNode(this));
-  }
-
   removeChild(child){
     for(var i=0;i<this.children.length;++i){
       if(this.children[i]==child){
@@ -84,31 +38,20 @@ export default class FI_Node2D extends FI_Node{
       }
     }
   }
-  getParent(){
-    return this.parent
-  }
-  addComponent(component){
-    this.components.push(component)
-    this.hasAdded && component.setNode(this)
-    return component
-  }
+
   removeComponent(component){
     for(var i=0;i<this.components.length;++i){
       if(this.components[i]==component){
         this.components.splice(i,1);
-        component.hasMounted() && component._onUnmount()
+        component.hasMounted && component._onUnmount()
         return;
       }
     }
   }
-  removeAllComponents(){
-    for(var i=0;i<this.components.length;++i){
-      this.components[i].hasMounted() && this.components[i]._onUnmount()
-    }
-  }
+
   addAction(action){
     this.actions.push(action)
-    action.setNode(this)
+    action._setNode(this)
     return action;
   }
   removeAction(action){

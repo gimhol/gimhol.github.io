@@ -1,22 +1,25 @@
+import FI_Node from '../node/FI_Node'
 export default class FI_Component {
+
   constructor(){
+    this.node = null;
+    this.parent = null;
+    this.children = []
+    this.hasMounted = false;
     this.enable = true;
   }
-
-  // LifeCycle
-  _onMount(){
-    this.onMount && this.onMount();
+  addChild(child){
+    if( !child instanceof FI_Component){
+      return console.warn(`"FI_Component.addChild" fail, this is not a FI_Component!`)
+    }
+    else if( child.parent !== null ){
+      return console.warn(`"FI_Component.addChild" fail, this component has been added!`)
+    }
+    this.children.push(child);
+    child.parent = this;
+    this.hasMounted && child._tryToMount()
+    return child;
   }
-  _onUnmount(){
-    this.onUnmount && this.onUnmount();
-  }
-  _onDisable(){
-    this.onDisable && this.onDisable();
-  }
-  _onEnable(){
-    this.onEnable && this.onEnable();
-  }
-
   setEnable(v){
     if(this.enable === !!v){
       return true;
@@ -28,25 +31,57 @@ export default class FI_Component {
       this._onDisable();
     }
   }
-
-  hasMounted(){ return !!this.node }
-
-  setNode(node){
-    if(!node){
+  _tryToMount(){
+    if( !this.hasMounted ){
+      this._tryToSetNode(this.parent.node);
+      this._onMount();
+    }
+  }
+  _tryToSetNode(node){
+    if( !this.node ){
+      this._setNode(node);
+    }
+  }
+  // LifeCycle
+  _onMount(){
+    this.hasMounted = true;
+    this._mountAllChildren();
+    this.onMount && this.onMount();
+  }
+  _onUnmount(){
+    this.hasMounted = false;
+    this.onUnmount && this.onUnmount();
+  }
+  _onDisable(){
+    this.onDisable && this.onDisable();
+  }
+  _onEnable(){
+    this.onEnable && this.onEnable();
+  }
+  _mountAllChildren(){
+    this.children.map((child)=>child._tryToMount());
+  }
+  _setNode(node){
+    if( !node instanceof FI_Node){
       return console.warn('FI_Component','can not mount on invaild node! node:',node)
     }
-    else if(this.node){
-      return console.warn('FI_Component','Component has been mounted!')
-    }
     this.node = node
-    this._onMount()
+    return node
   }
-  getNode(){ return this.node }
-  _onUpdate(){}
-  _onRender(){}
+
+  _onUpdate(deltaTime){
+    if( this.enable === false ){
+      return false;
+    }
+    this.children.map((child)=>child._onUpdate(deltaTime));
+    return true;
+  }
+  _onRender(context){
+    if( this.enable === false ){
+      return false;
+    }
+    this.children.map((child)=>child._onRender(context));
+    return true;
+  }
   debugDraw(){}
-
-
-
-
 }

@@ -47,5 +47,7 @@ class ImageKeeper {
       return Promise.resolve(image)
     }
   }
+
+
 }
 export default new ImageKeeper();
