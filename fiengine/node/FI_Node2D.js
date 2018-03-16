@@ -1,7 +1,7 @@
 import Vector2D from '../math/Vector2D'
 import Size2D from '../math/Size2D'
 import FI_Object from '../base/FI_Object'
-export default class FI_Node extends FI_Object{
+export default class FI_Node2D extends FI_Object{
   constructor(){
     super();
     this.children = []
@@ -173,15 +173,15 @@ export default class FI_Node extends FI_Object{
   }
   debugDraw(ctx){}
 }
-Vector2D.BindAllHandler(FI_Node,'Position');
-Vector2D.BindAllHandler(FI_Node,'Scale');
-Vector2D.BindAllHandler(FI_Node,'Anchor');
+Vector2D.BindAllHandler(FI_Node2D,'Position');
+Vector2D.BindAllHandler(FI_Node2D,'Scale');
+Vector2D.BindAllHandler(FI_Node2D,'Anchor');
 
-Size2D.BindMemberHandler(FI_Node,'Size',true);
-Size2D.BindWHHandle(FI_Node,'Size');
-Size2D.BindClassHandle(FI_Node,'Size');
+Size2D.BindMemberHandler(FI_Node2D,'Size',true);
+Size2D.BindWHHandle(FI_Node2D,'Size');
+Size2D.BindClassHandle(FI_Node2D,'Size');
 
-FI_Object.BindDirtyIntHandler(FI_Node,'Level');
-FI_Object.BindDirtyNumberHandler(FI_Node,'Rotation');
-FI_Object.BindDirtyBoolHandler(FI_Node,'Enable');
-FI_Object.BindDirtyBoolHandler(FI_Node,'Visible');
+FI_Object.BindDirtyIntHandler(FI_Node2D,'Level');
+FI_Object.BindDirtyNumberHandler(FI_Node2D,'Rotation');
+FI_Object.BindDirtyBoolHandler(FI_Node2D,'Enable');
+FI_Object.BindDirtyBoolHandler(FI_Node2D,'Visible');

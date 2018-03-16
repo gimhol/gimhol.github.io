@@ -1,15 +1,15 @@
-import FI_Node from '../../fiengine/node/FI_Node'
+import FI_Node2D from '../../fiengine/node/FI_Node2D'
 import FI_Text from '../../fiengine/component/FI_Text'
 import FI_Touchable from '../../fiengine/component/FI_Touchable'
 import { FI_ScaleTo } from '../../fiengine/action/FI_Scale'
-export default class Button extends FI_Node{
+export default class Button extends FI_Node2D{
   constructor(textContent){
     super()
     this.textContent = textContent
   }
   onAdded(){
-    var inner = this.addChild(new FI_Node())
-    var textNode = inner.addChild(new FI_Node())
+    var inner = this.addChild(new FI_Node2D())
+    var textNode = inner.addChild(new FI_Node2D())
 
     var textComponent = textNode.addComponent(new FI_Text())
     textComponent.content = this.textContent

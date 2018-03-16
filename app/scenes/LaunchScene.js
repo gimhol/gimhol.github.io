@@ -10,7 +10,7 @@ import MainScene from './MainScene'
 import {
   FI_SceneKeeper,
   FI_Scene,
-  FI_Node,
+  FI_Node2D,
   FI_Image,
   FI_Mover,
   FI_Touchable,
@@ -44,7 +44,7 @@ export default class LaunchScene extends FI_Scene{
     var ground = 500
   }
   createBullet(angle){
-    var a = new FI_Node()
+    var a = new FI_Node2D()
     a.setSizeWH(25,25)
     a.setPosition(this.genji.getPosition());
     a.addComponent(new FI_Image('../../textures/moon_1024.jpg'))
@@ -111,7 +111,7 @@ export default class LaunchScene extends FI_Scene{
 
 
   onAdded(){
-    this.stage2D = new FI_Node()
+    this.stage2D = new FI_Node2D()
     var draw = this.stage2D.addComponent(new FI_Draw())
     var r1 = new FI_Rect(0,600,1000,100)
     var r2 = new FI_Rect(10,610,900,50)
@@ -153,7 +153,7 @@ export default class LaunchScene extends FI_Scene{
     this.addChild(this.stage2D)
     this.genji = this.addChild(new Genji())
 
-    this.buttonLayer = new FI_Node();
+    this.buttonLayer = new FI_Node2D();
     this.buttonLayer.setPositionXY(300,0);
 
     var button = new Button('Sprite & Action');

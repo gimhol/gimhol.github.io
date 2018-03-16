@@ -1,7 +1,7 @@
 import {
   FI_Scene,
   FI_Draw,
-  FI_Node,
+  FI_Node2D,
   FI_Touchable,
 } from '../../fiengine/Root'
 
@@ -15,7 +15,7 @@ export default class MainScene extends FI_Scene{
     var padHeight = 600;
     var dotCount = 500;
 
-    this.pad0 = new FI_Node()
+    this.pad0 = new FI_Node2D()
     this.pad0.setAnchorX(0)
     this.pad0.setAnchorY(0)
     this.pad0.setPositionX(50)
@@ -23,7 +23,7 @@ export default class MainScene extends FI_Scene{
     this.pad0.setWidth(padWidth)
     this.pad0.setHeight(padHeight)
 
-    this.pad1 = new FI_Node();
+    this.pad1 = new FI_Node2D();
     this.pad1.setAnchorX(0)
     this.pad1.setAnchorY(0)
     this.pad1.setPositionX(padWidth+100)

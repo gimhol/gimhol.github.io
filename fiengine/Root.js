@@ -14,8 +14,8 @@ export const FI_Line2D = _Line2D
 
 // 节点
 
-import Node from './node/FI_Node'
-export const FI_Node = Node;
+import Node2D from './node/FI_Node2D'
+export const FI_Node2D = Node2D;
 
 import Scene from './node/FI_Scene'
 export const FI_Scene = Scene;

@@ -35,6 +35,10 @@ export default class Size2D extends FI_Object{
       this.tranWH(v.width,v.height);
     }
   }
+
+  toArray(){
+    return [this.width,this.height]
+  }
 }
 FI_Object.BindNumberHandler(Size2D,'Width')
 FI_Object.BindNumberHandler(Size2D,'Height')

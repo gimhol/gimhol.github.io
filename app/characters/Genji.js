@@ -1,4 +1,4 @@
-import FI_Node from '../../fiengine/node/FI_Node'
+import FI_Node2D from '../../fiengine/node/FI_Node2D'
 import FI_Actor2D from '../component/FI_Actor2D'
 import FI_Rect from '../../fiengine/math/Rect'
 import FI_Mover from '../../fiengine/component/FI_Mover'
@@ -6,7 +6,7 @@ import FI_Animator from '../../fiengine/component/animation/FI_Animator'
 
 import AnimationCreator from '../../fiengine/helper/AnimationCreator'
 
-export default class Genji extends FI_Node{
+export default class Genji extends FI_Node2D{
   constructor(){
     super()
     this.gavity = 60

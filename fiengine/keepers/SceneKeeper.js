@@ -1,6 +1,6 @@
-import FI_Node from '../node/FI_Node'
+import FI_Node2D from '../node/FI_Node2D'
 
-export default class SceneKeeper extends FI_Node{
+export default class SceneKeeper extends FI_Node2D{
   static getInstance(){
     if(!this.instance){
       this.instance = new SceneKeeper()

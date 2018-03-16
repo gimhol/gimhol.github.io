@@ -44,9 +44,6 @@ export default class FI_Draw extends FI_Component{
           break;
         case 'rect':
           var { x,y,w,h } = itemData;
-          !this.aaaa && console.log(this.node)
-          this.aaaa = true
-          // console.log(x,y,anchorOffset.x, anchorOffset.y,w,h)
           ctx.rect(x - anchorOffset.x,y - anchorOffset.y,w,h)
           break;
         case 'circle':

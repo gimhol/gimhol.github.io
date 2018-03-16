@@ -1,7 +1,7 @@
-import FI_Node from './FI_Node'
+import FI_Node2D from './FI_Node2D'
 import SceneKeeper from '../keepers/SceneKeeper'
 import Engine from '../Engine'
-export default class FI_Scene extends FI_Node{
+export default class FI_Scene extends FI_Node2D{
   constructor(){
     super()
     var size = Engine.getInstance().getSize()

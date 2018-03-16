@@ -14,12 +14,10 @@ import MainScene from './app/scenes/MainScene'
 import ButtonDemoScene from './app/scenes/ButtonDemoScene'
 
 var appDiv = document.getElementById('app')
-var canvas = document.createElement('canvas')
-appDiv.appendChild(canvas)
+
 Engine.getInstance()
-  .launch(canvas)
-  .setSize(1366,768)
-  .setBackgroundColor('black')
+  .launch(appDiv)
+  .setSize(1366,768);
 
 KeyboardCenter.getInstance().launch();
 MouseCenter.getInstance().launch();
