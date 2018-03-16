@@ -45,11 +45,11 @@ export default class FI_Animator extends FI_Component{
   setScaleX(x){
 
   }
-  update(dt){
-    this.curAnimation && this.curAnimation.update(dt)
+  _update(dt){
+    this.curAnimation && this.curAnimation._update(dt)
   }
-  draw(ctx){
-    this.curAnimation && this.curAnimation.draw(ctx)
+  _draw(ctx){
+    this.curAnimation && this.curAnimation._draw(ctx)
   }
 
 }

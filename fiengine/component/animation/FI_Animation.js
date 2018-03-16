@@ -47,12 +47,12 @@ export default class FI_Animation extends FI_Component{
   onLoopFinish(){}
   onFinish(){}
 
-  update(dt){
+  _update(dt){
     if(this.playing){
       var curFrame = this.frames[this.curIndex]
       if( curFrame ){
         this.curTime += dt;
-        curFrame.update(dt)
+        curFrame._update(dt)
         var diff = this.curTime - curFrame.getDuration()
         if(diff >= 0){
           this.curTime = 0;
@@ -79,7 +79,7 @@ export default class FI_Animation extends FI_Component{
       }
     }
   }
-  draw(ctx){
-    this.curFrame && this.curFrame.draw(ctx);
+  _draw(ctx){
+    this.curFrame && this.curFrame._draw(ctx);
   }
 }

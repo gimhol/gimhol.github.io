@@ -21,7 +21,7 @@ export default class FI_Draw extends FI_Component{
   }
   onMount(){
   }
-  draw(ctx){
+  _draw(ctx){
     // if(!this.isDirty){
     //   return
     // }

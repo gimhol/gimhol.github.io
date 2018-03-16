@@ -1,21 +1,15 @@
 import Vector2D from '../math/Vector2D'
 import Size2D from '../math/Size2D'
 import FI_Object from '../base/FI_Object'
-export default class FI_Node2D extends FI_Object{
+import FI_Node from './FI_Node'
+export default class FI_Node2D extends FI_Node{
   constructor(){
     super();
-    this.children = []
-    this.components = []
-    this.actions = []
-    this.level    = 0;
-    this.parent   = null;
     this.position = new Vector2D(0,0);
     this.anchor   = new Vector2D(0.5,0.5);
     this.size     = new Size2D(0, 0);
     this.scale    = new Vector2D(1,1);
     this.rotation = 0;
-    this.enable = false;
-    this.visible = 1;
   }
   // LifeCycle
   _onAdded(){
@@ -129,16 +123,16 @@ export default class FI_Node2D extends FI_Object{
     this.actions = []
   }
 
-  update(dt){
+  _update(dt){
     if(!this.enable){
       return
     }
     this.onUpdate && this.onUpdate(dt);
-    this.actions.map((action)=>action.update(dt));
-    this.components.map((component)=>component.update(dt));
-    this.children.map((child)=>child.update(dt));
+    this.actions.map((action)=>action._update(dt));
+    this.components.map((component)=>component._update(dt));
+    this.children.map((child)=>child._update(dt));
   }
-  draw(ctx){
+  _draw(ctx){
     if(!this.visible){
       return
     }
@@ -147,12 +141,12 @@ export default class FI_Node2D extends FI_Object{
     ctx.scale(this.scale.x,this.scale.y);
     ctx.save()
     this.components.map((component)=>{
-      component.draw(ctx);
+      component._draw(ctx);
       ctx.restore();
       ctx.save();
     });
     this.children.map((child)=>{
-      child.draw(ctx);
+      child._draw(ctx);
       ctx.restore();
       ctx.save();
     });
@@ -176,12 +170,7 @@ export default class FI_Node2D extends FI_Object{
 Vector2D.BindAllHandler(FI_Node2D,'Position');
 Vector2D.BindAllHandler(FI_Node2D,'Scale');
 Vector2D.BindAllHandler(FI_Node2D,'Anchor');
-
 Size2D.BindMemberHandler(FI_Node2D,'Size',true);
 Size2D.BindWHHandle(FI_Node2D,'Size');
 Size2D.BindClassHandle(FI_Node2D,'Size');
-
-FI_Object.BindDirtyIntHandler(FI_Node2D,'Level');
 FI_Object.BindDirtyNumberHandler(FI_Node2D,'Rotation');
-FI_Object.BindDirtyBoolHandler(FI_Node2D,'Enable');
-FI_Object.BindDirtyBoolHandler(FI_Node2D,'Visible');

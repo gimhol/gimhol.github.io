@@ -56,7 +56,7 @@ export default class FI_Touchable extends FI_Component{
     var curIsMouseOnMe = this._getCurrentIsMouseOnMe(e)
     this.enable && curIsMouseOnMe && this.onMouseUp && this.onMouseUp(this.mousePosition)
   }
-  draw(ctx){
+  _draw(ctx){
     this.debugDraw(ctx)
     this.transform = ctx.getTransform()
   }

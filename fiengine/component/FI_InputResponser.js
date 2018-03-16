@@ -75,7 +75,7 @@ export default class FI_InputResponser extends FI_Component{
     this.foucsingKeys[b] = -1;
     this.dklisteners[a+'_'+b] = func
   }
-  update(dt){
+  _update(dt){
     if( this.isListeningKeyboard ){
       for(var k in this.dklisteners){
         var ab = k.split('_');
@@ -107,6 +107,6 @@ export default class FI_InputResponser extends FI_Component{
     }
   }
 
-  // draw(ctx){
+  // _draw(ctx){
   // }
 }

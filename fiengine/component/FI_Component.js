@@ -42,8 +42,8 @@ export default class FI_Component {
     this._onMount()
   }
   getNode(){ return this.node }
-  update(){}
-  draw(){}
+  _update(){}
+  _draw(){}
   debugDraw(){}
 
 

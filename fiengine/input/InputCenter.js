@@ -11,7 +11,7 @@ export default class InputCenter extends EventCenter{
   onKeyUp(e){
 
   }
-  update(dt){
+  _update(dt){
 
   }
   onKeyPress(k,func){

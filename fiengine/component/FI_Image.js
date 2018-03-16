@@ -35,7 +35,7 @@ export default class FI_Image extends FI_Component{
   setTexRect(x,y,width,height){
     this.texRect = { x, y, width, height };
   }
-  draw(ctx){
+  _draw(ctx){
     if( this.image && this.texRect){
       var anchorOffset = this.node.getAnchorOffset()
       ctx.scale(this.scale.x * this.flap.x, this.scale.y * this.flap.y)
