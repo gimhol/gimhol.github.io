@@ -30,11 +30,11 @@ export default class FI_Actor2D extends FI_Component {
   onMount(){
     this.mover && this.mover.setNode(this.getNode())
   }
-  update(dt){
+  _onUpdate(dt){
     if(!this.mover){
       return
     }
-    this.mover.update(dt)
+    this.mover._onUpdate(dt)
     var curY = this.node.getPositionY()
     var curVY = 0
     if( curY < this.ground){

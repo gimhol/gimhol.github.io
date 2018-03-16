@@ -37,10 +37,10 @@ export default class FI_Frame extends FI_Component{
   onMount(){
     this.image && !this.image.hasMounted() && this.image.setNode(this.getNode())
   }
-  _update(dt){
+  _onUpdate(dt){
 
   }
-  _draw(ctx){
+  _onRender(ctx){
     if(this.image){
       this.texRect && this.image.setTexRect(
         this.texRect.x,
@@ -48,7 +48,7 @@ export default class FI_Frame extends FI_Component{
         this.texRect.width,
         this.texRect.height,
       )
-      this.image._draw(ctx)
+      this.image._onRender(ctx)
     }
   }
 }

@@ -25,7 +25,7 @@ export default class FI_Text extends FI_Component{
     this.setSizeWH(w,h);
     this.onSizeChange && this.onSizeChange(this)
   }
-  _draw(ctx){
+  _onRender(ctx){
     ctx.fillStyle = this.fillStyle
     ctx.strokeStyle = this.strokeStyle
     ctx.font = this.fontSize + this.fontSizeUnit + ' ' + this.fontFamily

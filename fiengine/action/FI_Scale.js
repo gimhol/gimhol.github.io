@@ -16,7 +16,7 @@ export class FI_ScaleTo extends FI_Action{
     this.node.setScaleY(this.valueY)
     this.node.removeAction(this)
   }
-  _update(dt){
+  _onUpdate(dt){
     this.node.tranScaleX(this.speedX*dt)
     this.node.tranScaleY(this.speedY*dt)
     this.time -= dt

@@ -5,5 +5,5 @@ export default class FI_Action {
     this.node = node
     this.onAssign()
   }
-  _update(){}
+  _onUpdate(){}
 }

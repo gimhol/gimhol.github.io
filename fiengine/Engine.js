@@ -294,19 +294,19 @@ export default class Engine extends SingletonCls{
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
 
-  // Update the rotation for the next _draw
+  // Update the rotation for the next _onRender
   aaa += 0.01;
   // cubeRotation += deltaTime;
 }
 
   looper(updateTime){
-    this._update(updateTime-this.lastUpdateTime)
-    this._draw()
+    this._onUpdate(updateTime-this.lastUpdateTime)
+    this._onRender()
     this.lastUpdateTime = updateTime;
     window.requestAnimationFrame(this.looper.bind(this))
   }
 
-  _update(dt){
+  _onUpdate(dt){
     if( this.canvas3d ){
       this.canvas3d.width = this.size.width;
       this.canvas3d.height = this.size.height;
@@ -317,10 +317,10 @@ export default class Engine extends SingletonCls{
       this.canvas2d.height = this.size.height;
     }
     if( this.rootNode ){
-      this.rootNode._update(dt);
+      this.rootNode._onUpdate(dt);
     }
   }
-  _draw(){
+  _onRender(){
     if( this.ctx2d ){
       this.ctx2d.clearRect(0,0,...this.size.toArray());
     }
@@ -335,7 +335,7 @@ export default class Engine extends SingletonCls{
         this.drawScene(this.webgl, this.programInfo, this.buffers);
       }
     }
-    this.rootNode._draw(this.ctx2d);
+    this.rootNode._onRender(this.ctx2d);
   }
 
 }

@@ -34,12 +34,9 @@ export default class FI_Node extends FI_Object{
   _onRemoved(){}
   _onEnable(){}
   _onDisable(){}
-  _onUpdate(){}
-  _onRender(){}
+  _onUpdate(dt){}
+  _onRender(ctx){}
 
-  // abstract !
-  _update(dt){}
-  _draw(ctx){}
 }
 FI_Object.BindDirtyIntHandler(FI_Node,'Level');
 FI_Object.BindDirtyBoolHandler(FI_Node,'Enable');

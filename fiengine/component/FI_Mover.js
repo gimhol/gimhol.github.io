@@ -47,11 +47,11 @@ export default class FI_Mover extends FI_Component{
 
   }
 
-  _update(dt){
+  _onUpdate(dt){
     this.node.tranPositionX(this.velocity.x*dt/1000)
     this.node.tranPositionY(this.velocity.y*dt/1000)
   }
 
-  _draw(ctx){
+  _onRender(ctx){
   }
 }

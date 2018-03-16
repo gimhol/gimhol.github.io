@@ -123,16 +123,16 @@ export default class FI_Node2D extends FI_Node{
     this.actions = []
   }
 
-  _update(dt){
+  _onUpdate(dt){
     if(!this.enable){
       return
     }
     this.onUpdate && this.onUpdate(dt);
-    this.actions.map((action)=>action._update(dt));
-    this.components.map((component)=>component._update(dt));
-    this.children.map((child)=>child._update(dt));
+    this.actions.map((action)=>action._onUpdate(dt));
+    this.components.map((component)=>component._onUpdate(dt));
+    this.children.map((child)=>child._onUpdate(dt));
   }
-  _draw(ctx){
+  _onRender(ctx){
     if(!this.visible){
       return
     }
@@ -141,12 +141,12 @@ export default class FI_Node2D extends FI_Node{
     ctx.scale(this.scale.x,this.scale.y);
     ctx.save()
     this.components.map((component)=>{
-      component._draw(ctx);
+      component._onRender(ctx);
       ctx.restore();
       ctx.save();
     });
     this.children.map((child)=>{
-      child._draw(ctx);
+      child._onRender(ctx);
       ctx.restore();
       ctx.save();
     });

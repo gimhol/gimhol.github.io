@@ -90,7 +90,7 @@ export default class Cube extends FI_Object{
       indices: indexBuffer,
     };
   }
-  _draw(gl){
+  _onRender(gl){
 
   }
 }

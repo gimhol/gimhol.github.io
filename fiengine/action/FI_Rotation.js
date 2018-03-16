@@ -14,7 +14,7 @@ export class FI_RotationBy extends FI_Action{
     this.node.setRotation(this.endValue)
     this.node.removeAction(this)
   }
-  _update(dt){
+  _onUpdate(dt){
     var cur = this.node.getRotation()
     this.node.setRotation(cur+this.speed*dt)
     this.time -= dt
@@ -31,7 +31,7 @@ export class FI_RotationTo extends FI_Action{
   onAssign(){
     this.node = node
   }
-  _update(dt){
+  _onUpdate(dt){
 
   }
 }

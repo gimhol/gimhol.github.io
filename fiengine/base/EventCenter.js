@@ -52,7 +52,7 @@ export default class EventCenter extends SingletonCls{
       }
     }
   }
-  _update(dt){
+  _onUpdate(dt){
     this.opUpdate && this.opUpdate(dt)
   }
 }
