@@ -1,11 +1,17 @@
-import _Rect from './Rect'
-export const FI_Rect = _Rect
+import Rect from './Rect'
+export const FI_Rect = Rect
 
-import _Vector2D from './Vector2D'
-export const FI_Vector2D = _Vector2D
+import Vector2D from './Vector2D'
+export const FI_Vector2D = Vector2D
 
-import _Size2D from './Size2D'
-export const FI_Size2D = _Size2D
+import Size2D from './Size2D'
+export const FI_Size2D = Size2D
 
-import _Line2D from './Line2D'
-export const FI_Line2D = _Line2D
+import Line2D from './Line2D'
+export const FI_Line2D = Line2D
+
+import Vector3D from './Vector3D'
+export const FI_Vector3D = Vector3D
+
+import Size3D from './Size3D'
+export const FI_Size3D = Size3D

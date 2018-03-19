@@ -4,7 +4,8 @@ export const FI_Rect = FI_Math.FI_Rect;
 export const FI_Vector2D = FI_Math.FI_Vector2D;
 export const FI_Size2D = FI_Math.FI_Size2D;
 export const FI_Line2D = FI_Math.FI_Line2D;
-
+export const FI_Vector3D = FI_Math.FI_Vector3D;
+export const FI_Size3D = FI_Math.FI_Size3D;
 
 import Scene from './node/FI_Scene'
 export const FI_Scene = Scene;
