@@ -32,6 +32,7 @@ export default class FI_InputResponser extends FI_Component{
   }
 
   _onKeyDown(e){
+
     if( typeof this.foucsingKeys[e.key] === 'number'){
       switch( this.foucsingKeys[e.key] ){
         case -1:  // 保持松开
@@ -82,7 +83,6 @@ export default class FI_InputResponser extends FI_Component{
         this.dklisteners[k](this.foucsingKeys[ab[1]]-this.foucsingKeys[ab[0]],dt)
       }
       for(var k in this.foucsingKeys){
-
         switch(this.foucsingKeys[k]){
           case 0: //释放
             this.foucsingKeys[k]--

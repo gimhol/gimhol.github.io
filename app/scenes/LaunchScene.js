@@ -108,8 +108,6 @@ export default class LaunchScene extends FI_Scene{
     }
   }
 
-
-
   onAdded(){
     this.stage2D = new FI_Node2D()
     var draw = this.stage2D.addComponent(new FI_Draw())
@@ -163,7 +161,7 @@ export default class LaunchScene extends FI_Scene{
     var button = new Button('Button');
     button.setPositionXY(400,350);
     button.onMouseUp = ()=>{
-      this.setScaleXY( this.getScaleX()*0.8,1)
+      this.inner2D.setScaleXY( this.inner2D.getScaleX()*0.8,1)
       //FI_SceneKeeper.getInstance().push(new MainScene());
     }
     this.buttonLayer.addChild(button);
@@ -180,6 +178,7 @@ export default class LaunchScene extends FI_Scene{
       direction /= (direction?Math.abs(direction):1)
       if( !this.genji.isRunning ){
         this.lr = direction
+
         this.genji.walk(direction)
       }else if(this.lr == -1*direction){
         this.lr = direction
@@ -205,8 +204,6 @@ export default class LaunchScene extends FI_Scene{
           this.leftShot()
       }
     })
-
-
 
   }
   onRemoved(){

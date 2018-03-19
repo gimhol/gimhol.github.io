@@ -45,6 +45,7 @@ export default class FI_Animator extends FI_Component{
     if( !this.enable ){
       return false;
     }
+
     this.curAnimation && this.curAnimation._onUpdate(dt);
     return true
   }

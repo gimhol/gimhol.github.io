@@ -68,8 +68,11 @@ export default class Genji extends FI_Node2D{
         { rect: { x:480, y:0, width:79, height:79 } },
         { rect: { x:400, y:0, width:79, height:79 } },
       ]
+    }).then(()=>{
+      this.animator.playAnaimtion('genji_standing')
     })
-    this.animator.playAnaimtion('genji_standing')
+
+    console.log(this.animator)
   }
 
   jump(){
@@ -113,4 +116,9 @@ export default class Genji extends FI_Node2D{
       this.actor2d.walk(this.animator.flap.x)
     }
   }
+  // _onRender(ctx){
+  //   if( super._onRender(ctx) ){
+  //     console.log('!')
+  //   }
+  // }
 }

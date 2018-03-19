@@ -122,18 +122,17 @@ class GlHelper {
       zNear,
       zFar
     );
-    mat4.rotate(projectionMatrix,projectionMatrix,3.14/4,[0, 0, 1]);
-    mat4.rotate(projectionMatrix,projectionMatrix,3.14/8,[0, 1, 0]);
+    mat4.rotate(projectionMatrix,projectionMatrix,a,[0, 0, 1]);
+    mat4.rotate(projectionMatrix,projectionMatrix,a,[0, 1, 0]);
     this.gl.uniformMatrix4fv(
       this.uniformLocations.projectionMatrix,
       false,
       projectionMatrix
     );
-
-
+    a+=0.010
   }
 }
-
+var a = 0
 GlHelper.GlobalVertexShaderSource = `
   attribute vec4 aVertexPosition;
   attribute vec4 aVertexColor;

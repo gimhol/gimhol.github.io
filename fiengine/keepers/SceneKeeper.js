@@ -28,12 +28,10 @@ class SceneKeeper extends FI_Node{
 
   }
   _onUpdate(deltaTime){
-    this.curScene &&
-    this.curScene._onUpdate(deltaTime)
+    this.curScene && this.curScene._onUpdate(deltaTime)
   }
-  _onRender(ctx){
-    this.curScene &&
-    this.curScene._onRender(ctx)
+  _onRender(ctx,gl){
+    this.curScene && this.curScene._onRender(ctx,gl)
   }
 }
 export default new SceneKeeper();

@@ -93,7 +93,13 @@ export default class FI_Node extends FI_Object{
   }
 
   _onUpdate(deltaTime){
+    if(!this.enable){
+      return false;
+    }
     this.onUpdate && this.onUpdate(deltaTime);
+    this.components.map((component)=>component._onUpdate(deltaTime));
+    this.children.map((child)=>child._onUpdate(deltaTime));
+    return true;
   }
 
   _onRender(ctx){

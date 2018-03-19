@@ -4,13 +4,11 @@ import GLHelper from '../glHelper'
 import {
   FI_Vector3D
 } from '../../math/Root'
-export default class Cube extends FI_Object{
+
+import FI_Node3D from './FI_Node3D'
+export default class Cube extends FI_Node3D{
   constructor(){
     super()
-    this.matrix = mat4.create();
-    this.position = new FI_Vector3D(0,0,-16);
-    this.scale = new FI_Vector3D(1,1,1);
-
     this.vertixPositions = [
       // Front face
       -1.0, -1.0,  1.0,
@@ -98,29 +96,9 @@ export default class Cube extends FI_Object{
     };
     return this.buffers;
   }
-  _onUpdate(deltaTime){
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
+  onRender(gl){
 
-    var parentMatrix = null;
-    if(!this.parent){
-      parentMatrix = mat4.create();
-    }else{
-      console.log(this)
-      parentMatrix = this.parent.matrix
-    }
-
-    // Now move the drawing position a bit to where we want to
-    // start drawing the square.
-    mat4.translate(this.matrix,parentMatrix,this.position.toArray());
-    mat4.scale(this.matrix,this.matrix,this.scale.toArray());
-
-    //mat4.rotate(this.matrix,this.matrix,10,[0, 0, 1]);
-    //mat4.rotate(this.matrix,this.matrix,10,[0, 1, 0]);
-
-    GLHelper.uniformModelViewMatrix(this.matrix);
-  }
-  _onRender(gl){
+    !this.buffers && this.initBuffers(gl)
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute
     GLHelper.bindVertexPositionBuffer(this.buffers.position);
@@ -130,5 +108,7 @@ export default class Cube extends FI_Object{
     // Tell WebGL which indices to use to index the vertices
     GLHelper.bindVertexIndexBuffer(this.buffers.indices);
     GLHelper.drawElements('TRIANGLES',36,'UNSIGNED_SHORT',0);
+
+
   }
 }

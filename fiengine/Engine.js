@@ -46,8 +46,6 @@ export default class Engine extends SingletonCls{
 
     GLHelper.build(this.webgl);
 
-    this.cube = new FI_Cube();
-    this.cube.initBuffers(this.webgl)
     this.looper(0);
     return this;
   }
@@ -59,10 +57,9 @@ export default class Engine extends SingletonCls{
     gl.enable(gl.DEPTH_TEST);           // Enable depth testing
     gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     GLHelper.setViewPort(this.size.width,this.size.height)
     GLHelper.setUpProjection();
-    this.cube._onRender(gl)
+    // this.cube._onRender(gl)
   }
 
   looper(updateTime){
@@ -83,7 +80,6 @@ export default class Engine extends SingletonCls{
     }
 
     SceneKeeper._onUpdate(dt);
-    this.cube._onUpdate(dt);
   }
   _onRender(){
     if( this.ctx2d ){

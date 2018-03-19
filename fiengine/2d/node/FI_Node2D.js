@@ -40,17 +40,15 @@ export default class FI_Node2D extends FI_Node{
   }
 
   _onUpdate(dt){
-    if(!this.enable){
-      return
+    if( !super._onUpdate(dt) ){
+      return false;
     }
-    this.onUpdate && this.onUpdate(dt);
     this.actions.map((action)=>action._onUpdate(dt));
-    this.components.map((component)=>component._onUpdate(dt));
-    this.children.map((child)=>child._onUpdate(dt));
+    return true;
   }
   _onRender(ctx){
     if(!this.visible){
-      return
+      return false
     }
     ctx.translate(this.position.x, this.position.y);
     ctx.rotate(this.rotation * Math.PI / 180);
@@ -71,6 +69,7 @@ export default class FI_Node2D extends FI_Node{
     this._doneTransformsDirty();
     this._doneLevelDirty();
     this._doneEnableDirty();
+    return true;
   }
   isTransformsDirty(){
     return this.isPositionDirty || this.isScaleDirty || this.isRotationDirty || this.isSizeDirty

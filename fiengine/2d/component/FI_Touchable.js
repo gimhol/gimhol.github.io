@@ -14,7 +14,7 @@ export default class FI_Touchable extends FI_Component{
     this.mousemoveListener.removeSelf();
   }
   _getCurrentIsMouseOnMe(e){
-    if( !e ){
+    if( !e || !this.transform){
       return false;
     }
     var anchorOffset = this.node.getAnchorOffset()
