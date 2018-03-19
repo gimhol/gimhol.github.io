@@ -1,6 +1,5 @@
+import {mat4} from '../utils/gl-matrix'
 class GlHelper {
-
-
   static initShaderProgram(vsSource, fsSource) {
     const vertexShader = this.loadShader(this.gl.VERTEX_SHADER, vsSource);
     const fragmentShader = this.loadShader(this.gl.FRAGMENT_SHADER, fsSource);
@@ -47,14 +46,14 @@ class GlHelper {
     this.attribLocations = {
       vertexPosition: this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition'),
       vertexColor: this.gl.getAttribLocation(this.shaderProgram, "aVertexColor"),
-    }
+    };
     this.uniformLocations = {
       projectionMatrix: this.gl.getUniformLocation(this.shaderProgram, 'uProjectionMatrix'),
       modelViewMatrix: this.gl.getUniformLocation(this.shaderProgram, 'uModelViewMatrix'),
-    }
+    };
 
-    // Tell WebGL to use our program when drawing
     this.gl.useProgram(this.shaderProgram);
+    this.setViewPort(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight)
   }
 
   static bindVertexPositionBuffer(vertexPositions)    {
@@ -102,18 +101,36 @@ class GlHelper {
         modelViewMatrix);
   }
 
-
-  static uniform(projectionMatrix){
-
-    // Set the shader uniforms
-    this.gl.uniformMatrix4fv(
-        this.uniformLocations.projectionMatrix,
-        false,
-        projectionMatrix);
-  }
-
   static drawElements(elementType, vertexCount, dataType, offset){
     this.gl.drawElements(this.gl[elementType], vertexCount, this.gl[dataType], offset);
+  }
+
+  static setViewPort(w,h){
+    this.gl.viewport(0,0,w,h)
+  }
+
+  static setUpProjection(){
+    const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+    const fieldOfView = 45 * Math.PI / 180;   // in radians
+    const zNear = 0.1;
+    const zFar = 100.0;
+    const projectionMatrix = mat4.create();
+    mat4.perspective(
+      projectionMatrix,
+      fieldOfView,
+      aspect,
+      zNear,
+      zFar
+    );
+    mat4.rotate(projectionMatrix,projectionMatrix,3.14/4,[0, 0, 1]);
+    mat4.rotate(projectionMatrix,projectionMatrix,3.14/8,[0, 1, 0]);
+    this.gl.uniformMatrix4fv(
+      this.uniformLocations.projectionMatrix,
+      false,
+      projectionMatrix
+    );
+
+
   }
 }
 

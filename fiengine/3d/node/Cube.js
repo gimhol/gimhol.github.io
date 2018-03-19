@@ -1,10 +1,16 @@
 import FI_Object from '../../base/FI_Object'
 import {mat4} from '../../utils/gl-matrix'
 import GLHelper from '../glHelper'
+import {
+  FI_Vector3D
+} from '../../math/Root'
 export default class Cube extends FI_Object{
   constructor(){
     super()
     this.matrix = mat4.create();
+    this.position = new FI_Vector3D(0,0,-16);
+    this.scale = new FI_Vector3D(1,1,1);
+
     this.vertixPositions = [
       // Front face
       -1.0, -1.0,  1.0,
@@ -95,24 +101,24 @@ export default class Cube extends FI_Object{
   _onUpdate(deltaTime){
     // Set the drawing position to the "identity" point, which is
     // the center of the scene.
-    var modelViewMatrix = mat4.create();
+
+    var parentMatrix = null;
+    if(!this.parent){
+      parentMatrix = mat4.create();
+    }else{
+      console.log(this)
+      parentMatrix = this.parent.matrix
+    }
 
     // Now move the drawing position a bit to where we want to
     // start drawing the square.
+    mat4.translate(this.matrix,parentMatrix,this.position.toArray());
+    mat4.scale(this.matrix,this.matrix,this.scale.toArray());
 
-    mat4.translate(modelViewMatrix,     // destination matrix
-                   modelViewMatrix,     // matrix to translate
-                   [-1.0, 1.0, -16.0]);  // amount to translate
-    mat4.rotate(modelViewMatrix,  // destination matrix
-                modelViewMatrix,  // matrix to rotate
-                10,     // amount to rotate in radians
-                [0, 0, 1]);       // axis to rotate around (Z)
-    mat4.rotate(modelViewMatrix,  // destination matrix
-                modelViewMatrix,  // matrix to rotate
-                10 * .7,// amount to rotate in radians
-                [0, 1, 0]);       // axis to rotate around (X)
+    //mat4.rotate(this.matrix,this.matrix,10,[0, 0, 1]);
+    //mat4.rotate(this.matrix,this.matrix,10,[0, 1, 0]);
 
-    GLHelper.uniformModelViewMatrix(modelViewMatrix);
+    GLHelper.uniformModelViewMatrix(this.matrix);
   }
   _onRender(gl){
     // Tell WebGL how to pull out the positions from the position

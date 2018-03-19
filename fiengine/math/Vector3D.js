@@ -1,16 +1,13 @@
 import FI_Object from '../base/FI_Object';
-
+import Size3D from './Size3D'
 export default class Vector3D extends FI_Object{
   constructor(x,y,z){
     super();
     this.setX(x);
     this.setY(y);
-    this.setY(z);
+    this.setZ(z);
   }
   // x y
-  getXYZ(){
-    return {x:this.x, y:this.y, z:this.z};
-  }
   setXYZ(x,y,z){
     this._setNumber('x',x);
     this._setNumber('y',y);
@@ -45,6 +42,20 @@ export default class Vector3D extends FI_Object{
     this._multiplyNumber('x',x);
     this._multiplyNumber('y',y);
     this._multiplyNumber('z',z);
+  }
+
+  // TO OTHER CLASS
+  toSize(){
+    return new Size3D(this.x,this.y,this.z)
+  }
+  toObject(){
+    return {x:this.x, y:this.y, z:this.z};
+  }
+  toString(){
+    return `Vector3D(${this.x},${this.y},${this.z})`
+  }
+  toArray(){
+    return [this.x, this.y, this.z]
   }
 }
 FI_Object.BindNumberHandler(Vector3D,'X')
