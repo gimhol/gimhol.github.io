@@ -1,4 +1,4 @@
-import FI_Node2D from './FI_Node2D'
+import FI_Node2D from '../2d/node/FI_Node2D'
 import SceneKeeper from '../keepers/SceneKeeper'
 import Engine from '../Engine'
 export default class FI_Scene extends FI_Node2D{

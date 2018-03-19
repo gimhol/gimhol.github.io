@@ -18,3 +18,6 @@ export const FI_Frame = Frame
 
 import Animation from './animation/FI_Animation'
 export const FI_Animation = Animation
+
+import Animator from './animation/FI_Animator'
+export const FI_Animator = Animator

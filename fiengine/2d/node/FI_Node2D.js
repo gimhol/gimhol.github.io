@@ -1,14 +1,17 @@
-import Vector2D from '../math/Vector2D'
-import Size2D from '../math/Size2D'
-import FI_Object from '../base/FI_Object'
-import FI_Node from './FI_Node'
+import {
+  FI_Vector2D,
+  FI_Size2D
+} from '../../math/Root'
+
+import FI_Object from '../../base/FI_Object'
+import FI_Node from '../../node/FI_Node'
 export default class FI_Node2D extends FI_Node{
   constructor(){
     super();
-    this.position = new Vector2D(0,0);
-    this.anchor   = new Vector2D(0.5,0.5);
-    this.size     = new Size2D(0, 0);
-    this.scale    = new Vector2D(1,1);
+    this.position = new FI_Vector2D(0,0);
+    this.anchor   = new FI_Vector2D(0.5,0.5);
+    this.size     = new FI_Size2D(0, 0);
+    this.scale    = new FI_Vector2D(1,1);
     this.rotation = 0;
   }
 
@@ -80,10 +83,10 @@ export default class FI_Node2D extends FI_Node{
   }
   debugDraw(ctx){}
 }
-Vector2D.BindAllHandler(FI_Node2D,'Position');
-Vector2D.BindAllHandler(FI_Node2D,'Scale');
-Vector2D.BindAllHandler(FI_Node2D,'Anchor');
-Size2D.BindMemberHandler(FI_Node2D,'Size',true);
-Size2D.BindWHHandle(FI_Node2D,'Size');
-Size2D.BindClassHandle(FI_Node2D,'Size');
+FI_Vector2D.BindAllHandler(FI_Node2D,'Position');
+FI_Vector2D.BindAllHandler(FI_Node2D,'Scale');
+FI_Vector2D.BindAllHandler(FI_Node2D,'Anchor');
+FI_Size2D.BindMemberHandler(FI_Node2D,'Size',true);
+FI_Size2D.BindWHHandle(FI_Node2D,'Size');
+FI_Size2D.BindClassHandle(FI_Node2D,'Size');
 FI_Object.BindDirtyNumberHandler(FI_Node2D,'Rotation');
