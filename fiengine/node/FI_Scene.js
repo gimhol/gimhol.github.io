@@ -9,6 +9,6 @@ export default class FI_Scene extends FI_Node2D{
     this.setHeight(size.height)
   }
   goto(sceneCls){
-    SceneKeeper.getInstance().push(new sceneCls())
+    SceneKeeper.push(new sceneCls())
   }
 }

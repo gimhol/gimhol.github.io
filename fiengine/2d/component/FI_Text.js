@@ -1,8 +1,8 @@
-import FI_Component from './FI_Component'
+import FI_Component from '../../base/FI_Component'
 
-import Vector2D from '../math/Vector2D'
+import Vector2D from '../../math/Vector2D'
 
-import Size2D from '../math/Size2D'
+import Size2D from '../../math/Size2D'
 
 export default class FI_Text extends FI_Component{
   constructor(uri){

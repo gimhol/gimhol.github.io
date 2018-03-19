@@ -1,6 +1,6 @@
 import FI_Node2D from '../../fiengine/node/FI_Node2D'
-import FI_Text from '../../fiengine/component/FI_Text'
-import FI_Touchable from '../../fiengine/component/FI_Touchable'
+import FI_Text from '../../fiengine/2d/component/FI_Text'
+import FI_Touchable from '../../fiengine/2d/component/FI_Touchable'
 import { FI_ScaleTo } from '../../fiengine/action/FI_Scale'
 export default class Button extends FI_Node2D{
   constructor(textContent){

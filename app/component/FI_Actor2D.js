@@ -1,4 +1,4 @@
-import FI_Component from '../../fiengine/component/FI_Component'
+import FI_Component from '../../fiengine/base/FI_Component'
 export default class FI_Actor2D extends FI_Component {
   constructor(){
     super();

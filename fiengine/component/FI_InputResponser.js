@@ -1,4 +1,4 @@
-import FI_Component from './FI_Component'
+import FI_Component from '../base/FI_Component'
 import KeyboardCenter from '../input/KeyboardCenter'
 
 // 静默: 0

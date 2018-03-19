@@ -1,5 +1,5 @@
-import FI_Component from './FI_Component'
-import imageKeeper from '../keepers/ImageKeeper'
+import FI_Component from '../../base/FI_Component'
+import imageKeeper from '../../keepers/ImageKeeper'
 
 export default class FI_Draw extends FI_Component{
   constructor(){

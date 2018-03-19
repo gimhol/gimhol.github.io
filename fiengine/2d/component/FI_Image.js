@@ -1,7 +1,7 @@
-import FI_Component from './FI_Component'
-import imageKeeper from '../keepers/ImageKeeper'
-import Vector2D from '../math/Vector2D'
-import Rect from '../math/Rect'
+import FI_Component from '../../base/FI_Component'
+import imageKeeper from '../../keepers/ImageKeeper'
+import Vector2D from '../../math/Vector2D'
+import Rect from '../../math/Rect'
 export default class FI_Image extends FI_Component{
   constructor(uri){
     super()

@@ -1,5 +1,5 @@
-import FI_Component from './FI_Component'
-import MouseCenter from '../input/MouseCenter'
+import FI_Component from '../../base/FI_Component'
+import MouseCenter from '../../input/MouseCenter'
 export default class FI_Touchable extends FI_Component{
 
   onMount(){

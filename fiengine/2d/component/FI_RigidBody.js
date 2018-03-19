@@ -1,4 +1,4 @@
-import FI_Component from './FI_Component'
+import FI_Component from '../../base/FI_Component'
 
 export default class FI_RigidBody extends FI_Component{
   constructor(){

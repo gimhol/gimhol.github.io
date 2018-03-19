@@ -1,9 +1,10 @@
-import FI_Object from '../base/FI_Object'
-
+import FI_Object from '../../base/FI_Object'
+import {mat4} from '../../utils/gl-matrix'
+import GLHelper from '../glHelper'
 export default class Cube extends FI_Object{
   constructor(){
     super()
-
+    this.matrix = mat4.create();
     this.vertixPositions = [
       // Front face
       -1.0, -1.0,  1.0,
@@ -84,13 +85,44 @@ export default class Cube extends FI_Object{
     // Now send the element array to GL
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
-    return {
+    this.buffers = {
       position: positionBuffer,
       color: colorBuffer,
       indices: indexBuffer,
     };
+    return this.buffers;
+  }
+  _onUpdate(deltaTime){
+    // Set the drawing position to the "identity" point, which is
+    // the center of the scene.
+    var modelViewMatrix = mat4.create();
+
+    // Now move the drawing position a bit to where we want to
+    // start drawing the square.
+
+    mat4.translate(modelViewMatrix,     // destination matrix
+                   modelViewMatrix,     // matrix to translate
+                   [-1.0, 1.0, -16.0]);  // amount to translate
+    mat4.rotate(modelViewMatrix,  // destination matrix
+                modelViewMatrix,  // matrix to rotate
+                10,     // amount to rotate in radians
+                [0, 0, 1]);       // axis to rotate around (Z)
+    mat4.rotate(modelViewMatrix,  // destination matrix
+                modelViewMatrix,  // matrix to rotate
+                10 * .7,// amount to rotate in radians
+                [0, 1, 0]);       // axis to rotate around (X)
+
+    GLHelper.uniformModelViewMatrix(modelViewMatrix);
   }
   _onRender(gl){
-
+    // Tell WebGL how to pull out the positions from the position
+    // buffer into the vertexPosition attribute
+    GLHelper.bindVertexPositionBuffer(this.buffers.position);
+    // Tell WebGL how to pull out the colors from the color buffer
+    // into the vertexColor attribute.
+    GLHelper.bindVertexColorBuffer(this.buffers.color);
+    // Tell WebGL which indices to use to index the vertices
+    GLHelper.bindVertexIndexBuffer(this.buffers.indices);
+    GLHelper.drawElements('TRIANGLES',36,'UNSIGNED_SHORT',0);
   }
 }

@@ -21,4 +21,4 @@ Engine.getInstance()
 
 KeyboardCenter.getInstance().launch();
 MouseCenter.getInstance().launch();
-SceneKeeper.getInstance().run(new LaunchScene());
+SceneKeeper.run(new LaunchScene());

@@ -1,5 +1,5 @@
 import FI_Object from '../base/FI_Object'
-import FI_Component from '../component/FI_Component'
+import FI_Component from '../base/FI_Component'
 /*
 
 Very simple lifeCycle:
@@ -28,22 +28,25 @@ export default class FI_Node extends FI_Object{
     this.hasAdded = false;
   }
 
-  getParent(){
-    return this.parent
-  }
-
   addComponent(component){
     if( !component instanceof FI_Component ){
       console.log(`"addComponent fail! This is not a component! "`)
       return;
     }
     this.components.push(component);
-
     component._setNode(this);
-
     this.hasAdded && component._onMount();
-    
     return component
+  }
+
+  removeComponent(component){
+    for(var i=0;i<this.components.length;++i){
+      if(this.components[i]==component){
+        this.components.splice(i,1);
+        component.hasMounted && component._onUnmount()
+        return;
+      }
+    }
   }
 
   setEnable(v){
@@ -55,6 +58,26 @@ export default class FI_Node extends FI_Object{
       this._onEnable();
     }else{
       this._onDisable();
+    }
+  }
+
+  addChild(child){
+    if(child.parent){
+      return console.warn('has been added !')
+    }
+    this.children.push(child)
+    child.parent = this;
+    child.setLevel(this.level+1)
+    child._onAdded()
+    return child
+  }
+
+  removeChild(child){
+    for(var i=0;i<this.children.length;++i){
+      if(this.children[i]==child){
+        this.children.splice(i,1).onRemoved()
+        return;
+      }
     }
   }
 

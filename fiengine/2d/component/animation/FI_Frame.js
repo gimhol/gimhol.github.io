@@ -1,5 +1,5 @@
-import FI_Component from '../FI_Component'
-import Vector2D from '../../math/Vector2D'
+import FI_Component from '../../../base/FI_Component'
+import Vector2D from '../../../math/Vector2D'
 import FI_Image from '../FI_Image'
 export default class FI_Frame extends FI_Image{
   constructor(){

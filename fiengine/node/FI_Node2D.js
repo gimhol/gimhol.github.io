@@ -19,36 +19,6 @@ export default class FI_Node2D extends FI_Node{
     }
   }
 
-  addChild(child){
-    if(child.getParent()){
-      return console.warn('has been added !')
-    }
-    this.children.push(child)
-    child.parent = this;
-    child.setLevel(this.level+1)
-    child._onAdded()
-    return child
-  }
-
-  removeChild(child){
-    for(var i=0;i<this.children.length;++i){
-      if(this.children[i]==child){
-        this.children.splice(i,1).onRemoved()
-        return;
-      }
-    }
-  }
-
-  removeComponent(component){
-    for(var i=0;i<this.components.length;++i){
-      if(this.components[i]==component){
-        this.components.splice(i,1);
-        component.hasMounted && component._onUnmount()
-        return;
-      }
-    }
-  }
-
   addAction(action){
     this.actions.push(action)
     action._setNode(this)

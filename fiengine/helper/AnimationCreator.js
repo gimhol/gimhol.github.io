@@ -1,6 +1,7 @@
-import FI_Image from '../component/FI_Image'
-import FI_Frame from '../component/animation/FI_Frame'
-import FI_Animation from '../component/animation/FI_Animation'
+import FI_Image from '../2d/component/FI_Image'
+import FI_Frame from '../2d/component/animation/FI_Frame'
+import FI_Animation from '../2d/component/animation/FI_Animation'
+
 import ImageKeeper from '../keepers/ImageKeeper'
 class AnimationCreator {
   constructor(){

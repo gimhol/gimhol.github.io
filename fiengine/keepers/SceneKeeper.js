@@ -1,6 +1,6 @@
-import FI_Node2D from '../node/FI_Node2D'
+import FI_Node from '../node/FI_Node'
 
-export default class SceneKeeper extends FI_Node2D{
+class SceneKeeper extends FI_Node{
   static getInstance(){
     if(!this.instance){
       this.instance = new SceneKeeper()
@@ -10,19 +10,30 @@ export default class SceneKeeper extends FI_Node2D{
   constructor(){
     super()
     this.curIndex = 0;
-    this.enable = true;
   }
   run(scene){
+    this.curScene = scene;
     this.addChild(scene)
   }
   push(scene){
-    // this.children[this.curIndex].invisible = 0;
+
     this.children[this.curIndex].setEnable(false);
     this.children[this.curIndex].setVisible(false);
+
     ++this.curIndex;
+    this.curScene = this.children[this.curIndex]
     this.addChild(scene)
   }
   back(){
 
   }
+  _onUpdate(deltaTime){
+    this.curScene &&
+    this.curScene._onUpdate(deltaTime)
+  }
+  _onRender(ctx){
+    this.curScene &&
+    this.curScene._onRender(ctx)
+  }
 }
+export default new SceneKeeper();
