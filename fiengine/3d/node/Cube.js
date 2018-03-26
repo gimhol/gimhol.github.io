@@ -6,109 +6,89 @@ import {
 } from '../../math/Root'
 
 import FI_Node3D from './FI_Node3D'
+
+import FI_CubeModel from '../static/FI_CubeModel';
+
 export default class Cube extends FI_Node3D{
   constructor(){
     super()
-    this.vertixPositions = [
-      // Front face
-      -1.0, -1.0,  1.0,
-       1.0, -1.0,  1.0,
-       1.0,  1.0,  1.0,
-      -1.0,  1.0,  1.0,
-
-      // Back face
-      -1.0, -1.0, -1.0,
-      -1.0,  1.0, -1.0,
-       1.0,  1.0, -1.0,
-       1.0, -1.0, -1.0,
-
-      // Top face
-      -1.0,  1.0, -1.0,
-      -1.0,  1.0,  1.0,
-       1.0,  1.0,  1.0,
-       1.0,  1.0, -1.0,
-
-      // Bottom face
-      -1.0, -1.0, -1.0,
-       1.0, -1.0, -1.0,
-       1.0, -1.0,  1.0,
-      -1.0, -1.0,  1.0,
-
-      // Right face
-       1.0, -1.0, -1.0,
-       1.0,  1.0, -1.0,
-       1.0,  1.0,  1.0,
-       1.0, -1.0,  1.0,
-
-      // Left face
-      -1.0, -1.0, -1.0,
-      -1.0, -1.0,  1.0,
-      -1.0,  1.0,  1.0,
-      -1.0,  1.0, -1.0
-    ];
-
-    var faceColors = [
-      [1.0,  1.0,  1.0,  1.0],    // Front face: white
-      [1.0,  0.0,  0.0,  1.0],    // Back face: red
-      [0.0,  1.0,  0.0,  1.0],    // Top face: green
-      [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
-      [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
-      [1.0,  0.0,  1.0,  1.0]     // Left face: purple
-    ];
-    this.vertixColors = [];
-    for (var j = 0; j < faceColors.length; ++j) {
-      const c = faceColors[j];
-      this.vertixColors = this.vertixColors.concat(c, c, c, c);
-    }
   }
-  initBuffers(gl){
-    // 顶点坐标缓冲
-    const positionBuffer = gl.createBuffer();
+  _initBuffers(gl){
+
+    this.texture = GLHelper.loadTexture('textures/earth_atmos_2048.jpg');
+
+    var {
+      position, indices, color, textureCoordinates, normal
+    } = FI_CubeModel;
+
+    var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertixPositions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(position), gl.STATIC_DRAW);
 
-    // 顶点颜色缓冲
-    const colorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertixColors), gl.STATIC_DRAW);
-
-    // 顶点坐标索引缓冲
-    const indexBuffer = gl.createBuffer();
+    var indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    // This array defines each face as two triangles, using the
-    // indices into the vertex array to specify each triangle's
-    // position.
-    const indices = [
-      0,  1,  2,      0,  2,  3,    // front
-      4,  5,  6,      4,  6,  7,    // back
-      8,  9,  10,     8,  10, 11,   // top
-      12, 13, 14,     12, 14, 15,   // bottom
-      16, 17, 18,     16, 18, 19,   // right
-      20, 21, 22,     20, 22, 23,   // left
-    ];
-    // Now send the element array to GL
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+    var colorBuffer;
+    if( color ){
+      colorBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
+    }
+
+    var textureCoordinateBuffer;
+    if( textureCoordinates ){
+      textureCoordinateBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordinateBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),gl.STATIC_DRAW);
+    }
+
+    var normalBuffer;
+    if(normal){
+      normalBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normal),gl.STATIC_DRAW);
+    }
 
     this.buffers = {
       position: positionBuffer,
       color: colorBuffer,
+      normal: normalBuffer,
+      textureCoordinate: textureCoordinateBuffer,
       indices: indexBuffer,
+      indicesCount: FI_CubeModel.indices.length
     };
     return this.buffers;
   }
-  onRender(gl){
 
-    !this.buffers && this.initBuffers(gl)
-    // Tell WebGL how to pull out the positions from the position
-    // buffer into the vertexPosition attribute
+  _onRender(gl){
+    super._onRender(gl);
+
+    !this.buffers && this._initBuffers(gl)
+
     GLHelper.bindVertexPositionBuffer(this.buffers.position);
-    // Tell WebGL how to pull out the colors from the color buffer
-    // into the vertexColor attribute.
-    GLHelper.bindVertexColorBuffer(this.buffers.color);
-    // Tell WebGL which indices to use to index the vertices
     GLHelper.bindVertexIndexBuffer(this.buffers.indices);
-    GLHelper.drawElements('TRIANGLES',36,'UNSIGNED_SHORT',0);
 
+    if(this.buffers.color){
+      GLHelper.bindVertexColorBuffer(this.buffers.color);
+    }
 
+    // if(this.buffers.normal){
+    //   const normalMatrix = mat4.create();
+    //   mat4.invert(normalMatrix, this.matrix);
+    //   mat4.transpose(normalMatrix, normalMatrix);
+    //   GLHelper.bindVertexNormalBuffer(this.buffers.normal)
+    //   GLHelper.uniformNormalMatrix(normalMatrix);
+    // }
+
+    if(this.buffers.textureCoordinate){
+      GLHelper.bindTextureCoordBuffer(this.buffers.textureCoordinate)
+
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.texture);
+      gl.uniform1i(GLHelper.uniformLocations.uSampler, 0);
+    }
+
+    GLHelper.drawElements('TRIANGLES',this.buffers.indicesCount,'UNSIGNED_SHORT',0);
   }
 }
