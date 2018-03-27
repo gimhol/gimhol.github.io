@@ -1,5 +1,5 @@
 import FI_Node from '../../node/FI_Node'
-import {mat4} from '../../utils/gl-matrix'
+import {mat4,quat,quat4} from '../../utils/gl-matrix'
 import GLHelper from '../glHelper'
 import {
   FI_Vector3D
@@ -10,23 +10,37 @@ export default class Node3D extends FI_Node{
     this.matrix = mat4.create();
     this.position = new FI_Vector3D(0,0,0);
     this.scale = new FI_Vector3D(1,1,1);
-  }
-  _onUpdate(deltaTime){
+    this.rotation = new FI_Vector3D(0,0,0);
 
-    this.children.map((child)=>child._onUpdate(deltaTime));
+    this.rotationQuat = [];
+    this.transfrom = mat4.create();
   }
-  _onRender(gl){
+  _getParentMatrix(){
     var parentMatrix = null;
     if(!this.parent){
       parentMatrix = mat4.create();
     }else{
-
       parentMatrix = this.parent.matrix
     }
-    // Now move the drawing position a bit to where we want to
-    // start drawing the square.
-    mat4.translate(this.matrix,parentMatrix,this.position.toArray());
-    mat4.scale(this.matrix,this.matrix,this.scale.toArray());
+    return parentMatrix;
+  }
+  _onUpdate(deltaTime){
+    this.children.map((child)=>child._onUpdate(deltaTime));
+  }
+  _onRender(gl){
+    var parentMatrix = this._getParentMatrix();
+
+    mat4.copy(this.matrix,parentMatrix)
+
+    quat.fromEuler(this.rotationQuat, this.rotation.x, this.rotation.y, this.rotation.z)
+    mat4.fromRotationTranslationScale(
+      this.transfrom,
+      this.rotationQuat,
+      this.position.toArray(),
+      this.scale.toArray()
+    )
+    mat4.multiply(this.matrix, this.matrix, this.transfrom);
+
     GLHelper.uniformModelViewMatrix(this.matrix);
 
     this.onRender && this.onRender(gl);
@@ -35,3 +49,4 @@ export default class Node3D extends FI_Node{
 }
 FI_Vector3D.BindAllHandler(Node3D,'Position');
 FI_Vector3D.BindAllHandler(Node3D,'Scale');
+FI_Vector3D.BindAllHandler(Node3D,'Rotation');

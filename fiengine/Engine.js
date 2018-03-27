@@ -5,8 +5,7 @@ import FI_Size2D from './math/Size2D'
 import FI_Color4F from './math/Color4F';
 import {mat4} from './utils/gl-matrix'
 import GLHelper from './3d/glHelper'
-import FI_Cube from './3d/node/Cube.js'
-var aaa = 1;
+
 export default class Engine extends SingletonCls{
   constructor(){
     super();
@@ -51,15 +50,12 @@ export default class Engine extends SingletonCls{
   }
 
   drawScene(gl) {
-
     gl.clearColor(...this.backgroundColor.toArray());  // Clear to black, fully opaque
     gl.clearDepth(1.0);                 // Clear everything
     gl.enable(gl.DEPTH_TEST);           // Enable depth testing
     gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     GLHelper.setViewPort(this.size.width,this.size.height)
-    GLHelper.setUpProjection();
-    // this.cube._onRender(gl)
   }
 
   looper(updateTime){

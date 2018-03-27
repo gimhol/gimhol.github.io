@@ -55,7 +55,14 @@ export default class Vector3D extends FI_Object{
     return `Vector3D(${this.x},${this.y},${this.z})`
   }
   toArray(){
-    return [this.x, this.y, this.z]
+    if( !this.arr ){
+      this.arr = [this.x,this.y,this.z]
+    }else{
+      this.arr[0] = this.x;
+      this.arr[1] = this.y;
+      this.arr[2] = this.z;
+    }
+    return this.arr;
   }
 }
 FI_Object.BindNumberHandler(Vector3D,'X')

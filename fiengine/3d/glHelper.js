@@ -1,6 +1,32 @@
 import {mat4} from '../utils/gl-matrix'
 class GlHelper {
-  static initShaderProgram(vsSource, fsSource) {
+  constructor(){
+    this.a = 0;
+    this.GlobalVertexShaderSource = `
+      attribute vec4 aVertexPosition;
+      attribute vec4 aVertexColor;
+      attribute vec2 aTextureCoord;
+      uniform mat4 uModelViewMatrix;
+      uniform mat4 uProjectionMatrix;
+      varying lowp vec4 vColor;
+      varying highp vec2 vTextureCoord;
+      void main() {
+        gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+        vColor = aVertexColor;
+        vTextureCoord = aTextureCoord;
+      }
+    `;
+
+    this.GlobalFragmentShaderSource = `
+      varying highp vec2 vTextureCoord;
+      uniform sampler2D uSampler;
+      void main(void) {
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
+      }
+    `;
+  }
+
+  initShaderProgram(vsSource, fsSource) {
     const vertexShader = this.loadShader(this.gl.VERTEX_SHADER, vsSource);
     const fragmentShader = this.loadShader(this.gl.FRAGMENT_SHADER, fsSource);
 
@@ -19,7 +45,7 @@ class GlHelper {
     return shaderProgram;
   }
 
-  static loadShader(type, source) {
+  loadShader(type, source) {
     const shader = this.gl.createShader(type);
 
     // Send the source to the shader object
@@ -37,7 +63,7 @@ class GlHelper {
     return shader;
   }
 
-  static build(gl){
+  build(gl){
     this.gl = gl;
     this.shaderProgram = this.initShaderProgram(
       this.GlobalVertexShaderSource,
@@ -57,7 +83,7 @@ class GlHelper {
     this.setViewPort(this.gl.canvas.clientWidth, this.gl.canvas.clientHeight)
   }
 
-  static bindVertexPositionBuffer(vertexPositions)    {
+  bindVertexPositionBuffer(vertexPositions)    {
       const numComponents = 3;
       const type = this.gl.FLOAT;
       const normalize = false;
@@ -74,7 +100,7 @@ class GlHelper {
       this.gl.enableVertexAttribArray(this.attribLocations.vertexPosition);
   }
 
-    static bindVertexColorBuffer(vertexColors)        {
+  bindVertexColorBuffer(vertexColors)        {
     const numComponents = 4;
     const type = this.gl.FLOAT;
     const normalize = false;
@@ -91,10 +117,10 @@ class GlHelper {
     this.gl.enableVertexAttribArray(this.attribLocations.vertexColor);
   }
 
-  static bindVertexIndexBuffer(indices){
+  bindVertexIndexBuffer(indices){
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indices);
   }
-  static loadTexture(url) {
+  loadTexture(url) {
     var gl = this.gl;
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -144,7 +170,7 @@ class GlHelper {
 
     return texture;
   }
-  static bindTextureCoordBuffer(textureCoord){
+  bindTextureCoordBuffer(textureCoord){
     const numComponents = 2;
     const type = this.gl.FLOAT;
     const normalize = false;
@@ -161,22 +187,24 @@ class GlHelper {
     this.gl.enableVertexAttribArray(
         this.attribLocations.textureCoord);
   }
-  static uniformModelViewMatrix(modelViewMatrix){
+  uniformModelViewMatrix(modelViewMatrix){
     this.gl.uniformMatrix4fv(
         this.uniformLocations.modelViewMatrix,
         false,
         modelViewMatrix);
   }
 
-  static drawElements(elementType, vertexCount, dataType, offset){
+  drawElements(elementType, vertexCount, dataType, offset){
     this.gl.drawElements(this.gl[elementType], vertexCount, this.gl[dataType], offset);
   }
 
-  static setViewPort(w,h){
-    this.gl.viewport(0,0,w,h)
+  setViewPort(w,h){
+    this.gl.viewport(0,0,w,h);
+    !this.sss && console.log(this.gl)
+    this.sss = true
   }
 
-  static setUpProjection(){
+  setUpProjection(){
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const fieldOfView = 45 * Math.PI / 180;   // in radians
     const zNear = 0.1;
@@ -189,37 +217,15 @@ class GlHelper {
       zNear,
       zFar
     );
-    mat4.rotate(projectionMatrix,projectionMatrix,a,[0, 0, 1]);
-    mat4.rotate(projectionMatrix,projectionMatrix,a,[0, 1, 0]);
+    //mat4.rotate(projectionMatrix, projectionMatrix,this.a,[0, 0, 1]);
+    //mat4.rotate(projectionMatrix, projectionMatrix,this.a,[0, 1, 0]);
     this.gl.uniformMatrix4fv(
       this.uniformLocations.projectionMatrix,
       false,
       projectionMatrix
     );
-    a+=0.010
+    this.a+=0.010
   }
 }
-var a = 0
-GlHelper.GlobalVertexShaderSource = `
-  attribute vec4 aVertexPosition;
-  attribute vec4 aVertexColor;
-  attribute vec2 aTextureCoord;
-  uniform mat4 uModelViewMatrix;
-  uniform mat4 uProjectionMatrix;
-  varying lowp vec4 vColor;
-  varying highp vec2 vTextureCoord;
-  void main() {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-    vColor = aVertexColor;
-    vTextureCoord = aTextureCoord;
-  }
-`;
 
-GlHelper.GlobalFragmentShaderSource = `
-  varying highp vec2 vTextureCoord;
-  uniform sampler2D uSampler;
-  void main(void) {
-    gl_FragColor = texture2D(uSampler, vTextureCoord);
-  }
-`;
-export default GlHelper;
+export default new GlHelper();
