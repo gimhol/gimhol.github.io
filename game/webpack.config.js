@@ -8,7 +8,7 @@ var config = {
   devServer: {
     inline: true,
     compress: false,
-    contentBase: path.join(__dirname, ""),
+    contentBase: path.join(__dirname, "../"),
     open: "http://localhost:7777/webpack-dev-server/main",
     port: 7777,
   },

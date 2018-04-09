@@ -35,7 +35,7 @@ export default class Genji extends FI_Node2D{
       name: 'genji_standing',
       loop: 0,
       duration: 120,
-      image: '../res/textures/template.png',
+      image: './game/res/textures/template.png',
       frames: [
         { rect: { x:0, y:0, width:79, height:79 } },
         { rect: { x:80, y:0, width:79, height:79 } },
@@ -47,7 +47,7 @@ export default class Genji extends FI_Node2D{
       name: 'genji_running',
       loop: 0,
       duration: 90,
-      image: '../res/textures/template.png',
+      image: './game/res/textures/template.png',
       frames: [
         { rect: { x:0, y:160, width:79, height:79 } },
         { rect: { x:80, y:160, width:79, height:79 } },
@@ -59,7 +59,7 @@ export default class Genji extends FI_Node2D{
       name: 'genji_walking',
       loop: 0,
       duration: 120,
-      image: '../res/textures/template.png',
+      image: './game/res/textures/template.png',
       frames: [
         { rect: { x:320, y:0, width:79, height:79 } },
         { rect: { x:400, y:0, width:79, height:79 } },

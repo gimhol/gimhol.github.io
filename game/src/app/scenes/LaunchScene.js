@@ -47,7 +47,7 @@ export default class LaunchScene extends FI_Scene{
     var a = new FI_Node2D()
     a.setSizeWH(25,25)
     a.setPosition(this.genji.getPosition());
-    a.addComponent(new FI_Image('../../res/textures/moon_1024.jpg'))
+    a.addComponent(new FI_Image('./game/res/textures/moon_1024.jpg'))
 
     var mover = a.addComponent( new FI_Mover() )
     var sp = 1600
