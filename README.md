@@ -1,2 +1,2 @@
-# gimhol.github.io/
-https://gimhol.github.io/
+# [Game](./game)
+# [Blog](./blog)
