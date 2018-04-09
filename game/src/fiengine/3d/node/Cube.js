@@ -15,7 +15,7 @@ export default class Cube extends FI_Node3D{
   }
   _initBuffers(gl){
 
-    this.texture = GLHelper.loadTexture('./game/res/textures/earth_atmos_2048.jpg');
+    this.texture = GLHelper.loadTexture('./res/textures/earth_atmos_2048.jpg');
 
     var {
       position, indices, color, textureCoordinates, normal
