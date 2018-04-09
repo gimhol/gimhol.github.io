@@ -1,20 +1,16 @@
 var webpack = require("webpack")
 var path = require("path")
 var config = {
-  entry: {
-    main: path.resolve(__dirname, 'src/index.js'),
-    blog: path.resolve(__dirname, 'blog/src/index.js'),
-  },
+  entry: path.resolve(__dirname, 'src/index.js'),
   output: {
     path: path.resolve(__dirname, 'bundle'),
-    filename: '[name].js'
   },
   devServer: {
     inline: true,
     compress: false,
     contentBase: path.join(__dirname, ""),
     open: "http://localhost:7777/webpack-dev-server/main",
-    port: 7777,   //设定使用webpack-dev-server工具的服务器端口
+    port: 7777,
   },
   plugins: [
       new webpack.HotModuleReplacementPlugin(),
@@ -22,7 +18,17 @@ var config = {
   ],
   module: {
   	rules: [
-  		{test: /\.(js|jsx)?$/, use: ['babel-loader']}
+  		{
+        test: /\.(js|jsx)?$/,
+        use: [
+          {
+            loader:'babel-loader',
+            options:{
+                presets: ['react'],
+            }
+          }
+        ]
+      }
   	]
   },
   resolve:{
