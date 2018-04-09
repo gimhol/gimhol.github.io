@@ -1,29 +1,29 @@
+var webpack = require("webpack")
 var path = require("path")
 var config = {
-  entry: './index.js',
+  entry: {
+    main: path.resolve(__dirname, 'src/index.js'),
+    blog: path.resolve(__dirname, 'blog/src/index.js'),
+  },
   output: {
-    path: path.resolve(__dirname, './'),
-    filename: 'bundle.js',  //设置导出文件为index.js
+    path: path.resolve(__dirname, 'bundle'),
+    filename: '[name].js'
   },
   devServer: {
     inline: true,
-    port: 7777   //设定使用webpack-dev-server工具的服务器端口
+    compress: false,
+    contentBase: path.join(__dirname, ""),
+    open: "http://localhost:7777/webpack-dev-server/main",
+    port: 7777,   //设定使用webpack-dev-server工具的服务器端口
   },
+  plugins: [
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.NamedModulesPlugin(),
+  ],
   module: {
-	  /*
-    loaders: [ {   //引入babel模块处理ES6代码
-       test: /\.(js|jsx)?$/,
-       exclude: /node_modules/,
-       loader: 'babel-loader',
-
-       query: {
-          presets: ['es2015','react']
-       }
-    }]*/
-	
-	rules: [
-		{test: /\.(js|jsx)?$/, use: ['babel-loader']}
-	]
+  	rules: [
+  		{test: /\.(js|jsx)?$/, use: ['babel-loader']}
+  	]
   },
   resolve:{
     extensions:['.js',".css",".jsx"]
