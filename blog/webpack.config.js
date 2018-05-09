@@ -6,7 +6,7 @@ var config = {
     index: path.resolve(__dirname, 'src/index.js'),
   },
   output: {
-    path: path.resolve(__dirname, 'bundle'),
+    path: path.resolve(__dirname, './'),
   },
   devServer: {
     inline: true,
@@ -19,7 +19,7 @@ var config = {
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NamedModulesPlugin(),
       new HtmlWebpackPlugin({
-          template: path.resolve(__dirname,'index.html'),
+          template: path.resolve(__dirname,'template.html'),
           filename:'index.html',
           chunks:['index'],
           hash: true,
