@@ -15,3 +15,9 @@ export const FI_Vector3D = Vector3D
 
 import Size3D from './Size3D'
 export const FI_Size3D = Size3D
+
+import Quaternion from './Quaternion'
+export const FI_Quaternion = Quaternion
+
+import Matrix4 from './Matrix4'
+export const FI_Matrix4 = Matrix4;
