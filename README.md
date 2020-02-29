@@ -1,3 +1,3 @@
-<!-- ## [Game](./game) -->
-<!-- ## [Blog](./blog) -->
+## [Game](./game)
+## [Blog](./blog)
 ## [tetris](./tetris)
