@@ -32,8 +32,6 @@ export default class FI_Scene extends FI_Node{
           }
           var c0 = this.addChild(new Cube())
           c0.setPositionXYZ(x*6,y*6,z*6)
-          // c0.setRotationY(45)
-          // c0.setRotationZ(45)
         }
       }
     }
@@ -53,11 +51,9 @@ export default class FI_Scene extends FI_Node{
       return this.inner2D.addChild(child)
     }
     else if(child instanceof FI_Node3D){
-
       if(child instanceof FI_Camera3D){
         this.cameraList.push(child)
       }
-
       return this.inner3D.addChild(child)
     }
   }
@@ -86,7 +82,6 @@ export default class FI_Scene extends FI_Node{
     //3d part.
     this.cameraList.map((camera)=>{
       camera._onCameraLooking(gl)
-
       this.inner3D._onRender(gl)
     })
 

@@ -14,20 +14,25 @@ export default class Cube extends FI_Node3D{
     super()
   }
   _initBuffers(gl){
-
     this.texture = GLHelper.loadTexture('./res/textures/earth_atmos_2048.jpg');
 
     var {
       position, indices, color, textureCoordinates, normal
     } = FI_CubeModel;
 
-    var positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(position), gl.STATIC_DRAW);
+    var positionBuffer;
+    if(position){
+      positionBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(position), gl.STATIC_DRAW);
+    }
 
-    var indexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    var indexBuffer;
+    if(indices){
+      indexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    }
 
     var colorBuffer;
     if( color ){
@@ -66,24 +71,20 @@ export default class Cube extends FI_Node3D{
 
     !this.buffers && this._initBuffers(gl)
 
-    GLHelper.bindVertexPositionBuffer(this.buffers.position);
-    GLHelper.bindVertexIndexBuffer(this.buffers.indices);
+    var { position, color, textureCoordinate, indices, indicesCount} = this.buffers;
 
-    if(this.buffers.color){
-      GLHelper.bindVertexColorBuffer(this.buffers.color);
+    if(position){
+      GLHelper.bindVertexPositionBuffer(position);
+    }
+    if(indices){
+      GLHelper.bindVertexIndexBuffer(indices);
+    }
+    if(color){
+      GLHelper.bindVertexColorBuffer(color);
     }
 
-    // if(this.buffers.normal){
-    //   const normalMatrix = mat4.create();
-    //   mat4.invert(normalMatrix, this.matrix);
-    //   mat4.transpose(normalMatrix, normalMatrix);
-    //   GLHelper.bindVertexNormalBuffer(this.buffers.normal)
-    //   GLHelper.uniformNormalMatrix(normalMatrix);
-    // }
-
-    if(this.buffers.textureCoordinate){
-      GLHelper.bindTextureCoordBuffer(this.buffers.textureCoordinate)
-
+    if(textureCoordinate){
+      GLHelper.bindTextureCoordBuffer(textureCoordinate)
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.texture);
       gl.uniform1i(GLHelper.uniformLocations.uSampler, 0);

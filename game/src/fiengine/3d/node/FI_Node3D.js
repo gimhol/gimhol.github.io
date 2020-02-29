@@ -1,5 +1,4 @@
 import FI_Node from '../../node/FI_Node'
-import {mat4,quat,quat4} from '../../utils/gl-matrix'
 import GLHelper from '../glHelper'
 import {
   FI_Vector3D,
