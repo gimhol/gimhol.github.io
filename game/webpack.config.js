@@ -1,7 +1,8 @@
 var webpack = require("webpack")
 var path = require("path")
 var config = {
-  entry: path.resolve(__dirname, 'src/index.js'),
+  entry: path.resolve(__dirname, 'src/index.ts'),
+  devtool: 'inline-source-map',
   output: {
     path: path.resolve(__dirname, 'bundle'),
   },
@@ -19,7 +20,7 @@ var config = {
   module: {
   	rules: [
   		{
-        test: /\.(js|jsx)?$/,
+        test: /\.(js|jsx|ts|tsx)?$/,
         use: [
           {
             loader:'babel-loader',
@@ -32,7 +33,7 @@ var config = {
   	]
   },
   resolve:{
-    extensions:['.js',".css",".jsx"]
+    extensions:['.tsx', '.ts', '.js',".css",".jsx"]
   }
 }
 module.exports = config;  //导出config文件
