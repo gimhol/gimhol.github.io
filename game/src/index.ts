@@ -21,16 +21,31 @@ document.getElementsByTagName("body")[0].appendChild(appDiv)
 import Blackboard from './FIBlackboard/Blackboard'
 import ToolType from './FIBlackboard/ToolType'
 
+
+var scale = 1
 var canvas = document.createElement('canvas')
 canvas.style.background = 'black'
-canvas.width = 1000;
-canvas.height = 1000;
+canvas.width = 1000 * scale;
+canvas.height = 1000 * scale;
 canvas.style.width = '1000px';
 canvas.style.height = '1000px';
 console.log(canvas.getContext('2d'))
 
 var bb = new Blackboard(canvas)
-canvas.addEventListener('mousedown',(e)=>  bb["toolDown"](e.offsetX,e.offsetY))
-canvas.addEventListener('mousemove',(e)=>  bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX,e.offsetY))
-canvas.addEventListener('mouseup',  (e)=>  bb["toolDone"](e.offsetX,e.offsetY))
+var pointer_event = false
+canvas.addEventListener('mousedown',(e)=>pointer_event && e.buttons == 1 && bb["toolDown"](e.offsetX * scale,e.offsetY * scale))
+canvas.addEventListener('mousemove',(e)=>pointer_event && bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX * scale,e.offsetY * scale))
+canvas.addEventListener('mouseup',  (e)=>pointer_event && e.buttons == 1 && bb["toolDone"](e.offsetX * scale,e.offsetY * scale))
+
+
+canvas.addEventListener('pointerdown',(e)=>{
+    pointer_event = true
+    e.buttons == 1 && bb["toolDown"](e.offsetX * scale,e.offsetY * scale)
+})
+canvas.addEventListener('pointermove',(e)=>e.buttons == 1 &&  bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX * scale,e.offsetY * scale))
+canvas.addEventListener('pointerup',  (e)=>{
+    pointer_event = false
+    e.buttons == 1 &&  bb["toolDone"](e.offsetX * scale,e.offsetY * scale)
+})
+
 document.getElementsByTagName("body")[0].appendChild(canvas)

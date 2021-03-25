@@ -10,6 +10,7 @@ export default class ItemData{
 	w:number
 	h:number
 	selected:boolean
+	lineWidth:number
 	constructor(type:ToolType){
 		this.type = type
 		this.id = ""
@@ -18,7 +19,8 @@ export default class ItemData{
 		this.z = 0
 		this.w = 0
 		this.h = 0
-		this.selected = true
+		this.selected = false
+		this.lineWidth = 4
 	}
 	getSelected(){ return this.selected }
 	setSelected(v){ this.selected = v }

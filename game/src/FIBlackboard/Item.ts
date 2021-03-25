@@ -5,13 +5,22 @@ export default class BbItemBase {
 	data: ItemData
 	blackboard: Blackboard
 	dirty: boolean
-
+	dirtyLeft: number
+	dirtyTop: number
+	dirtyRight: number
+	dirtyBottom: number
+	editing: boolean
 	constructor() {
         this.data = new ItemData(ToolType.Invalid)
+
+		this.dirtyLeft = 0
+		this.dirtyRight = 0
+		this.dirtyTop = 0
+		this.dirtyBottom = 0
     }
 
     getBlackboard():Blackboard{ return this.blackboard }
-    setBlackboard(v:Blackboard){ this.blackboard = v}
+    setBlackboard(v:Blackboard){ this.blackboard = v; }
 
 	setData(v:ItemData){ this.data = v; }
 	getData():ItemData{ return this.data; }
@@ -51,13 +60,40 @@ export default class BbItemBase {
 	getBottom():number{ return this.getData().getBottom(); }
 	setBottom(v:number){ this.getData().setBottom(v); }
 	
-	setDirty(v:boolean){ this.dirty = v }
+	collide(left:number,top:number,right:number,bottom:number){
+		return !(this.getRight() < left || this.getBottom() < top || this.getLeft() > right || this.getTop() > bottom)
+	}
+
+	setDirty(v:boolean, left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){ 
+		this.dirty = v 
+		if(this.dirty){
+			if(right <= left || bottom <= top){
+				this.dirtyLeft = this.getLeft()
+				this.dirtyRight = this.getRight()
+				this.dirtyTop = this.getTop()
+				this.dirtyBottom = this.getBottom()
+			}else{
+				this.dirtyLeft = Math.min(this.dirtyLeft,this.getLeft())
+				this.dirtyRight = Math.max(this.dirtyRight,this.getRight())
+				this.dirtyTop = Math.min(this.dirtyTop,this.getTop())
+				this.dirtyBottom = Math.max(this.dirtyBottom,this.getBottom())
+			}
+		}else{
+			this.dirtyLeft = 0
+			this.dirtyRight = 0
+			this.dirtyTop = 0
+			this.dirtyBottom = 0
+		}
+
+	}
 
     toolMove(x:number,y:number){ } //console.log('toolMove',this.getType(),x,y) }
 	toolDown(x:number,y:number){ } //console.log('toolDown',this.getType(),x,y) }
 	toolDraw(x:number,y:number){ } //console.log('toolDraw',this.getType(),x,y) }
 	toolDone(x:number,y:number){ } //console.log('toolDone',this.getType(),x,y) }
 
-	update(){this.blackboard &&　this.blackboard.update()}
-	paint(ctx){}
+	update(){
+		this.blackboard && this.blackboard.update(this.dirtyLeft, this.dirtyTop, this.dirtyRight, this.dirtyBottom)
+	}
+	paint(ctx:CanvasRenderingContext2D,left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){}
 }
