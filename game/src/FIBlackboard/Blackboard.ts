@@ -26,17 +26,17 @@ export default class Blackboard {
         this.dirtyRight = 0
         this.dirtyBottom = 0
         this.factory = new Factory()
-        var t = new Date().getTime()
-        for(let i = 0; i < 100; ++i){
-            let item = this.factory.createItem(ToolType.Pen);
-            item.toolDown(0, 0);
-            for(let j = 0; j < 100; ++j){
-                item.toolDraw(Math.random()*50, Math.random()*50);
-            }
-            item.toolDone(0,0);
-            this.addItem(item);
-        }
-        console.log("time use!", new Date().getTime() - t)
+        // var t = new Date().getTime()
+        // for(let i = 0; i < 400; ++i){
+        //     let item = this.factory.createItem(ToolType.Pen);
+        //     item.toolDown(i*10+Math.random()*10, i*10+Math.random()*10);
+        //     for(let j = 0; j < 100; ++j){
+        //         item.toolDraw(i*10+Math.random()*10, i*10+Math.random()*10);
+        //     }
+        //     item.toolDone(i*10+Math.random()*10, i*10+Math.random()*10);
+        //     this.addItem(item);
+        // }
+        // console.log("time use!", new Date().getTime() - t)
         setInterval(()=>this.tryUpdate(),30)
     }
 
