@@ -19,8 +19,12 @@ var config = {
   ],
   module: {
   	rules: [
-  		{
-        test: /\.(js|jsx|ts|tsx)?$/,
+      {
+        test: /\.(ts|tsx)?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      },{
+        test: /\.(js|jsx)?$/,
         use: [
           {
             loader:'babel-loader',
@@ -28,7 +32,8 @@ var config = {
                 presets: ['react'],
             }
           }
-        ]
+        ],
+        exclude: /node_modules/
       }
   	]
   },

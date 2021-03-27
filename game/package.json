@@ -20,6 +20,7 @@
   "homepage": "https://github.com/gimhol/gimhol.github.io#readme",
   "dependencies": {},
   "devDependencies": {
+    "@types/webpack-env": "^1.16.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-decorators": "^6.24.1",

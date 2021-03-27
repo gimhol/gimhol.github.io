@@ -33,19 +33,26 @@ console.log(canvas.getContext('2d'))
 
 var bb = new Blackboard(canvas)
 var pointer_event = false
-canvas.addEventListener('mousedown',(e)=>pointer_event && e.buttons == 1 && bb["toolDown"](e.offsetX * scale,e.offsetY * scale))
-canvas.addEventListener('mousemove',(e)=>pointer_event && bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX * scale,e.offsetY * scale))
-canvas.addEventListener('mouseup',  (e)=>pointer_event && e.buttons == 1 && bb["toolDone"](e.offsetX * scale,e.offsetY * scale))
 
-
+canvas.addEventListener('mousedown',(e)=>{
+    pointer_event && e.buttons == 0 && bb["toolDown"](e.offsetX * scale,e.offsetY * scale)
+})
+canvas.addEventListener('mousemove',(e)=>{
+    pointer_event && bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX * scale,e.offsetY * scale)
+})
+canvas.addEventListener('mouseup',  (e)=>{
+    pointer_event && e.button == 0 && bb["toolDone"](e.offsetX * scale,e.offsetY * scale)
+})
 canvas.addEventListener('pointerdown',(e)=>{
     pointer_event = true
     e.buttons == 1 && bb["toolDown"](e.offsetX * scale,e.offsetY * scale)
 })
-canvas.addEventListener('pointermove',(e)=>e.buttons == 1 &&  bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX * scale,e.offsetY * scale))
+canvas.addEventListener('pointermove',(e)=>{
+    e.buttons == 1 &&  bb[e.buttons == 1?"toolDraw":"toolMove"](e.offsetX * scale,e.offsetY * scale)
+})
 canvas.addEventListener('pointerup',  (e)=>{
     pointer_event = false
-    e.buttons == 1 &&  bb["toolDone"](e.offsetX * scale,e.offsetY * scale)
+    e.button == 0 &&  bb["toolDone"](e.offsetX * scale,e.offsetY * scale)
 })
 
 document.getElementsByTagName("body")[0].appendChild(canvas)

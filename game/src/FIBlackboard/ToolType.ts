@@ -1,15 +1,18 @@
 export default class ToolType {
-    _value:Number
-    _desc:String
-    constructor(value:Number, desc:String){
+    _value:number
+    _desc:string
+    constructor(value:number, desc:string){
         this._value = value
         this._desc = desc
     }
-    value():Number{ return this._value; }
-    desc():String{ return this._desc; }
-
+    value():number{ return this._value; }
+    desc():string{ return this._desc; }
+    toString():string { return "["+this._value+"]"+this._desc}
+    
     static Invalid: ToolType
     static Pen: ToolType
+    static Picker: ToolType
 }
 ToolType.Invalid = new ToolType(0, "Invalid")
-ToolType.Pen = new ToolType(1, "Pen")
+ToolType.Picker = new ToolType(1, "Picker")
+ToolType.Pen = new ToolType(2, "Pen")

@@ -9,8 +9,11 @@ export default class ItemData{
 	z:number
 	w:number
 	h:number
-	selected:boolean
 	lineWidth:number
+	strokeColor:string
+	brushColor:string
+	lineCap:CanvasLineCap
+	lineJoin:CanvasLineJoin
 	constructor(type:ToolType){
 		this.type = type
 		this.id = ""
@@ -19,13 +22,12 @@ export default class ItemData{
 		this.z = 0
 		this.w = 0
 		this.h = 0
-		this.selected = false
 		this.lineWidth = 4
+		this.strokeColor = 'white'
+		this.brushColor = 'white'
+		this.lineCap = 'round'
+		this.lineJoin = 'round'
 	}
-	getSelected(){ return this.selected }
-	setSelected(v){ this.selected = v }
-	select(){ this.selected = true }
-	deselect(){ this.selected = false }
 
 	getType(){ return this.type }
 	setType(v:ToolType){ this.type = v }
