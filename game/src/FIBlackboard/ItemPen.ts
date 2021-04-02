@@ -1,26 +1,21 @@
 import Item from './Item'
 import ItemPenData from './ItemPenData'
+import CacheCanvas from './CacheCanvas'
+import Rect from './Rect'
 
 export default class ItemPen extends Item {
-    offscreenCanvas: HTMLCanvasElement
-    offscreenCtx: CanvasRenderingContext2D
     prevMouseX:number
     prevMouseY:number
     coordIdx:number // 用于‘离屏绘制’时，遍历坐标点用。
-    offscreenIntervalId: any // ‘离屏绘制’的定时器id。
 
     constructor(){
         super()
-        this.offscreenCanvas = document.createElement('canvas')
-        this.offscreenCanvas.width = 1000
-        this.offscreenCanvas.height = 1000
-        this.offscreenCtx = this.offscreenCanvas.getContext('2d')
     }
 	selfData():ItemPenData{ 
         return <ItemPenData> this.data
     }
     toolMove(x:number,y:number){ 
-        super.toolMove(x,y); 
+        super.toolMove(x,y) 
     }
 	toolDown(x:number,y:number){ 
         super.toolDown(x,y)
@@ -71,7 +66,7 @@ export default class ItemPen extends Item {
         let x = this.selfData().coords[0]
         let y = this.selfData().coords[1]
         this.coordIdx = 2
-        this.offscreenCtx.beginPath();
+        this.offscreenCtx.beginPath()
         this.offscreenCtx.moveTo(x,y)
 
         var halfLW = this.data.lineWidth / 2
@@ -81,11 +76,11 @@ export default class ItemPen extends Item {
         this.setH(this.data.lineWidth)
         this.setDirty(true,x-halfLW,y-halfLW, x+halfLW, y+halfLW)
         this.update()
-        
-        this.offscreenIntervalId = setInterval(this._updateOffsceen.bind(this),60)
+        this.offscreenX = this.getLeft()
+        this.offscreenY = this.getTop()
+        this.offscreenIntervalId = setInterval(this._updateOffsceen.bind(this),1000/30)
     }
     _updateOffsceen(){
-        // console.log('dot count diff:',this.selfData().coords.length - this.coordIdx)
         while(this.coordIdx < this.selfData().coords.length - 2){
             this.offscreenCtx.clearRect(this.getX(),this.getY(),this.getW(),this.getH())
             let prevX = this.selfData().coords[this.coordIdx-2];
@@ -97,7 +92,6 @@ export default class ItemPen extends Item {
                 let nextX = this.selfData().coords[this.coordIdx];
                 let nextY = this.selfData().coords[this.coordIdx+1];
                 if(this.isTriDotsOneLine(prevX,prevY,nextX,nextY,x,y)){ // 忽略构成直线的点。
-                    // console.log('isTriDotsOneLine: ',prevX,prevY,x,y,nextX,nextY)
                     continue
                 }
             }
@@ -108,7 +102,7 @@ export default class ItemPen extends Item {
             let cx2 = prevX
             let cy2 = prevY
             this.offscreenCtx.bezierCurveTo(cx1,cy1,cx2,cy2,dx,dy)
-            this.offscreenCtx.stroke();
+            this.offscreenCtx.stroke()
             
             var halfLW = this.data.lineWidth / 2
             this.setLeft(Math.min(x - halfLW,this.getLeft()))
@@ -120,12 +114,15 @@ export default class ItemPen extends Item {
                 Math.min(prevY,y)-halfLW,
                 Math.max(prevX,x)+halfLW,
                 Math.max(prevY,y)+halfLW)
+                
+            this.offscreenX = this.getLeft()
+            this.offscreenY = this.getTop()
         }
         this.update()
     }
     _endOffscreen(){
         clearInterval(this.offscreenIntervalId)
-        this._updateOffsceen();
+        this._updateOffsceen()
 
         let prevX = this.selfData().coords[this.coordIdx-2];
         let prevY = this.selfData().coords[this.coordIdx-1];
@@ -133,7 +130,7 @@ export default class ItemPen extends Item {
         let y = this.selfData().coords[this.coordIdx+1];
 
         this.offscreenCtx.lineTo(x,y)
-        this.offscreenCtx.stroke();
+        this.offscreenCtx.stroke()
 
         var halfLW = this.data.lineWidth / 2
         this.setDirty(true,
@@ -141,13 +138,64 @@ export default class ItemPen extends Item {
             Math.min(prevY,y)-halfLW,
             Math.max(prevX,x)+halfLW,
             Math.max(prevY,y)+halfLW)
-        this.update()
+        this.update()        
+
+        let canvas: CacheCanvas = null
+        let rect = new Rect(0,0,0,0);
+
+        for(let i = 0; i < Item.cacheCanvases.length; ++i){
+            canvas = Item.cacheCanvases[i]
+            rect = canvas.add(this.getId(),this.offscreenCanvas,this.getX(),this.getY(),this.getW(),this.getH())
+            if(rect.isValid()){
+                break;
+            }
+        }
+        if(this.getH() > Item.cacheFloorHeight)
+            Item.cacheFloorHeight = this.getH() * 2
+        if(this.getH() > Item.cacheFloorWidth)
+            Item.cacheFloorWidth = this.getW() * 2
+
+        if(!canvas || !rect.isValid()){
+            canvas = new CacheCanvas(Item.cacheFloorWidth,Item.cacheFloorHeight)
+            rect = canvas.add(this.getId(),this.offscreenCanvas,this.getX(),this.getY(),this.getW(),this.getH())
+            Item.cacheCanvases.push(canvas)
+        }
+
+        if(rect.isValid()){
+            this.offscreenX = rect.x
+            this.offscreenY = rect.y
+            this.offscreenCanvas = canvas.canvas
+            this.offscreenCtx = canvas.ctx
+        }
     }
 
+    /**
+     * paint 绘制到某canvas的content中
+     * @param ctx canvas的content
+     * @param left 需要重新绘制的左边x坐标(相对与canvas)
+     * @param top  需要重新绘制的顶部y坐标(相对与canvas)
+     * @param right  需要重新绘制的右边x坐标(相对与canvas)
+     * @param bottom  需要重新绘制的底部y坐标(相对与canvas)
+     */
 	paint(ctx:CanvasRenderingContext2D,left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){
+        if(right <= left || bottom <= top) {
+            left = this.getLeft()
+            top = this.getTop()
+            right = this.getRight()
+            bottom = this.getBottom()
+        }
+        var srcL = this.offscreenX + left - this.getLeft()
+        var srcT = this.offscreenY + top - this.getTop()
         ctx.drawImage(this.offscreenCanvas,
-            left, top, right-left, bottom-top,
-            left, top, right-left, bottom-top)
+            srcL,
+            srcT, 
+            right-left, 
+            bottom-top,
+            
+            left,
+            top, 
+            right-left, 
+            bottom-top)
         super.paint(ctx,left,top,right,bottom)
     }
 }

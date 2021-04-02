@@ -1,14 +1,11 @@
 import ToolType from './ToolType'
-import Utils from './Utils'
+import Rect from './Rect'
 
 export default class ItemData{
 	type:ToolType
 	id:string
-	x:number
-	y:number
 	z:number
-	w:number
-	h:number
+	geo:Rect
 	lineWidth:number
 	strokeColor:string
 	brushColor:string
@@ -17,11 +14,12 @@ export default class ItemData{
 	constructor(type:ToolType){
 		this.type = type
 		this.id = ""
-		this.x = 0
-		this.y = 0
+		this.geo = new Rect(
+			Number.MAX_VALUE,
+			Number.MAX_VALUE,
+			Number.MAX_VALUE,
+			Number.MAX_VALUE)
 		this.z = 0
-		this.w = 0
-		this.h = 0
 		this.lineWidth = 4
 		this.strokeColor = 'white'
 		this.brushColor = 'white'
@@ -32,34 +30,34 @@ export default class ItemData{
 	getType(){ return this.type }
 	setType(v:ToolType){ this.type = v }
 	
-	getId():string{ return this.id }
-	setId(v:string){ this.id = v }
-
-	getX():number{ return this.x }
-	setX(v:number){ this.x = v }
-
-	getY():number{ return this.y }
-	setY(v:number){ this.y = v }
-
 	getZ():number{ return this.z }
 	setZ(v:number){ this.z = v }
 
-	getW():number{ return this.w }
-	setW(v:number){ this.w = v }
+	getId():string{ return this.id }
+	setId(v:string){ this.id = v }
 
-	getH():number{ return this.h }
-	setH(v:number){ this.h = v }
+	getX():number{ return this.geo.x }
+	setX(v:number){ this.geo.x = v }
 
-	getLeft():number{ return this.x }
-	setLeft(v:number){ this.w = this.x + this.w - v; this.x = v }
+	getY():number{ return this.geo.y }
+	setY(v:number){ this.geo.y = v }
 
-	getTop():number{ return this.y }
-	setTop(v:number){ this.h = this.y + this.h - v; this.y = v }
+	getW():number{ return this.geo.w }
+	setW(v:number){ this.geo.w = v }
 
-	getRight():number{ return this.x + this.w }
-	setRight(v:number){ this.w = v - this.x }
+	getH():number{ return this.geo.h }
+	setH(v:number){ this.geo.h = v }
 
-	getBottom():number{ return this.y + this.h }
-	setBottom(v:number){ this.h = v - this.y }
+	getLeft():number{ return this.geo.getLeft() }
+	setLeft(v:number){ this.geo.setLeft(v) }
+
+	getTop():number{ return this.geo.getTop() }
+	setTop(v:number){ this.geo.setTop(v) }
+
+	getRight():number{ return this.geo.getRight() }
+	setRight(v:number){ this.geo.setRight(v) }
+
+	getBottom():number{ return this.geo.getBottom() }
+	setBottom(v:number){ this.geo.setBottom(v) }
 	
 }

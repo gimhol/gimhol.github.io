@@ -1,8 +1,19 @@
 import ItemData from './ItemData'
 import ToolType from './ToolType'
 import Blackboard from './Blackboard'
-interface A{}
+import CacheCanvas from './CacheCanvas'
+import Rect from './Rect'
 export default class Item{
+	static cacheCanvases: Array<CacheCanvas>
+    static cacheFloorWidth: number
+    static cacheFloorHeight: number
+
+    offscreenCanvas: HTMLCanvasElement
+    offscreenCtx: CanvasRenderingContext2D
+    offscreenIntervalId: any // ‘离屏绘制’的定时器id。
+    offscreenX: number
+    offscreenY: number
+
 	data: ItemData
 	blackboard: Blackboard
 	dirty: boolean
@@ -15,11 +26,18 @@ export default class Item{
 	constructor() {
         this.data = null
 		this.editing = false
-		this.selected = true
+		this.selected = false
 		this.dirtyLeft = 0
 		this.dirtyRight = 0
 		this.dirtyTop = 0
 		this.dirtyBottom = 0
+
+		this.offscreenCanvas = document.createElement('canvas')
+        this.offscreenCanvas.width = 1920   
+        this.offscreenCanvas.height = 1920
+        this.offscreenCtx = this.offscreenCanvas.getContext('2d')
+        this.offscreenX = 0
+        this.offscreenY = 0
     }
 
     getBlackboard():Blackboard{ return this.blackboard }
@@ -64,6 +82,13 @@ export default class Item{
 	
 	collide(left:number,top:number,right:number,bottom:number){
 		return !(this.getRight() < left || this.getBottom() < top || this.getLeft() > right || this.getTop() > bottom)
+	}
+	collided(left:number,top:number,right:number,bottom:number):Rect{
+		let l = Math.max(left,this.getLeft())
+		let r = Math.min(right,this.getRight())
+		let t = Math.max(top,this.getTop())
+		let b = Math.min(bottom,this.getBottom())
+		return new Rect(l,t,r-l,b-t)
 	}
 	setDirty(v:boolean, left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){ 
 		this.dirty = v 
@@ -116,3 +141,6 @@ export default class Item{
         }
 	}
 }
+Item.cacheCanvases = []
+Item.cacheFloorWidth = 0
+Item.cacheFloorHeight = 0

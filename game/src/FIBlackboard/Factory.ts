@@ -13,7 +13,7 @@ export default class Factory {
 
 		this.dataClsMap.set(ToolType.Pen.value(),ItemPenData)
 		this.itemClsMap.set(ToolType.Pen.value(),ItemPen)
-		console.log(this.itemClsMap.get(ToolType.Pen.value()))
+		// console.log(this.itemClsMap.get(ToolType.Pen.value()))
 	}
 	createItemId(type:ToolType){ return ''+type+'_'+new Date().getTime() }
 	createItemData(type:ToolType):ItemData { 

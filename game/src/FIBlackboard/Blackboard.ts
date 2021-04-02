@@ -37,7 +37,7 @@ export default class Blackboard {
         //     this.addItem(item);
         // }
         // console.log("time use!", new Date().getTime() - t)
-        setInterval(()=>this.tryUpdate(),30)
+        setInterval(()=>this.tryUpdate(),1000/60)
     }
 
     addItem(item:Item){
@@ -76,7 +76,6 @@ export default class Blackboard {
     setDirty(dirty:boolean,left:number = 0,top:number = 0,right:number = 0,bottom:number = 0){
         this.dirty = dirty 
 		if(this.dirty){
-            // console.log(...arguments)
             if(right <= left || bottom <= top) {
                 this.dirtyLeft 	= 0
 				this.dirtyRight = this.canvas.width
@@ -110,10 +109,9 @@ export default class Blackboard {
         }
         var paintItemCount = 0
         this.items.map((item,i)=>{
-            var collided = item.collide(left, top, right, bottom)
-            if(item.dirty || collided   ){
-                // console.log(i,item.dirty,collided,left,top,right, bottom)
-                item.paint(ctx, left, top, right, bottom)
+            var collided = item.collided(left, top, right, bottom)
+            if(item.dirty || collided.isValid()){
+                item.paint(ctx, collided.x, collided.y, collided.x + collided.w, collided.y + collided.h)
                 item.setDirty(false);
                 ++paintItemCount
             }
