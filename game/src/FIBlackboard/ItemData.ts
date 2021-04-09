@@ -60,4 +60,7 @@ export default class ItemData{
 	getBottom():number{ return this.geo.getBottom() }
 	setBottom(v:number){ this.geo.setBottom(v) }
 	
+	setXYWH(x:number, y:number, w:number, h:number){ this.geo.setXYWH(x,y,w,h) }
+	getXYWH():Array<number>{ return this.geo.getXYWH() }
+	getLTRB():Array<number>{ return this.geo.getLTRB() }
 }

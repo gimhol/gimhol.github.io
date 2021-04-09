@@ -21,6 +21,8 @@ document.getElementsByTagName("body")[0].appendChild(appDiv)
 import Blackboard from './FIBlackboard/Blackboard'
 import ToolType from './FIBlackboard/ToolType'
 
+let body = document.getElementsByTagName("body")[0]
+body.style.margin = '0px'
 
 var scale = 1
 var canvas = document.createElement('canvas')
@@ -30,6 +32,7 @@ canvas.height = 1000 * scale;
 canvas.style.width = '1000px';
 canvas.style.height = '1000px';
 console.log(canvas.getContext('2d'))
+body.appendChild(canvas)
 
 var bb = new Blackboard(canvas)
 var pointer_event = false
@@ -55,4 +58,22 @@ canvas.addEventListener('pointerup',  (e)=>{
     e.button == 0 &&  bb["toolDone"](e.offsetX * scale,e.offsetY * scale)
 })
 
-document.getElementsByTagName("body")[0].appendChild(canvas)
+
+
+let toolBtns:Array<HTMLButtonElement> = []
+let toolBtnDatas = [
+    ["pen",ToolType.Pen],
+    ["picker",ToolType.Picker]
+]
+function addToolButton(text:string, toolType:ToolType):HTMLButtonElement{
+    var btn = document.createElement('button')
+    btn.innerText = text
+    btn.addEventListener('click',()=>{
+        bb.setToolType(toolType)
+    })
+    body.appendChild(btn)
+    return btn
+}
+toolBtnDatas.map((pair)=>{
+    toolBtns.push(addToolButton(<string>pair[0],<ToolType>pair[1]))
+})

@@ -3,38 +3,38 @@ import ToolType from './ToolType'
 import Blackboard from './Blackboard'
 import CacheCanvas from './CacheCanvas'
 import Rect from './Rect'
-export default class Item{
+import OffscreenI from './Updater'
+export default class Item implements OffscreenI{
 	static cacheCanvases: Array<CacheCanvas>
     static cacheFloorWidth: number
     static cacheFloorHeight: number
 
     offscreenCanvas: HTMLCanvasElement
     offscreenCtx: CanvasRenderingContext2D
-    offscreenIntervalId: any // ‘离屏绘制’的定时器id。
     offscreenX: number
     offscreenY: number
 
 	data: ItemData
 	blackboard: Blackboard
 	dirty: boolean
-	dirtyLeft:number
-	dirtyTop:number
-	dirtyRight:number
-	dirtyBottom:number
+	// dirtyLeft:number
+	// dirtyTop:number
+	// dirtyRight:number
+	// dirtyBottom:number
 	editing: boolean
 	selected:boolean
 	constructor() {
         this.data = null
 		this.editing = false
 		this.selected = false
-		this.dirtyLeft = 0
-		this.dirtyRight = 0
-		this.dirtyTop = 0
-		this.dirtyBottom = 0
+		// this.dirtyLeft = 0
+		// this.dirtyRight = 0
+		// this.dirtyTop = 0
+		// this.dirtyBottom = 0
 
 		this.offscreenCanvas = document.createElement('canvas')
-        this.offscreenCanvas.width = 1920   
-        this.offscreenCanvas.height = 1920
+        this.offscreenCanvas.width = 1000   
+        this.offscreenCanvas.height = 1000
         this.offscreenCtx = this.offscreenCanvas.getContext('2d')
         this.offscreenX = 0
         this.offscreenY = 0
@@ -47,9 +47,14 @@ export default class Item{
 	getData():ItemData{ return this.data }
 
 	getSelected(){ return this.selected }
-	setSelected(v:boolean){ this.selected = v }
-	select(){ this.selected = true }
-	deselect(){ this.selected = false }
+	setSelected(v:boolean){ 
+		if(this.selected == v)
+			return
+		this.selected = v
+		this.setDirty(true)
+	}
+	select(){ this.setSelected(true) }
+	deselect(){ this.setSelected(false) }
 	
 	getType(){ return this.data.getType() }
 
@@ -80,40 +85,48 @@ export default class Item{
 	getBottom():number{ return this.data.getBottom() }
 	setBottom(v:number){ this.data.setBottom(v) }
 	
-	collide(left:number,top:number,right:number,bottom:number){
-		return !(this.getRight() < left || this.getBottom() < top || this.getLeft() > right || this.getTop() > bottom)
+	setXYWH(x:number, y:number, w:number, h:number){ this.data.setXYWH(x,y,w,h) }
+	getXYWH():Array<number>{ return this.data.getXYWH() }
+	getLTRB():Array<number>{ return this.data.getLTRB() }
+
+	setLTRB(l:number, t:number, r:number, b:number){
+		this.data.geo.x = l
+		this.data.geo.y = t
+		this.data.geo.w = r-l
+		this.data.geo.h = b-t
+	}
+	collide(left:number,top:number,right:number,bottom:number):boolean{
+		return this.data.geo.collideLTRB(left,top,right,bottom)
 	}
 	collided(left:number,top:number,right:number,bottom:number):Rect{
-		let l = Math.max(left,this.getLeft())
-		let r = Math.min(right,this.getRight())
-		let t = Math.max(top,this.getTop())
-		let b = Math.min(bottom,this.getBottom())
-		return new Rect(l,t,r-l,b-t)
+		return this.data.geo.collidedLTRB(left,top,right,bottom)
 	}
 	setDirty(v:boolean, left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){ 
 		this.dirty = v 
 		if(this.dirty){
-			if(right <= left || bottom <= top){
-				this.dirtyLeft 	= this.getLeft()
-				this.dirtyRight = this.getRight()
-				this.dirtyTop = this.getTop()
-				this.dirtyBottom = this.getBottom()
-			}else if(this.dirtyRight <= this.dirtyLeft || this.dirtyBottom <= this.dirtyTop){
-				this.dirtyLeft = left
-				this.dirtyRight = right
-				this.dirtyTop = top
-				this.dirtyBottom = bottom
-			}else {
-				this.dirtyLeft = Math.min(this.dirtyLeft,this.getLeft())
-				this.dirtyRight = Math.max(this.dirtyRight,this.getRight())
-				this.dirtyTop = Math.min(this.dirtyTop,this.getTop())
-				this.dirtyBottom = Math.max(this.dirtyBottom,this.getBottom())
-			}
+			// if(right <= left || bottom <= top){
+			// 	this.dirtyLeft 	= this.getLeft()
+			// 	this.dirtyRight = this.getRight()
+			// 	this.dirtyTop = this.getTop()
+			// 	this.dirtyBottom = this.getBottom()
+			// }else if(this.dirtyRight <= this.dirtyLeft || this.dirtyBottom <= this.dirtyTop){
+			// 	this.dirtyLeft = left
+			// 	this.dirtyRight = right
+			// 	this.dirtyTop = top
+			// 	this.dirtyBottom = bottom
+			// }else {
+			// 	this.dirtyLeft = Math.min(this.dirtyLeft,this.getLeft())
+			// 	this.dirtyRight = Math.max(this.dirtyRight,this.getRight())
+			// 	this.dirtyTop = Math.min(this.dirtyTop,this.getTop())
+			// 	this.dirtyBottom = Math.max(this.dirtyBottom,this.getBottom())
+			// }
+			// this.blackboard && this.blackboard.setDirty(true,this.dirtyLeft, this.dirtyTop, this.dirtyRight, this.dirtyBottom)
+			this.blackboard && this.blackboard.setDirty(true,left,top,right,bottom)
 		}else{
-			this.dirtyLeft = 0
-			this.dirtyRight = 0
-			this.dirtyTop = 0
-			this.dirtyBottom = 0
+			// this.dirtyLeft = 0
+			// this.dirtyRight = 0
+			// this.dirtyTop = 0
+			// this.dirtyBottom = 0
 		}
 	}
 
@@ -122,23 +135,35 @@ export default class Item{
 	toolDraw(x:number,y:number){ } //console.log('toolDraw',this.getType(),x,y) }
 	toolDone(x:number,y:number){ } //console.log('toolDone',this.getType(),x,y) }
 	update(){
-		this.blackboard && this.blackboard.setDirty(true,this.dirtyLeft, this.dirtyTop, this.dirtyRight, this.dirtyBottom)
+		
 	}
 	paint(ctx:CanvasRenderingContext2D,left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){
 		if(this.getSelected()) {
             ctx.setLineDash([4, 4])
             ctx.strokeStyle = 'white'
             ctx.lineWidth = 1
-            ctx.lineCap = "round"
-            ctx.lineJoin = "round"
             ctx.beginPath()
-            ctx.moveTo(this.getLeft(),this.getTop())
-            ctx.lineTo(this.getRight(),this.getTop())
-            ctx.lineTo(this.getRight(),this.getBottom())
-            ctx.lineTo(this.getLeft(),this.getBottom())
+			let l = this.getLeft()+1
+			let t = this.getTop()+1
+			let r = this.getRight()-1
+			let b = this.getBottom()-1
+            ctx.moveTo(l,t)
+            ctx.lineTo(r,t)
+            ctx.lineTo(r,b)
+            ctx.lineTo(l,b)
             ctx.closePath()
             ctx.stroke()
         }
+	}
+	start(){ 
+		this.blackboard.updaters = this.blackboard.updaters.filter((item)=>item !== this) 
+		this.blackboard.updaters.push(this)
+	}
+    onUpdate(){
+        // console.log(this,"onUpdate()")
+	}
+    stop(){
+		this.blackboard.updaters = this.blackboard.updaters.filter((item)=>item !== this) 
 	}
 }
 Item.cacheCanvases = []

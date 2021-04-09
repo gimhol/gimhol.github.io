@@ -21,7 +21,7 @@ export default class ItemPen extends Item {
         super.toolDown(x,y)
         this.selfData().coords.push(x) 
         this.selfData().coords.push(y)
-        this._startOffscreen()
+        this.start()
         this.prevMouseX = x;
         this.prevMouseY = y;
     }
@@ -39,7 +39,7 @@ export default class ItemPen extends Item {
         this.selfData().coords.push(x) 
         this.selfData().coords.push(y)
         this.blackboard && this.blackboard.unsetEditingItem(this)
-        this._endOffscreen()
+        this.stop()
     }
 
     /**
@@ -58,7 +58,7 @@ export default class ItemPen extends Item {
             Math.min(ax , bx) <= ox && ox <= Math.max(ax , bx) &&
             Math.min(ay , by) <= oy && oy <= Math.max(ay , by)
     }
-    _startOffscreen(){
+    start(){
         this.offscreenCtx.strokeStyle = this.data.strokeColor
         this.offscreenCtx.lineWidth = this.data.lineWidth
         this.offscreenCtx.lineCap = this.data.lineCap
@@ -75,25 +75,36 @@ export default class ItemPen extends Item {
         this.setW(this.data.lineWidth)
         this.setH(this.data.lineWidth)
         this.setDirty(true,x-halfLW,y-halfLW, x+halfLW, y+halfLW)
-        this.update()
         this.offscreenX = this.getLeft()
         this.offscreenY = this.getTop()
-        this.offscreenIntervalId = setInterval(this._updateOffsceen.bind(this),1000/30)
+        super.start()
     }
-    _updateOffsceen(){
-        while(this.coordIdx < this.selfData().coords.length - 2){
+    onUpdate(){
+        super.onUpdate()
+        let coords = this.selfData().coords
+        if(this.coordIdx >= coords.length - 2)
+            return // not changed.
+        let halfLW = this.data.lineWidth / 2
+        let geoL = this.getLeft()
+        let geoT = this.getTop()
+        let geoR = this.getRight()
+        let geoB = this.getBottom()
+        let dirtyL = Math.min(coords[this.coordIdx-4],coords[this.coordIdx-2])
+        let dirtyT = Math.min(coords[this.coordIdx-3],coords[this.coordIdx-1])
+        let dirtyR = Math.max(coords[this.coordIdx-4],coords[this.coordIdx-2])
+        let dirtyB = Math.max(coords[this.coordIdx-3],coords[this.coordIdx-1])
+        while(this.coordIdx < coords.length - 2){
             this.offscreenCtx.clearRect(this.getX(),this.getY(),this.getW(),this.getH())
-            let prevX = this.selfData().coords[this.coordIdx-2];
-            let prevY = this.selfData().coords[this.coordIdx-1];
-            let x = this.selfData().coords[this.coordIdx];
-            let y = this.selfData().coords[this.coordIdx+1];
+            let prevX = coords[this.coordIdx-2];
+            let prevY = coords[this.coordIdx-1];
+            let x = coords[this.coordIdx];
+            let y = coords[this.coordIdx+1];
             this.coordIdx += 2
-            if(this.coordIdx < this.selfData().coords.length - 2){
-                let nextX = this.selfData().coords[this.coordIdx];
-                let nextY = this.selfData().coords[this.coordIdx+1];
-                if(this.isTriDotsOneLine(prevX,prevY,nextX,nextY,x,y)){ // 忽略构成直线的点。
+            if(this.coordIdx < coords.length - 2){
+                let nextX = coords[this.coordIdx];
+                let nextY = coords[this.coordIdx+1];
+                if(this.isTriDotsOneLine(prevX,prevY,nextX,nextY,x,y)) // 忽略构成直线的点。
                     continue
-                }
             }
             let dx = (x+prevX)/2
             let dy = (y+prevY)/2
@@ -103,27 +114,33 @@ export default class ItemPen extends Item {
             let cy2 = prevY
             this.offscreenCtx.bezierCurveTo(cx1,cy1,cx2,cy2,dx,dy)
             this.offscreenCtx.stroke()
-            
-            var halfLW = this.data.lineWidth / 2
-            this.setLeft(Math.min(x - halfLW,this.getLeft()))
-            this.setTop(Math.min(y - halfLW,this.getTop()))
-            this.setRight(Math.max(x + halfLW, this.getRight()))
-            this.setBottom(Math.max(y + halfLW, this.getBottom()))
-            this.setDirty(true,
-                Math.min(prevX,x)-halfLW,
-                Math.min(prevY,y)-halfLW,
-                Math.max(prevX,x)+halfLW,
-                Math.max(prevY,y)+halfLW)
-                
-            this.offscreenX = this.getLeft()
-            this.offscreenY = this.getTop()
+            dirtyL = Math.min(dirtyL,x)
+            dirtyR = Math.max(dirtyR,x)
+            dirtyT = Math.min(dirtyT,y)
+            dirtyB = Math.max(dirtyB,y)
+            geoL = Math.min(x,geoL)
+            geoT = Math.min(y,geoT)
+            geoR = Math.max(x,geoR)
+            geoB = Math.max(y,geoB)
         }
-        this.update()
-    }
-    _endOffscreen(){
-        clearInterval(this.offscreenIntervalId)
-        this._updateOffsceen()
+        this.setLTRB(
+            geoL - halfLW,
+            geoT - halfLW,
+            geoR + halfLW,
+            geoB + halfLW)
+        this.offscreenX = this.getLeft()
+        this.offscreenY = this.getTop()
+        this.setDirty(true,
+            dirtyL-halfLW,
+            dirtyT-halfLW,
+            dirtyR+halfLW,
+            dirtyB+halfLW)
 
+        super.onUpdate()
+    }
+    stop(){
+        super.stop()
+        this.onUpdate()
         let prevX = this.selfData().coords[this.coordIdx-2];
         let prevY = this.selfData().coords[this.coordIdx-1];
         let x = this.selfData().coords[this.coordIdx];
@@ -137,8 +154,7 @@ export default class ItemPen extends Item {
             Math.min(prevX,x)-halfLW,
             Math.min(prevY,y)-halfLW,
             Math.max(prevX,x)+halfLW,
-            Math.max(prevY,y)+halfLW)
-        this.update()        
+            Math.max(prevY,y)+halfLW)      
 
         let canvas: CacheCanvas = null
         let rect = new Rect(0,0,0,0);
