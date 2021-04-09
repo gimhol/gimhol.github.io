@@ -2,6 +2,8 @@ import Blackboard from "./Blackboard"
 import Item from "./Item"
 import ItemData from "./ItemData"
 import ToolType from "./ToolType"
+import FIArray from "./FIArray"
+
 
 export default class Picker extends Item{
     constructor(blackboard: Blackboard){
@@ -43,9 +45,7 @@ export default class Picker extends Item{
     stop(){
         super.stop()
         
-        if(this._state == Picker.STATE_PICKING && this._items.length > 0)
-            this._state = Picker.STATE_PICKED
-
+        this._state = Picker.STATE_NONE
         this.setXYWH(0,0,0,0)
         this.setDirty(true,
             this._prevPickerL,
@@ -62,7 +62,7 @@ export default class Picker extends Item{
         this._prevPickerB = 0
     }
     toolDown(x:number,y:number){
-        this._items = []
+        this._items = new FIArray<Item>()
         this._pickerBeginX = x
         this._pickerBeginY = y
         this._pickerL = x
@@ -74,37 +74,33 @@ export default class Picker extends Item{
         this._prevPickerR = x
         this._prevPickerB = y
         this.setXYWH(x,y,0,0)
-        this.blackboard.deselectAll()
 
-        switch(this._state){
-        case Picker.STATE_PICKED:
-        case Picker.STATE_NONE:
-            let hit = false
-            for(let i = this.blackboard.items.length - 1; i >= 0; --i){
-                let item = this.blackboard.items[i]
-                if(!item.data.geo.containXY(x,y))
-                    continue
-                hit = true
-                this._items = [item]
-                item.setSelected(true)
-                break
+        let item = this.blackboard.items.lastOrNull((item)=>item.data.geo.containXY(x,y))
+        if (null != item) {
+            if (item.isSelected()) {
+                this._items = this.blackboard.selectedItems()
+                this._state = Picker.STATE_PICKED
+            } else {
+                this.blackboard.deselectAll()
+                this._items = new FIArray<Item>()
+                this._items.push(item)
+                item.select()
             }
-            console.log("hit",hit)
-            this._state = hit?Picker.STATE_PICKED:Picker.STATE_NONE
-            break
+            this._state = Picker.STATE_PICKED
+        } else {
+            this.blackboard.deselectAll()
+            this._state = Picker.STATE_PICKING
+            this.start()
         }
-
-        console.log(this._state)
-        if(this._state == Picker.STATE_PICKED)
-            return
-        this._state = Picker.STATE_PICKING
-        this.start()
     }
     toolDraw(x:number,y:number){
         this._pickerL = Math.min(x,this._pickerBeginX)
         this._pickerT = Math.min(y,this._pickerBeginY)
         this._pickerR = Math.max(x,this._pickerBeginX)
         this._pickerB = Math.max(y,this._pickerBeginY)
+        if(this._state == Picker.STATE_PICKED){
+
+        }
     }
     toolDone(x:number,y:number){
         this.setDirty(true,...this.getLTRB())
@@ -147,7 +143,7 @@ export default class Picker extends Item{
     _prevPickerR: number
     _prevPickerB: number
 
-    _items: Array<Item>
+    _items: FIArray<Item>
     static STATE_NONE: number
     static STATE_PICKING: number
     static STATE_PICKED: number

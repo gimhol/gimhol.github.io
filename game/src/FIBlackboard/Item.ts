@@ -39,14 +39,22 @@ export default class Item implements OffscreenI{
         this.offscreenX = 0
         this.offscreenY = 0
     }
+    moveTo(x:number, y:number){
+        let dirtyL = Math.min(this.data.geo.x, x)
+        let dirtyT = Math.min(this.data.geo.y, y)
+        let dirtyR = Math.max(this.data.geo.x + this.data.geo.w, x + this.data.geo.w)
+        let dirtyB = Math.max(this.data.geo.y + this.data.geo.h, y + this.data.geo.h)
+        this.data.geo.x = x
+        this.data.geo.y = y
+        this.setDirty(true,dirtyL,dirtyT,dirtyR,dirtyB)
+    }
 
     getBlackboard():Blackboard{ return this.blackboard }
     setBlackboard(v:Blackboard){ this.blackboard = v }
 
 	setData(v:ItemData){ this.data = v }
 	getData():ItemData{ return this.data }
-
-	getSelected(){ return this.selected }
+	isSelected(){ return this.selected }
 	setSelected(v:boolean){ 
 		if(this.selected == v)
 			return
@@ -138,7 +146,7 @@ export default class Item implements OffscreenI{
 		
 	}
 	paint(ctx:CanvasRenderingContext2D,left:number = 0, top:number = 0, right:number = 0, bottom:number = 0){
-		if(this.getSelected()) {
+		if(this.isSelected()) {
             ctx.setLineDash([4, 4])
             ctx.strokeStyle = 'white'
             ctx.lineWidth = 1
@@ -156,14 +164,15 @@ export default class Item implements OffscreenI{
         }
 	}
 	start(){ 
-		this.blackboard.updaters = this.blackboard.updaters.filter((item)=>item !== this) 
+		console.log(this.blackboard.updaters)
+		this.blackboard.updaters.removeOnce((item)=>item !== this) 
 		this.blackboard.updaters.push(this)
 	}
     onUpdate(){
         // console.log(this,"onUpdate()")
 	}
     stop(){
-		this.blackboard.updaters = this.blackboard.updaters.filter((item)=>item !== this) 
+		this.blackboard.updaters.removeOnce((item)=>item !== this) 
 	}
 }
 Item.cacheCanvases = []

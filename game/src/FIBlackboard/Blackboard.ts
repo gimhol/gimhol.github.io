@@ -6,13 +6,14 @@ import Factory from './Factory'
 import Picker from './Picker'
 import Updater from './Updater'
 import Rect from './Rect'
+import FIArray from './FIArray'
 
 export default class Blackboard {
     canvas: HTMLCanvasElement
     ctx: CanvasRenderingContext2D
     toolType: ToolType
     editingItem: Item
-    items: Array<Item>
+    items: FIArray<Item>
     dirty:boolean
     dirtyLeft:number
     dirtyTop:number
@@ -20,7 +21,7 @@ export default class Blackboard {
     dirtyBottom:number
     factory:Factory
     picker: Picker
-    updaters: Updater[]
+    updaters: FIArray<Updater>
 
     pickerElement: HTMLElement
 	constructor(canvas:HTMLCanvasElement){
@@ -34,14 +35,14 @@ export default class Blackboard {
         this.canvas = canvas
         this.ctx = canvas.getContext('2d')
         this.toolType = ToolType.Pen
-        this.items = []
+        this.items = new FIArray<Item>()
         this.dirtyLeft = 0
         this.dirtyTop = 0
         this.dirtyRight = 0
         this.dirtyBottom = 0
         this.factory = new Factory()
         this.picker = new Picker(this)
-        this.updaters = []
+        this.updaters = new FIArray<Updater>()
         // var t = new Date().getTime()
         // for(let i = 0; i < 400; ++i){
         //     let item = this.factory.createItem(ToolType.Pen);
@@ -187,10 +188,10 @@ export default class Blackboard {
 			this.dirtyBottom = 0
         }
     }
-    setSelectedRect(rect:Rect):Array<Item>{
-        let ret:Array<Item> = []
+    setSelectedRect(rect:Rect):FIArray<Item>{
+        let ret = new FIArray<Item>()
         this.items.map((item)=>{
-            let pre = item.getSelected()
+            let pre = item.isSelected()
             let cur = item.data.geo.collide(rect)
             if(cur)
                 ret.push(item)
@@ -203,6 +204,7 @@ export default class Blackboard {
     deselectAll(){
         this.items.map((item)=>item.setSelected(false))
     }
+	selectedItems():FIArray<Item>{ return this.items.filter((item)=>item.isSelected()) }
     paint(ctx:CanvasRenderingContext2D,left:number = 0,top:number = 0,right:number = 0,bottom:number = 0){
         var t = new Date().getTime()
         ctx.fillStyle="black";
