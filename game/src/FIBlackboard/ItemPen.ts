@@ -7,7 +7,6 @@ export default class ItemPen extends Item {
     prevMouseX:number
     prevMouseY:number
     coordIdx:number // 用于‘离屏绘制’时，遍历坐标点用。
-
     constructor(){
         super()
     }
@@ -79,6 +78,7 @@ export default class ItemPen extends Item {
         this.offscreenY = this.getTop()
         super.start()
     }
+
     onUpdate(){
         super.onUpdate()
         let coords = this.selfData().coords
@@ -118,16 +118,16 @@ export default class ItemPen extends Item {
             dirtyR = Math.max(dirtyR,x)
             dirtyT = Math.min(dirtyT,y)
             dirtyB = Math.max(dirtyB,y)
-            geoL = Math.min(x,geoL)
-            geoT = Math.min(y,geoT)
-            geoR = Math.max(x,geoR)
-            geoB = Math.max(y,geoB)
+            geoL = Math.min(x - halfLW,geoL)
+            geoT = Math.min(y - halfLW,geoT)
+            geoR = Math.max(x + halfLW,geoR)
+            geoB = Math.max(y + halfLW,geoB)
         }
         this.setLTRB(
-            geoL - halfLW,
-            geoT - halfLW,
-            geoR + halfLW,
-            geoB + halfLW)
+            geoL,
+            geoT,
+            geoR,
+            geoB)
         this.offscreenX = this.getLeft()
         this.offscreenY = this.getTop()
         this.setDirty(true,
@@ -135,7 +135,6 @@ export default class ItemPen extends Item {
             dirtyT-halfLW,
             dirtyR+halfLW,
             dirtyB+halfLW)
-
         super.onUpdate()
     }
     stop(){
